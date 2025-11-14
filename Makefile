@@ -1,10 +1,22 @@
+
+# note to self: manually update SRC_FILES and H_FILES when done
+# note to self: it almost looks like SRC_FILES and H_FILES aren't
+# properly being defined...
+
 PROJECT = final_project
-SRC_FILES = 
-H_FILES = 
+SRC_FILES = src/misc/file_handling.cpp \
+			src/misc/cmd_line_opts.cpp \
+			src/main.cpp \
+			src/assembler/tokenizer.cpp \
+			src/assembler/blueprint.cpp
+H_FILES = src/misc/file_handling.h \
+		  src/misc/cmd_line_opts.h \
+		  src/assembler/blueprint.h \
+		  src/assembler/translation.h \
+		  src/assembler/common_values.h \
+		  src/assembler/tokenizer.h
 REZ_FILES =
 USERNAME  = santiago_sagastegui
-
-# note to self: manually define SRC_FILES, H_FILES, and OBJECTS later
 
 SRC_FILES = 
 H_FILES =
@@ -15,7 +27,7 @@ CXXFLAGS_DEBUG = -g
 CXXFLAGS_WARN  = -Wall -Werror -Wextra -Wconversion -Wdouble-promotion \
 				 -Wunreachable-code -Wshadow -Wpedantic
 CPPVERSION = -std=c++17
-OBJECTS = $(wildcard build/*.o)
+OBJECTS =
 
 ARCHIVE_EXTENSION = zip
 
@@ -38,12 +50,15 @@ else
 	ZIP_NAME = $(PROJECT)_$(USERNAME).$(ARCHIVE_EXTENSION)
 endif
 
+# note to self: apparently, make evaluates all variables before
+# it runs the lines, instead of the more rational line-by-line substitution
 all:
 	make -C src/assembler
 	make -C src/misc
 	$(CXX) $(CPPVERSION) $(CXXFLAGS_DEBUG) $(CXXFLAGS_WARN) \
 		-o build/main.o -c src/main.cpp
-	$(CXX) -o $(TARGET) $(wildcard build/*.o)
+	$(CXX) -o $(TARGET) build/blueprint.o build/cmd_line_opts.o \
+						build/file_handling.o build/main.o build/tokenizer.o
 
 # $(CXX) $(CPPVERSION) $(CXXFLAGS_DEBUG) $(CXXFLAGS_WARN) -o $@ -c $<
 
