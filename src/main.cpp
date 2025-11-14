@@ -16,7 +16,7 @@
 #include "assembler/blueprint.h"
 #include "assembler/common_values.h"
 #include "assembler/tokenizer.h"
-// #include "assembler/translation.h"
+#include "assembler/translation.h"
 #include "misc/cmd_line_opts.h"
 #include "misc/file_handling.h"
 
@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
                         std::cout << "Invalid symbol: " << res.relevant_tokens.at(1) << "\n";
                         return 0;
                 }
-                /*
+
                 res = generate_program(final_program, tokens, label_table);
                 switch (res.assembler_retval) {
                 case COMPLETE:
@@ -122,6 +122,13 @@ int main(int argc, char **argv) {
                         std::cout << "Instruction #" << res.relevant_idx << "\n";
                         std::cout << "Invalid mnemonic: " << res.relevant_tokens.at(0) << "\n";
                         return 0;
+                case MISSING_ARGUMENTS_2:
+                        // is intentionally duplicate, will remove the previous
+                        // MISSING_ARGUMENTS later
+                        std::cout << "--- Assembler Error ---\n";
+                        std::cout << "Missing arguments\n";
+                        std::cout << "Instruction #" << res.relevant_idx << "\n";
+                        std::cout << "Mnemonic: " << res.relevant_tokens.at(0) << "\n";
                 }
 
                 if (life_opts.intermediate_files) {
@@ -131,7 +138,6 @@ int main(int argc, char **argv) {
                                 return 1;
                         }
                 }
-                */
         }
 
 

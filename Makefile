@@ -8,6 +8,7 @@ SRC_FILES = src/misc/file_handling.cpp \
 			src/misc/cmd_line_opts.cpp \
 			src/main.cpp \
 			src/assembler/tokenizer.cpp \
+			src/assembler/translation.cpp \
 			src/assembler/blueprint.cpp
 H_FILES = src/misc/file_handling.h \
 		  src/misc/cmd_line_opts.h \
@@ -27,8 +28,12 @@ CXXFLAGS_DEBUG = -g
 CXXFLAGS_WARN  = -Wall -Werror -Wextra -Wconversion -Wdouble-promotion \
 				 -Wunreachable-code -Wshadow -Wpedantic
 CPPVERSION = -std=c++17
-OBJECTS =
-
+OBJECTS = build/blueprint.o \
+		  build/cmd_line_opts.o \
+		  build/file_handling.o \
+		  build/main.o \
+		  build/tokenizer.o \
+		  build/translation.o
 ARCHIVE_EXTENSION = zip
 
 ifeq ($(shell echo "Windows"), "Windows")
@@ -57,8 +62,7 @@ all:
 	make -C src/misc
 	$(CXX) $(CPPVERSION) $(CXXFLAGS_DEBUG) $(CXXFLAGS_WARN) \
 		-o build/main.o -c src/main.cpp
-	$(CXX) -o $(TARGET) build/blueprint.o build/cmd_line_opts.o \
-						build/file_handling.o build/main.o build/tokenizer.o
+	$(CXX) -o $(TARGET) $(OBJECTS)
 
 # $(CXX) $(CPPVERSION) $(CXXFLAGS_DEBUG) $(CXXFLAGS_WARN) -o $@ -c $<
 

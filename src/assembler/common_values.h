@@ -16,7 +16,13 @@ enum Atom_Type {
         STACK_OFFSET = 1 << 6,
 };
 
-// return value for assembler functions
+// many values between Grammar_Retval and Assembler_Retval are only
+// slightly different, because I made the blueprint functions before
+// generate_program. I want to check twice on the same function, but
+// can't have the same name used in two different enums, so that's why
+// there are almost exactly the same names
+
+// return value for blueprint functions
 enum Grammar_Retval {
         GOOD,
         EXPECTED_MNEMONIC,
@@ -24,11 +30,13 @@ enum Grammar_Retval {
         INVALID_ATOM,
 };
 
+// return value for translation functions
 enum Assembler_Retval {
         COMPLETE,
         MISSING_MAIN,
         UNKNOWN_LABEL,
         UNKNOWN_MNEMONIC,
+        MISSING_ARGUMENTS_2
 };
 
 // to pass debug info through syntax checking functions

@@ -28,7 +28,6 @@ std::map<std::string, int16_t> define_labels(std::deque<std::string> &tokens) {
 }
 
 bool is_valid_i16(std::string token) {
-        token = token.substr(1, token.length()-1);
         std::stringstream the_stream(token);
         int32_t value = 0;
         the_stream >> token;
@@ -50,6 +49,7 @@ bool is_valid_atom(Atom_Type atom_type, std::string token) {
         case LITERAL_INT:
                 if (token.front() != '$')
                         return false;
+                token = token.substr(1, token.length()-1);
                 return is_valid_i16(token);
         case LITERAL_STR:
                 first = token.front() == token.back();
@@ -71,7 +71,8 @@ bool is_valid_atom(Atom_Type atom_type, std::string token) {
         case STACK_OFFSET:
                 if (token.front() != '%')
                         return false;
-                return is_valid_i16(token.substr(1, token.length() - 1));
+                token = token.substr(1, token.length()-1);
+                return is_valid_i16(token);
         }
         return true;
 }
