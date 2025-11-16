@@ -48,8 +48,8 @@ some changes to make usage simple.
 | RET          |           |           |           |
 | PUSH         | src       |           |           |
 | POP          | dest      |           |           |
-| READ         | src       | addr      |           |
 | WRITE        | dest      | addr      |           |
+| READ         | src       | addr      |           |
 | PRINT        | src       |           |           |
 | SPRINT       | string    |           |           |
 | EXIT         |           |           |           |

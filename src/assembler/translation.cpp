@@ -127,6 +127,7 @@ Debug_Info generate_program(std::vector<int16_t> &result,
                 }
                 // is intentionally duplicate: see main.cpp usage of MISSING_ARGUMENTS_2
                 std::vector<Atom_Type> curr_blueprint = BLUEPRINTS.at(tokens.front());
+                curr_blueprint.shrink_to_fit();
                 if (curr_blueprint.size() > tokens.size()) {
                         context.relevant_idx = instruction_idx;
                         context.relevant_tokens = {tokens.front()};

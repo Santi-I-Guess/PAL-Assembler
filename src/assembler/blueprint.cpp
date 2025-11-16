@@ -102,7 +102,6 @@ Debug_Info is_valid_arguments(std::deque<std::string> tokens,
         // map has std::map::find, which makes checking easy
         int instruction_idx = 0;
         while (!tokens.empty()) {
-                std::deque<std::string> curr_ins = {};
                 if (BLUEPRINTS.find(tokens.front()) == BLUEPRINTS.end()) {
                         context.relevant_idx = instruction_idx;
                         context.relevant_tokens = {tokens.front()};
@@ -110,6 +109,7 @@ Debug_Info is_valid_arguments(std::deque<std::string> tokens,
                         return context;
                 }
                 std::vector<Atom_Type> curr_blueprint = BLUEPRINTS.at(tokens.front());
+                curr_blueprint.shrink_to_fit();
                 if (tokens.size() < curr_blueprint.size()) {
                         context.relevant_idx = instruction_idx;
                         context.relevant_tokens = {tokens.front()};

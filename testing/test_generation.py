@@ -31,7 +31,7 @@ def get_num_tests() -> int:
 # not explicitly defined
 def write_program(sink, program_buffer, message) -> None:
     # set left align values
-    max_sizes = [0, 0, 0]
+    max_sizes = [0, 0, 0, 0]
     for curr_ins in program_buffer:
         if curr_ins[0] not in instructions.MNEMONICS_LIST:
             # label

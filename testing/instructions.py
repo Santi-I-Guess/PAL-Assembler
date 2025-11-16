@@ -4,14 +4,13 @@ import random
 
 
 # atom type
-class Atom_T(Enum):
-    LABEL = 1
-    LITERAL_INT = 2
-    LITERAL_STR = 3
-    MNEMONIC = 4
-    REGISTER = 5
-    SOURCE = 6
-    STACK_OFFSET = 7
+LABEL = 1
+LITERAL_INT = 2
+LITERAL_STR = 3
+MNEMONIC = 4
+REGISTER = 5
+SOURCE = 6
+STACK_OFFSET = 7
 
 
 # for eventually generating malformed programs
@@ -25,34 +24,34 @@ class Error_T(Enum):
 
 
 # describe template of instruction
-BLUEPRINTS_MAP = {
-    "NOP":    [Atom_T.MNEMONIC],
-    "CALL":   [Atom_T.MNEMONIC, Atom_T.LABEL],
-    "RET":    [Atom_T.MNEMONIC],
-    "PRINT":  [Atom_T.MNEMONIC, Atom_T.SOURCE],
-    "SPRINT": [Atom_T.MNEMONIC, Atom_T.LITERAL_STR],
-    "EXIT":   [Atom_T.MNEMONIC],
-    "READ":   [Atom_T.MNEMONIC, Atom_T.REGISTER, Atom_T.LITERAL_INT],
-    "WRITE":  [Atom_T.MNEMONIC, Atom_T.SOURCE,   Atom_T.LITERAL_INT],
-    "POP":    [Atom_T.MNEMONIC, Atom_T.REGISTER],
-    "PUSH":   [Atom_T.MNEMONIC, Atom_T.SOURCE],
-    "MOV":    [Atom_T.MNEMONIC, Atom_T.REGISTER, Atom_T.SOURCE],
-    "ADD":    [Atom_T.MNEMONIC, Atom_T.REGISTER, Atom_T.SOURCE],
-    "SUB":    [Atom_T.MNEMONIC, Atom_T.REGISTER, Atom_T.SOURCE],
-    "MUL":    [Atom_T.MNEMONIC, Atom_T.REGISTER, Atom_T.SOURCE],
-    "DIV":    [Atom_T.MNEMONIC, Atom_T.REGISTER, Atom_T.SOURCE],
-    "AND":    [Atom_T.MNEMONIC, Atom_T.REGISTER, Atom_T.SOURCE],
-    "OR":     [Atom_T.MNEMONIC, Atom_T.REGISTER, Atom_T.SOURCE],
-    "XOR":    [Atom_T.MNEMONIC, Atom_T.REGISTER, Atom_T.SOURCE],
-    "LSH":    [Atom_T.MNEMONIC, Atom_T.REGISTER, Atom_T.SOURCE],
-    "RSH":    [Atom_T.MNEMONIC, Atom_T.REGISTER, Atom_T.SOURCE],
-    "CMP":    [Atom_T.MNEMONIC, Atom_T.SOURCE,   Atom_T.SOURCE],
-    "JEQ":    [Atom_T.MNEMONIC, Atom_T.LABEL],
-    "JNE":    [Atom_T.MNEMONIC, Atom_T.LABEL],
-    "JGE":    [Atom_T.MNEMONIC, Atom_T.LABEL],
-    "JGR":    [Atom_T.MNEMONIC, Atom_T.LABEL],
-    "JLE":    [Atom_T.MNEMONIC, Atom_T.LABEL],
-    "JLS":    [Atom_T.MNEMONIC, Atom_T.LABEL],
+BLUEPRINTS_MAP: dict[str, list] = {
+    "NOP":    [MNEMONIC],
+    "MOV":    [MNEMONIC, REGISTER, SOURCE],
+    "ADD":    [MNEMONIC, REGISTER, SOURCE, SOURCE],
+    "SUB":    [MNEMONIC, REGISTER, SOURCE, SOURCE],
+    "MUL":    [MNEMONIC, REGISTER, SOURCE, SOURCE],
+    "DIV":    [MNEMONIC, REGISTER, SOURCE, SOURCE],
+    "AND":    [MNEMONIC, REGISTER, SOURCE, SOURCE],
+    "OR":     [MNEMONIC, REGISTER, SOURCE, SOURCE],
+    "XOR":    [MNEMONIC, REGISTER, SOURCE, SOURCE],
+    "LSH":    [MNEMONIC, REGISTER, SOURCE, SOURCE],
+    "RSH":    [MNEMONIC, REGISTER, SOURCE, SOURCE],
+    "CMP":    [MNEMONIC, SOURCE,   SOURCE],
+    "JEQ":    [MNEMONIC, LABEL],
+    "JNE":    [MNEMONIC, LABEL],
+    "JGE":    [MNEMONIC, LABEL],
+    "JGR":    [MNEMONIC, LABEL],
+    "JLE":    [MNEMONIC, LABEL],
+    "JLS":    [MNEMONIC, LABEL],
+    "CALL":   [MNEMONIC, LABEL],
+    "RET":    [MNEMONIC],
+    "PUSH":   [MNEMONIC, SOURCE],
+    "POP":    [MNEMONIC, REGISTER],
+    "WRITE":  [MNEMONIC, SOURCE,   LITERAL_INT],
+    "READ":   [MNEMONIC, REGISTER, LITERAL_INT],
+    "PRINT":  [MNEMONIC, SOURCE],
+    "SPRINT": [MNEMONIC, LITERAL_STR],
+    "EXIT":   [MNEMONIC]
 }
 
 
@@ -105,19 +104,22 @@ def gen_instruction() -> list[str]:
     output_instruction = []
     curr_blueprint = BLUEPRINTS_MAP[mnemonic]
     for idx, curr_type in enumerate(curr_blueprint):
-        if curr_type == Atom_T.LABEL:
+        if curr_type == LABEL:
             output_instruction.append(gen_random_label())
-        elif curr_type == Atom_T.LITERAL_INT:
+        elif curr_type == LITERAL_INT:
             rand_i16 = gen_random_i16()
             output_instruction.append(f"${rand_i16}")
-        elif curr_type == Atom_T.LITERAL_STR:
+        elif curr_type == LITERAL_STR:
             # print literal backslash, let final_project try to interpret that
             output_instruction.append(f"\"{gen_random_word()}\\n\"")
-        elif curr_type == Atom_T.MNEMONIC:
+        elif curr_type == MNEMONIC:
             output_instruction.append(mnemonic)
-        elif curr_type == Atom_T.REGISTER:
-            output_instruction.append("R" + random.choice("ABCDEFGH"))
-        elif curr_type == Atom_T.SOURCE:
+        elif curr_type == REGISTER:
+            registers = [
+                "RA", "RB", "RC", "RD", "RE", "RF", "RG", "RH", "RSP", "RIP"
+            ]
+            output_instruction.append(random.choice(registers))
+        elif curr_type == SOURCE:
             # LITERAL_INT, REGISTER, STACK_OFFSET
             the_choice = random.randint(0, 2)
             if the_choice == 0:
@@ -130,7 +132,7 @@ def gen_instruction() -> list[str]:
             else:
                 # STACK_OFFSET
                 output_instruction.append(f"%{random.randint(0, 4)}")
-        elif curr_type == Atom_T.STACK_OFFSET:
+        elif curr_type == STACK_OFFSET:
             output_instruction.append(f"%{random.randint(0, 4)}")
     return output_instruction
 
