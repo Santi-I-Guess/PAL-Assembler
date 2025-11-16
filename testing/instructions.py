@@ -14,6 +14,16 @@ class Atom_T(Enum):
     STACK_OFFSET = 7
 
 
+# for eventually generating malformed programs
+class Error_T(Enum):
+    EXPECTED_MNEMONIC = 1,
+    INVALID_ATOM = 1 << 1,
+    MISSING_ARGUMENTS = 1 << 2,
+    MISSING_EXIT = 1 << 3,
+    MISSING_MAIN = 1 << 4,
+    UNKNOWN_LABEL = 1 << 5,
+
+
 # describe template of instruction
 BLUEPRINTS_MAP = {
     "NOP":    [Atom_T.MNEMONIC],
@@ -153,8 +163,143 @@ def insert_label_defs(program_buffer: list[list[str]]) -> list[list[str]]:
     random.shuffle(labels)
     for idx, name in enumerate(labels):
         if idx == 0:
-            new_program_buffer.insert(0, f"{name}:")
+            new_program_buffer.insert(0, [f"{name}:"])
         else:
-            new_program_buffer.insert(label_indexes[idx], f"{name}:")
+            new_program_buffer.insert(label_indexes[idx], [f"{name}:"])
 
     return new_program_buffer
+
+
+def gen_erroneous_mnemonic() -> str:
+    alphabet: str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    word_size: int = random.randint(3, 5)
+    word: str = "".join(random.sample(alphabet, word_size))
+    while word in MNEMONICS_LIST:
+        word = "".join(random.sample(alphabet, word_size))
+    return word
+
+
+def gen_erroneous_atom() -> str:
+    alphabet: str = "abcdefghijklmnopqrstuvwxyz"
+    word: list[str] = random.sample(alphabet, 2) \
+        + list(str(random.randint(10, 99)))
+    random.shuffle(word)
+    suffix_choice = random.randint(0, 6)
+    if suffix_choice == 0:
+        # might cause MISSING_ARGUMENTS instead of INVALID_ATOM
+        word.insert(0, "\"")
+        word.append("\"")
+    elif suffix_choice == 1:
+        word.insert(0, "$")
+    elif suffix_choice == 2:
+        word.insert(0, "%")
+    return "".join(word)
+
+
+def error_expected_mnemonic(program_buffer: list[list[str]]) \
+                            -> list[list[str]]:
+    # replace a random mnemonic with a nonexistant one
+    error_line_idx: int = random.randint(1, len(program_buffer) - 1)
+    while program_buffer[error_line_idx][0] in MNEMONICS_LIST:
+        error_line_idx = random.randint(1, len(program_buffer) - 1)
+    program_buffer[error_line_idx][0] = gen_erroneous_mnemonic()
+    return program_buffer
+
+
+def error_invalid_atom(program_buffer: list[list[str]]) -> list[list[str]]:
+    # replace a random instruction argument with nonsense
+    error_line_idx: int = random.randint(1, len(program_buffer) - 1)
+    curr_ins: list[str] = program_buffer[error_line_idx]
+    while curr_ins[0] not in MNEMONICS_LIST and len(curr_ins) < 2:
+        error_line_idx = random.randint(1, len(program_buffer) - 1)
+        curr_ins = program_buffer[error_line_idx]
+    curr_ins[-1] = gen_erroneous_atom()
+    program_buffer[error_line_idx] = curr_ins
+    return program_buffer
+
+
+def error_missing_arguments(program_buffer: list[list[str]]) \
+                            -> list[list[str]]:
+    # remove an argument of a random instruction
+    error_line_idx: int = random.randint(1, len(program_buffer) - 1)
+    curr_ins: list[str] = program_buffer[error_line_idx]
+    # ensure curr_ins has an argument to remove
+    while curr_ins[0] not in MNEMONICS_LIST or len(curr_ins) < 2:
+        error_line_idx = random.randint(1, len(program_buffer) - 1)
+        curr_ins = program_buffer[error_line_idx]
+    curr_ins.pop()
+    program_buffer[error_line_idx] = curr_ins
+    return program_buffer
+
+
+def error_missing_exit(program_buffer: list[list[str]]) \
+                       -> list[list[str]]:
+    # remove all instances of EXIT
+    filtered_program_buffer = []
+    for ins in program_buffer:
+        if ins[0] != "EXIT":
+            filtered_program_buffer.append(ins)
+    return filtered_program_buffer
+
+
+def error_missing_main(program_buffer: list[list[str]]) \
+                       -> list[list[str]]:
+    # remove instance of main label
+    filtered_program_buffer = []
+    for ins in program_buffer:
+        if ins[0] != "main:":
+            filtered_program_buffer.append(ins)
+    return filtered_program_buffer
+
+
+def error_unknown_label(program_buffer: list[list[str]]) \
+                       -> list[list[str]]:
+    # remove one random label definition
+    label_idxs: list[int] = []
+    for idx, ins in enumerate(program_buffer):
+        if ins[0][-1] == ":" and ins[0] != "main:":
+            label_idxs.append(idx)
+    chosen_idx = random.choice(label_idxs)
+    program_buffer.pop(chosen_idx)
+    return program_buffer
+
+
+def quick_check(program_buffer: list[list[str]]) -> None:
+    if any(len(i) == 0 for i in program_buffer):
+        print("program buffer has an empty element")
+        for i in program_buffer:
+            print(i, type(i))
+        exit()
+    if len(program_buffer) == 0:
+        print("program buffer is empty")
+        for i in program_buffer:
+            print(" ".join(i))
+        exit()
+    if any(not isinstance(i, list) for i in program_buffer):
+        print("something in program_buffer is not an object")
+        for i in program_buffer:
+            print(i, type(i))
+        exit()
+
+
+def insert_errors(program_buffer: list[list[str]],
+                  error_bits: list[bool]) -> list[list[str]]:
+    if error_bits[0]:  # EXPECTED_MNEMONIC
+        quick_check(program_buffer)
+        program_buffer = error_expected_mnemonic(program_buffer)
+    if error_bits[1]:  # INVALID_ATOM
+        quick_check(program_buffer)
+        program_buffer = error_invalid_atom(program_buffer)
+    if error_bits[2]:  # MISSING_ARGUMENTS
+        quick_check(program_buffer)
+        program_buffer = error_missing_arguments(program_buffer)
+    if error_bits[3]:  # MISSING_EXIT
+        quick_check(program_buffer)
+        program_buffer = error_missing_exit(program_buffer)
+    if error_bits[4]:  # MISSING_MAIN
+        quick_check(program_buffer)
+        program_buffer = error_missing_main(program_buffer)
+    if error_bits[5]:  # UNKNOWN_LABEL
+        quick_check(program_buffer)
+        program_buffer = error_unknown_label(program_buffer)
+    return program_buffer

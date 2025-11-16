@@ -43,7 +43,7 @@ def write_program(sink, program_buffer, message) -> None:
     for curr_ins in program_buffer:
         if curr_ins[0] not in instructions.MNEMONICS_LIST:
             # label definition
-            print(curr_ins, file=sink)
+            print(curr_ins[0], file=sink)
             continue
         # actual instruction
         print("    ", end="", file=sink)
@@ -57,16 +57,6 @@ def write_program(sink, program_buffer, message) -> None:
         print("", file=sink)
 
 
-# for eventually generating malformed programs
-class Error_T(Enum):
-    EXPECTED_MNEMONIC = 1,
-    INVALID_ATOM = 1 << 1,
-    MISSING_ARGUMENTS = 1 << 2,
-    MISSING_EXIT = 1 << 3,
-    MISSING_MAIN = 1 << 4,
-    UNKNOWN_LABEL = 1 << 5,
-
-
 if __name__ == "__main__":
     num_tests = get_num_tests()
     if num_tests == 0:
@@ -78,15 +68,32 @@ if __name__ == "__main__":
     for file_idx in range(num_tests):
         program_buffer = instructions.gen_raw_program()
         program_buffer = instructions.insert_label_defs(program_buffer)
-        file_name = f"{DUMP_DIR}/g_example_{str(file_idx).rjust(2, "0")}.txt"
+        file_name = f"{DUMP_DIR}/gib_valid_example_{file_idx:0>2}.txt"
         with open(file_name, "w") as sink:
-            message = "; -- gibberish program --"
+            message = "; -- gibberish valid program --"
             write_program(sink, program_buffer, message)
     # gibberish tests with some kind of syntax error
     for file_idx in range(num_tests):
-        program_buffer = instructions.gen_raw_program()
-        program_buffer = instructions.insert_label_defs(program_buffer)
         # guarentees at least one error is included
-        error_str = bin(random.randint(1, 127))[2:].rjust(5, "0")
-        error_bits = [i == "1" for i in error_str]
-        print(error_bits)
+        error_str: str = bin(random.randint(1, 63))[2:].rjust(6, "0")
+        error_bits: list[bool] = [i == "1" for i in error_str]
+        program_buffer: list[list[str]] = instructions.gen_raw_program()
+        program_buffer = instructions.insert_label_defs(program_buffer)
+        instructions.quick_check(program_buffer)
+        program_buffer = instructions.insert_errors(program_buffer, error_bits)
+        file_name = f"{DUMP_DIR}/gib_error_example_{file_idx:0>2}.txt"
+        message: str = "; -- gibberish erroneous program --"
+        if error_bits[0]:  # EXPECTED_MNEMONIC
+            message += "\n; EXPECTED_MNEMONIC"
+        if error_bits[1]:  # INVALID_ATOM
+            message += "\n; INVALID_ATOM"
+        if error_bits[2]:  # MISSING_ARGUMENTS
+            message += "\n; MISSING_ARGUMENTS"
+        if error_bits[3]:  # MISSING_EXIT
+            message += "\n; MISSING_EXIT"
+        if error_bits[4]:  # MISSING_MAIN
+            message += "\n; MISSING_MAIN"
+        if error_bits[5]:  # UNKNOWN_LABEL
+            message += "\n; UNKNOWN_LABEL"
+        with open(file_name, "w") as sink:
+            write_program(sink, program_buffer, message)
