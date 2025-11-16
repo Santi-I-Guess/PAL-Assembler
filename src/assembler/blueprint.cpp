@@ -85,7 +85,6 @@ Debug_Info is_valid_arguments(std::deque<std::string> tokens,
 
         Debug_Info context;
         context.grammar_retval = ACCEPTABLE;
-        // check if program has entry point
         if (label_table.find("main") == label_table.end()) {
                 context.grammar_retval = MISSING_MAIN;
                 return context;

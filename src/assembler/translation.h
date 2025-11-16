@@ -10,8 +10,8 @@
 
 // valid register symbols
 const std::map<std::string, int16_t> REGISTER_TABLE = {
-        {"R0", 0}, {"R1", 1}, {"R2", 2}, {"R3", 3},
-        {"R4", 4}, {"R5", 5}, {"R6", 6}, {"R7", 7},
+        {"RA", 0}, {"RB", 1}, {"RC", 2}, {"RD", 3},
+        {"RE", 4}, {"RF", 5}, {"RG", 6}, {"RH", 7},
 };
 
 // opcode for each instruction mnemonic
@@ -24,6 +24,13 @@ const std::map<std::string, int16_t> OPCODE_TABLE = {
         {"CMP",   20}, {"JEQ",  21}, {"JNE",  22}, {"JGE",   23},
         {"JGR",   24}, {"JLE",  25}, {"JLS",  26},
 };
+
+// generates single token
+int16_t translate_token(std::string token, Atom_Type atom_type,
+                        std::map<std::string, int16_t> label_table);
+
+// generates string bytes
+std::deque<int16_t> translate_string(std::string token, int16_t &program_idx);
 
 // generates the final program
 Debug_Info generate_program(std::vector<int16_t> &result,
