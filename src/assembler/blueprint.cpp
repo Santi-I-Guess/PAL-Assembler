@@ -108,8 +108,10 @@ Debug_Info is_valid_arguments(std::deque<std::string> tokens,
                         context.grammar_retval = EXPECTED_MNEMONIC;
                         return context;
                 }
-                std::vector<Atom_Type> curr_blueprint = BLUEPRINTS.at(tokens.front());
-                curr_blueprint.shrink_to_fit();
+                std::vector<Atom_Type> curr_blueprint;
+                curr_blueprint.reserve(4); /* prevent werid uninit data */
+                curr_blueprint = BLUEPRINTS.at(tokens.front());
+                // curr_blueprint.shrink_to_fit();
                 if (tokens.size() < curr_blueprint.size()) {
                         context.relevant_idx = instruction_idx;
                         context.relevant_tokens = {tokens.front()};

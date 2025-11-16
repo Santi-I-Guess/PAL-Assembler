@@ -261,6 +261,11 @@ def error_unknown_label(program_buffer: list[list[str]]) \
     for idx, ins in enumerate(program_buffer):
         if ins[0][-1] == ":" and ins[0] != "main:":
             label_idxs.append(idx)
+    # on the small chance no labels were used
+    if len(label_idxs) == 0:
+        new_ins: list[str] = ["JMP", gen_random_label()]
+        program_buffer.append(new_ins)
+        return program_buffer
     chosen_idx = random.choice(label_idxs)
     program_buffer.pop(chosen_idx)
     return program_buffer

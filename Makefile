@@ -19,8 +19,6 @@ H_FILES = src/misc/file_handling.h \
 REZ_FILES =
 USERNAME  = santiago_sagastegui
 
-SRC_FILES = 
-H_FILES =
 BUILD_DIR = build
 
 CXX = g++
@@ -91,7 +89,7 @@ submission:
 	@echo "...$(ZIP_NAME) done!"
 
 debug:
-	g++ $(SRC_FILES) -DDEBUG -o $(TARGET)
+	g++ $(SRC_FILES) -DDEBUG -fsanitize=address -o $(TARGET)
 
 .PHONY: all clean depend submission debug
 .DEFAULT: all
