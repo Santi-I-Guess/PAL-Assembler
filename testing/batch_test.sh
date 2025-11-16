@@ -1,28 +1,31 @@
 #!/usr/bin/env bash
 
-rm example_programs/*
-python3 test_generation.py
+set -o nounset
 
-# correct_g=0
-# incorrect_g=0
-# correct_e=0
-# incorrect_e=0
+# assuming project directory is named "final_project"
 
-declare -a incorrect_files
-for i in example_programs/gib_valid_*; do
+# get relative paths to important files
+project_root=$(realpath --relative-to=./ $(pwd | sed "s/\(.*final_project\).*/\1/"))
+testing_dir=$(realpath --relative-to=./ "${project_root}/testing")
+test_gen=$(realpath --relative-to=./ ${testing_dir}/test_generation.py)
+program=$(realpath --relative-to=./ "${project_root}/final_project")
+
+if [[ ! -f ${project_root}/final_project ]]; then
+    printf "warning: project executable could not be found. exiting...\n"
+    exit
+fi
+
+for i in ${testing_dir}/example_programs/*; do
+    rm $i
+done
+python3 ${test_gen}
+
+for i in ${testing_dir}/example_programs/gib_valid_*; do
     printf "\x1b[32m${i}\x1b[0m:\n"
-    ../final_project ${i}
+    ${program} ${i}
 done
 
-for i in example_programs/gib_error_*; do
+for i in ${testing_dir}/example_programs/gib_error_*; do
     printf "\x1b[31m${i}\x1b[0m:\n"
-    ../final_project ${i}
+    ${program} ${i}
 done
-
-# echo "correct valid programs: ${correct_g}"
-# echo "incorrect valid programs: ${incorrect_g}"
-# echo "correct erroneous programs: ${correct_e}"
-# echo "incorrect erroneous programs: ${incorrect_e}"
-# if [[ ${#incorrect_files[@]} -ne 0 ]]; then
-#     echo "incorrect files:  ${arr_name[@]}"
-# fi
