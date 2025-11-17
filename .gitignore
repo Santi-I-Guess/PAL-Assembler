@@ -3,7 +3,6 @@
 !*/
 !*.*
 build/*
-resources/*
 *.txt
 *.bin
 *.bak

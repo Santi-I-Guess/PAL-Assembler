@@ -1,3 +1,5 @@
+![Project Banner](resources/pseudo_assembly_assembler.png)
+
 # CSCI 200 Final Project: Pseudo Assembly Assembler
 The Pseudo Assembly Assembler (PAA) is a simple assembler and simulator, meant
 to introduce users to the concepts of low level programming and computer
