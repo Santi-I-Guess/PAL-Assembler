@@ -6,26 +6,37 @@ set -o nounset
 
 # get relative paths to important files
 project_root=$(realpath --relative-to=./ $(pwd | sed "s/\(.*final_project\).*/\1/"))
-testing_dir=$(realpath --relative-to=./ "${project_root}/testing")
-test_gen=$(realpath --relative-to=./ ${testing_dir}/test_generation.py)
-program=$(realpath --relative-to=./ "${project_root}/final_project")
+ testing_dir=$(realpath --relative-to=./ ${project_root}/testing)
+  executable=$(realpath --relative-to=./ ${project_root}/final_project)
+    test_gen=$(realpath --relative-to=./ ${testing_dir}/test_generation.py)
 
-if [[ ! -f ${project_root}/final_project ]]; then
-    printf "warning: project executable could not be found. exiting...\n"
-    exit
+# make sure final_project executable exists
+if [[ ! -f ${executable} ]]; then
+    original_dir=$(realpath ./)
+    cd ${project_root}
+    make
+    cd ${original_dir}
 fi
 
-for i in ${testing_dir}/example_programs/*; do
-    rm $i
-done
+# make sure example_programs exists
+if [[ ! -d ${testing_dir}/example_programs ]]; then
+    mkdir ${testing_dir}/example_programs
+fi
+
+# only try to delete example_programs if they already exist
+if [[ -f ${testing_dir}/example_programs/* ]]; then
+    for i in ${testing_dir}/example_programs/*; do
+        rm $i
+    done
+fi
 python3 ${test_gen}
 
+# test valid, then test error
 for i in ${testing_dir}/example_programs/gib_valid_*; do
     printf "\x1b[32m${i}\x1b[0m:\n"
-    ${program} ${i}
+    ${executable} ${i}
 done
-
 for i in ${testing_dir}/example_programs/gib_error_*; do
     printf "\x1b[31m${i}\x1b[0m:\n"
-    ${program} ${i}
+    ${executable} ${i}
 done
