@@ -7,9 +7,9 @@ H_FILES   = $(foreach dir, $(SRC_DIRS), $(wildcard $(dir)/*.h))
 REZ_FILES = resources/pseudo_assembly_assembler.png
 USERNAME  = santiago_sagastegui
 
-# do not use this for suffix rules
-OBJECTS = $(foreach curr_file, $(SRC_FILES), \
-		  $(shell echo $(curr_file) | sed "s/.*\/\([a-z_]\+\).cpp/build\/\1.o/"))
+# https://www.gnu.org/software/make/manual/html_node/File-Name-Functions.html
+# this is why you read documentation, kids
+OBJECTS = $(patsubst %.cpp, build/%.o, $(notdir $(SRC_FILES)))
 
 CXX = g++
 CXXFLAGS_DEBUG = -g
@@ -25,7 +25,7 @@ ifeq ($(shell echo "Windows"), "Windows")
 	ZIPPER = tar -a -c -f
 	ZIP_NAME = $(PROJECT)_$(USERNAME).$(ARCHIVE_EXTENSION)
 	Q =
-	MKDIR = New-Item -Name "build" -ItemType "Directory" -Force)
+	MKDIR = New-Item -Name "build" -ItemType "Directory" -Force
 else
 	TARGET = $(PROJECT)
 	DEL = rm -f
