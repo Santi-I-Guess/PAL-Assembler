@@ -43,12 +43,12 @@ enum Assembler_Retval {
 };
 
 // to pass debug info through syntax checking functions
-class Debug_Info {
-public:
-        int                      relevant_idx;
+// don't really think I need private members for this class
+struct Debug_Info {
+        int                     relevant_idx;
         std::deque<std::string> relevant_tokens;
-        Grammar_Retval           grammar_retval;
-        Assembler_Retval         assembler_retval;
+        Grammar_Retval          grammar_retval;
+        Assembler_Retval        assembler_retval;
 };
 
 // instruction argument types

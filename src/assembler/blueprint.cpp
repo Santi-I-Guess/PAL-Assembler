@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <deque>
+#include <iostream>
 #include <map>
 #include <string>
 #include <sstream>
@@ -18,10 +19,15 @@ std::map<std::string, int16_t> define_labels(std::deque<std::string> &tokens) {
                         continue;
                 }
                 curr_token.pop_back();
-                if (symbols.find(curr_token) == symbols.end())
+                // if symbol has been defined, redefine but put out a warning
+                if (symbols.find(curr_token) == symbols.end()) {
                         symbols.insert({curr_token, (int16_t)program_addr});
-                else
+                } else {
+                        std::cout << "Warning: " << curr_token;
+                        std::cout << " is defined more than once, and will ";
+                        std::cout << "take the newest definition\n";
                         symbols[curr_token] = (int16_t)program_addr;
+                }
         }
         tokens.swap(filtered_tokens);
         return symbols;

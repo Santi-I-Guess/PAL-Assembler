@@ -7,9 +7,9 @@ H_FILES   = $(foreach dir, $(SRC_DIRS), $(wildcard $(dir)/*.h))
 REZ_FILES = resources/pseudo_assembly_assembler.png
 USERNAME  = santiago_sagastegui
 
-# use of sed and echo in template makefile implies dos systems have access
-# to sed and echo. I think foreach is a native make command, so I don't have
-# to worry about cross system compatibility there
+# do not use this for suffix rules
+OBJECTS = $(foreach curr_file, $(SRC_FILES), \
+		  $(shell echo $(curr_file) | sed "s/.*\/\([a-z_]\+\).cpp/build\/\1.o/"))
 
 CXX = g++
 CXXFLAGS_DEBUG = -g
@@ -38,22 +38,13 @@ else
 	ZIP_NAME = $(PROJECT)_$(USERNAME).$(ARCHIVE_EXTENSION)
 endif
 
-
-# needs to stay like this for suffix rule to work properly
-OBJECTS = $(SRC_FILES:src/%.cpp=build/%.o)
-
-all: $(TARGET)
-
-# We use objects in the rule dependencies, but not the g++ call,
-# since OBJECTS holds the build paths before the text replacement
-$(TARGET): $(OBJECTS)
-	$(CXX) -o $@  $(wildcard build/*.o)
-
-# eval: the cheap trick to runtime evaluation
-build/%.o: src/%.cpp
-	$(eval TMP = $(shell echo $^ | sed "s/.*\/\([a-z_]\+\).cpp/build\/\1.o/"))
-	@echo "$(TMP) <- $<"
-	@$(CXX) $(CPPVERSION) $(CXXFLAGS_DEBUG) $(CXXFLAGS_WARN) -o $(TMP) -c $<
+# i think i just forgot to have a proper pattern sub in the first iteration
+all:
+	@make -C src
+	@make -C src/assembler
+	@make -C src/misc
+	@make -C src/simulator
+	$(CXX) -o $(TARGET) $(OBJECTS)
 
 clean:
 	$(DEL) $(TARGET) $(OBJECTS)
@@ -65,7 +56,6 @@ depend:
 	@$(CXX) -MM $(SRC_FILES) >> Makefile
 
 # last time i used mkdir -p, i wasn't entirely sure it was DOS compatible
-BUILD_DIRS = build build/assembler build/misc build/simulator
 submission:
 	@echo "Creating submission file $(ZIP_NAME) ..."
 	@echo "...Zipping source files:   $(SRC_FILES) ..."
@@ -80,13 +70,9 @@ debug:
 	g++ $(SRC_FILES) -DDEBUG -fsanitize=address -o $(TARGET)
 
 .PHONY: all clean depend submission debug
-.DEFAULT: all first
+.DEFAULT: all
 
 # DEPENDENCIES
-main.o: src/main.cpp src/assembler/blueprint.h \
- src/assembler/common_values.h src/assembler/common_values.h \
- src/assembler/tokenizer.h src/assembler/translation.h \
- src/misc/cmd_line_opts.h src/misc/file_handling.h
 blueprint.o: src/assembler/blueprint.cpp src/assembler/blueprint.h \
  src/assembler/common_values.h
 tokenizer.o: src/assembler/tokenizer.cpp src/assembler/tokenizer.h
@@ -94,3 +80,7 @@ translation.o: src/assembler/translation.cpp \
  src/assembler/common_values.h src/assembler/translation.h
 cmd_line_opts.o: src/misc/cmd_line_opts.cpp src/misc/cmd_line_opts.h
 file_handling.o: src/misc/file_handling.cpp src/misc/file_handling.h
+main.o: src/main.cpp src/assembler/blueprint.h \
+ src/assembler/common_values.h src/assembler/common_values.h \
+ src/assembler/tokenizer.h src/assembler/translation.h \
+ src/misc/cmd_line_opts.h src/misc/file_handling.h
