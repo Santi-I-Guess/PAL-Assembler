@@ -1,5 +1,6 @@
 SRC_FILES = $(wildcard *.cpp)
-OBJ_FILES = $(patsubst %.cpp, ../../build/%.o, $(SRC_FILES))
+BUILD_DIR = ../../build
+OBJ_FILES = $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(SRC_FILES))
 
 CXX = g++
 CXXFLAGS_DEBUG = -g
@@ -9,7 +10,8 @@ CPPVERSION = -std=c++17
 
 all: $(OBJ_FILES)
 
-../../build/%.o: %.cpp
+# order only prerequisite
+$(BUILD_DIR)/%.o: %.cpp
 	$(CXX) $(CPPVERSION) $(CXXFLAGS_DEBUG) $(CXXFLAGS_WARN) -o $@ -c $<
 
 .DEFAULT: all

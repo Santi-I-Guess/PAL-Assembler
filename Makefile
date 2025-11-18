@@ -25,26 +25,31 @@ ifeq ($(shell echo "Windows"), "Windows")
 	ZIPPER = tar -a -c -f
 	ZIP_NAME = $(PROJECT)_$(USERNAME).$(ARCHIVE_EXTENSION)
 	Q =
+	MKDIR = New-Item -Name "build" -ItemType "Directory" -Force)
 else
 	TARGET = $(PROJECT)
 	DEL = rm -f
 	ZIPPER = tar -acf
 	Q= "
-
 	ifeq ($(shell tar --version | grep -o "GNU tar"), GNU tar)
 		ARCHIVE_EXTENSION = tar.gz
 	endif
-
 	ZIP_NAME = $(PROJECT)_$(USERNAME).$(ARCHIVE_EXTENSION)
+	MKDIR = mkdir -p build
 endif
 
-# i think i just forgot to have a proper pattern sub in the first iteration
-all:
+BUILD_DIR = build
+
+# order only prerequisite: don't build again, but ensure they exist
+all: | $(BUILD_DIR)
 	@make -C src
 	@make -C src/assembler
 	@make -C src/misc
 	@make -C src/simulator
 	$(CXX) -o $(TARGET) $(OBJECTS)
+
+$(BUILD_DIR):
+	$(MKDIR)
 
 clean:
 	$(DEL) $(TARGET) $(OBJECTS)
@@ -62,7 +67,7 @@ submission:
 	@echo "...Zipping header files:   $(H_FILES) ..."
 	@echo "...Zipping resource files: $(REZ_FILES)..."
 	@echo "...Zipping Makefile ..."
-	$(ZIPPER) $(ZIP_NAME) $(SRC_FILES) $(H_FILES) $(REZ_FILES) $(BUILD_DIRS) \
+	$(ZIPPER) $(ZIP_NAME) $(SRC_FILES) $(H_FILES) $(REZ_FILES) $(BUILD_DIR) \
 		Makefile
 	@echo "...$(ZIP_NAME) done!"
 
