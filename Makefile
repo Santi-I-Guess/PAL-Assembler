@@ -12,7 +12,8 @@ USERNAME  = santiago_sagastegui
 OBJECTS = $(patsubst %.cpp, build/%.o, $(notdir $(SRC_FILES)))
 
 CXX = g++
-CXXFLAGS_DEBUG = -g
+# remove fsanitize later
+CXXFLAGS_DEBUG = -g -fsanitize=address
 CXXFLAGS_WARN  = -Wall -Werror -Wextra -Wconversion -Wdouble-promotion \
 				 -Wunreachable-code -Wshadow -Wpedantic
 CPPVERSION = -std=c++17

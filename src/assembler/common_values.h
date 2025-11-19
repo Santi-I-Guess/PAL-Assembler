@@ -79,12 +79,15 @@ struct Program_Info {
 const std::map<std::string, std::deque<Atom_Type>> BLUEPRINTS = {
         {"NOP",    {MNEMONIC                          } },
         {"MOV",    {MNEMONIC, REGISTER, SOURCE        } },
+        {"INC",    {MNEMONIC, REGISTER                } },
+        {"DEC",    {MNEMONIC, REGISTER                } },
         {"ADD",    {MNEMONIC, REGISTER, SOURCE, SOURCE} },
         {"SUB",    {MNEMONIC, REGISTER, SOURCE, SOURCE} },
         {"MUL",    {MNEMONIC, REGISTER, SOURCE, SOURCE} },
         {"DIV",    {MNEMONIC, REGISTER, SOURCE, SOURCE} },
         {"AND",    {MNEMONIC, REGISTER, SOURCE, SOURCE} },
-        {"OR",     {MNEMONIC, REGISTER, SOURCE, SOURCE} },
+        {"OR",     {MNEMONIC, REGISTER, SOURCE        } },
+        {"NOT",    {MNEMONIC, REGISTER, SOURCE        } },
         {"XOR",    {MNEMONIC, REGISTER, SOURCE, SOURCE} },
         {"LSH",    {MNEMONIC, REGISTER, SOURCE, SOURCE} },
         {"RSH",    {MNEMONIC, REGISTER, SOURCE, SOURCE} },
@@ -110,22 +113,26 @@ const std::map<std::string, std::deque<Atom_Type>> BLUEPRINTS = {
  * @brief hashmap for valid callable registers in assembly language
  */
 const std::map<std::string, int16_t> REGISTER_TABLE = {
-        {"RA",  0}, {"RB",  1}, {"RC", 2}, {"RD", 3},
-        {"RE",  4}, {"RF",  5}, {"RG", 6}, {"RH", 7},
-        {"RSP", 8}, {"RIP", 9}
+        {"RA",  0}, {"RB",  1}, {"RC",    2}, {"RD", 3},
+        {"RE",  4}, {"RF",  5}, {"RG",    6}, {"RH", 7},
+        {"RSP", 8}, {"RIP", 9}, {"CMP0", 10}, {"CMP1", 11}
 };
 
 /**
  * @brief hashmap for valid opcodes for each mnemoinc in assembly language
  */
+// new: not, inc, dec
 const std::map<std::string, int16_t> OPCODE_TABLE = {
-        {"NOP",    0}, {"MOV",     1}, {"ADD",    2}, {"SUB",   3},
-        {"MUL",    4}, {"DIV",     5}, {"AND",    6}, {"OR",    7},
-        {"XOR",    8}, {"LSH",     9}, {"RSH",   10}, {"CMP",  11},
-        {"JEQ",   12}, {"JNE",    13}, {"JGE",   14}, {"JGR",  15},
-        {"JLE",   16}, {"JLS",    17}, {"CALL",  18}, {"RET",  19},
-        {"PUSH",  20}, {"POP",    21}, {"WRITE", 22}, {"READ", 23},
-        {"PRINT", 24}, {"SPRINT", 25}, {"EXIT",  26},
+        {"NOP",    0}, {"MOV",     1}, {"INC",   2},
+        {"DEC",    3}, {"ADD",     4}, {"SUB",   5},
+        {"MUL",    6}, {"DIV",     7}, {"AND",   8},
+        {"OR",     9}, {"NOT",    10}, {"XOR",  11},
+        {"LSH",   12}, {"RSH",    13}, {"CMP",  14},
+        {"JEQ",   15}, {"JNE",    16}, {"JGE",  17},
+        {"JGR",   18}, {"JLE",    19}, {"JLS",  20},
+        {"CALL",  21}, {"RET",    22}, {"PUSH", 23},
+        {"POP",   24}, {"WRITE",  25}, {"READ", 26},
+        {"PRINT", 27}, {"SPRINT", 28}, {"EXIT", 29},
 };
 
 #endif

@@ -30,17 +30,21 @@ some changes to make usage simple.
 | **Mnemonic** | **Arg 1** | **Arg 2** | **Arg 3** |
 |--------------|-----------|-----------|-----------|
 | NOP          |           |           |           |
-| MOV          | dest      | src       |           |
-| ADD          | dest      | src       | src       |
-| SUB          | dest      | src       | src       |
-| MUL          | dest      | src       | src       |
-| DIV          | dest      | src       | src       |
-| AND          | dest      | src       | src       |
-| OR           | dest      | src       | src       |
-| XOR          | dest      | src       | src       |
-| LSH          | dest      | src       | src       |
-| RSH          | dest      | src       | src       |
-| CMP          | src       | src       |           |
+| MOV          | dest      | src0      |           |
+| INC          | dest      |           |           |
+| DEC          | dest      |           |           |
+| ADD          | dest      | src0      | src1      |
+| SUB          | dest      | src0      | src1      |
+| MUL          | dest      | src0      | src1      |
+| DIV          | dest      | src0      | src1      |
+| AND          | dest      | src0      | src1      |
+| OR           | dest      | src0      | src1      |
+| NOT          | dest      | src0      |           |
+| XOR          | dest      | src0      | src1      |
+| LSH          | dest      | src0      | src1      |
+| RSH          | dest      | src0      | src1      |
+| CMP          | src0      | src1      |           |
+| JMP          | label     |           |           |
 | JEQ          | label     |           |           |
 | JNE          | label     |           |           |
 | JGR          | label     |           |           |
@@ -50,8 +54,8 @@ some changes to make usage simple.
 | RET          |           |           |           |
 | PUSH         | src       |           |           |
 | POP          | dest      |           |           |
-| WRITE        | dest      | addr      |           |
-| READ         | src       | addr      |           |
+| WRITE        | src       | addr      |           |
+| READ         | dest      | addr      |           |
 | PRINT        | src       |           |           |
 | SPRINT       | string    |           |           |
 | EXIT         |           |           |           |

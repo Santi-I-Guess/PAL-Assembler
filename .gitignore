@@ -1,6 +1,7 @@
 # to ignore executable files
 *
 !Makefile
+!Doxyfile
 !*/
 !*.*
 build/*

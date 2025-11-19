@@ -64,11 +64,14 @@ bool is_valid_atom(Atom_Type atom_type, std::string token) {
         case MNEMONIC:
                 return BLUEPRINTS.find(token) != BLUEPRINTS.end();
         case REGISTER:
-                return REGISTER_TABLE.find(token) != REGISTER_TABLE.end();
+                // general purpose registers only
+                if (REGISTER_TABLE.find(token) == REGISTER_TABLE.end())
+                        return false;
+                return REGISTER_TABLE.at(token) < 8;
         case SOURCE:
                 if (is_valid_atom(LITERAL_INT, token))
                         return true;
-                if (is_valid_atom(REGISTER, token))
+                if (REGISTER_TABLE.find(token) != REGISTER_TABLE.end())
                         return true;
                 return is_valid_atom(STACK_OFFSET, token);
         case STACK_OFFSET:
