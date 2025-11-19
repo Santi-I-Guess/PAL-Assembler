@@ -45,23 +45,29 @@ def get_alignments(program_buffer) -> list[int]:
 # helper function for write_program
 def print_ins(curr_ins, max_sizes, sink):
     print("    ", end="", file=sink)
+    print_str: str = ""
     for idx, token in enumerate(curr_ins):
-        if idx == len(curr_ins) - 1:
-            print(token, end="", file=sink)
+        if token[-1] == ':':
+            print(token, file=sink)
+            return
         else:
             token = token.ljust(max_sizes[idx] + 2, " ")
-            print(token, end=" ", file=sink)
+            print_str += token
+    print_str = print_str.ljust(60, " ")
+    print(print_str, end="", file=sink)
 
 
 def write_program(sink, program_buffer, message) -> None:
     max_sizes = get_alignments(program_buffer)
     print(message, file=sink)
+    ins_num = 0
     for curr_ins in program_buffer:
         if is_label(curr_ins[0]):
             print(curr_ins[0], file=sink)
         else:
             print_ins(curr_ins, max_sizes, sink)
-        print("", file=sink)
+            print(f"; ins #{ins_num}", file=sink)
+            ins_num += 1
 
 
 if __name__ == "__main__":

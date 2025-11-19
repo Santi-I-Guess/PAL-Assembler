@@ -27,12 +27,15 @@ class Error_T(Enum):
 BLUEPRINTS_MAP: dict[str, list] = {
     "NOP":    [MNEMONIC],
     "MOV":    [MNEMONIC, REGISTER, SOURCE],
+    "INC":    [MNEMONIC, REGISTER],
+    "DEC":    [MNEMONIC, REGISTER],
     "ADD":    [MNEMONIC, REGISTER, SOURCE, SOURCE],
     "SUB":    [MNEMONIC, REGISTER, SOURCE, SOURCE],
     "MUL":    [MNEMONIC, REGISTER, SOURCE, SOURCE],
     "DIV":    [MNEMONIC, REGISTER, SOURCE, SOURCE],
     "AND":    [MNEMONIC, REGISTER, SOURCE, SOURCE],
     "OR":     [MNEMONIC, REGISTER, SOURCE, SOURCE],
+    "NOT":    [MNEMONIC, REGISTER, SOURCE],
     "XOR":    [MNEMONIC, REGISTER, SOURCE, SOURCE],
     "LSH":    [MNEMONIC, REGISTER, SOURCE, SOURCE],
     "RSH":    [MNEMONIC, REGISTER, SOURCE, SOURCE],
@@ -59,7 +62,9 @@ BLUEPRINTS_MAP: dict[str, list] = {
 MNEMONICS_LIST = list(BLUEPRINTS_MAP.keys())
 
 
-registers = ["RA", "RB", "RC", "RD", "RE", "RF", "RG", "RH", "RSP", "RIP"]
+registers = ["RA", "RB", "RC", "RD",
+             "RE", "RF", "RG", "RH",
+             "RSP", "RIP", "CMP0", "CMP1"]
 
 
 def gen_random_i16() -> int:
@@ -117,7 +122,7 @@ def gen_instruction() -> list[str]:
         elif curr_type == MNEMONIC:
             output_instruction.append(mnemonic)
         elif curr_type == REGISTER:
-            output_instruction.append(random.choice(registers))
+            output_instruction.append("R" + random.choice("ABCDEFGH"))
         elif curr_type == SOURCE:
             # LITERAL_INT, REGISTER, STACK_OFFSET
             the_choice = random.randint(0, 2)
@@ -127,7 +132,7 @@ def gen_instruction() -> list[str]:
                 output_instruction.append(f"${rand_i16}")
             elif the_choice == 1:
                 # REGISTER
-                output_instruction.append("R" + random.choice("ABCDEFGH"))
+                output_instruction.append(random.choice(registers))
             else:
                 # STACK_OFFSET
                 output_instruction.append(f"%{random.randint(0, 4)}")

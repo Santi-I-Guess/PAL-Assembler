@@ -86,7 +86,7 @@ const std::map<std::string, std::deque<Atom_Type>> BLUEPRINTS = {
         {"MUL",    {MNEMONIC, REGISTER, SOURCE, SOURCE} },
         {"DIV",    {MNEMONIC, REGISTER, SOURCE, SOURCE} },
         {"AND",    {MNEMONIC, REGISTER, SOURCE, SOURCE} },
-        {"OR",     {MNEMONIC, REGISTER, SOURCE        } },
+        {"OR",     {MNEMONIC, REGISTER, SOURCE, SOURCE} },
         {"NOT",    {MNEMONIC, REGISTER, SOURCE        } },
         {"XOR",    {MNEMONIC, REGISTER, SOURCE, SOURCE} },
         {"LSH",    {MNEMONIC, REGISTER, SOURCE, SOURCE} },
