@@ -6,36 +6,44 @@
 
 #include "tokenizer.h"
 
-size_t get_token_len(size_t i, std::string source_buffer) {
+size_t get_string_token_length(size_t i,
+                               const std::string source_buffer) {
         size_t token_len = 1, buff_len = source_buffer.length();
-        bool is_quote_token = source_buffer[i] == '\"';
         bool escaped_quote = false;
         while (i + token_len < buff_len) {
-                char curr = source_buffer[i + token_len];
-                if (is_quote_token) {
-                        if (curr == '\n')
-                                return SIZE_MAX;
-                        token_len++;
-                        // ensure newlines and escaped quotes are tokenized
-                        if (escaped_quote) {
-                                // escaped_quote only lasts till the next char
-                                escaped_quote = false;
-                                if (curr == '\"')
-                                        continue;
-                        }
-                        if (curr == '\\')
-                                escaped_quote = true;
-                        else if (curr == '\"')
-                                break;
-                } else {
-                        if (is_identifier_char(curr))
-                                token_len++;
-                        else
-                                break;
-                }
+                char curr = source_buffer.at(i + token_len);
+                // see @details
+                if (curr == '\n')
+                        return SIZE_MAX;
+                token_len++;
+
+                // ensure escaped quotes are included in token
+                if (curr == '\"' && !escaped_quote)
+                        break;
+                escaped_quote = false;
+                if (curr == '\\')
+                        escaped_quote = true;
         }
         if (i + token_len == buff_len)
-                return SIZE_MAX; // basically just -1
+                return SIZE_MAX;
+        return token_len;
+}
+
+size_t get_token_len(size_t i, std::string source_buffer) {
+        size_t token_len = 1;
+        size_t buff_len = source_buffer.length();
+        if (source_buffer.at(i) == '\"')
+                return get_string_token_length(i, source_buffer);
+
+        while (i + token_len < buff_len) {
+                char curr = source_buffer[i + token_len];
+                if (is_identifier_char(curr))
+                        token_len++;
+                else
+                        break;
+        }
+        if (i + token_len == buff_len)
+                return SIZE_MAX;
         return token_len;
 }
 

@@ -6,13 +6,19 @@
 #include <string>
 
 /**
- * @brief finds the size of the next token to extract
- * @details tokenize_buffer helper function. Will return SIZE_MAX if
- * it hits an invalid token, but won't signal an error immediatly. Also,
- * if a literal string is not terminated before a newline, the token won't
- * be added at all, which allows a reliable "MISSING_ARGUMENTS" for SPRINT
+ * @brief finds the size of the next string
+ * @details helper function of get_token_len. If a literal string is not
+ * terminated before a newline, the token won't be added at all, which
+ * allows a reliable "MISSING_ARGUMENTS" for SPRINT
  */
-size_t get_token_len(size_t buffer_idx, const std::string source_buffer);
+size_t get_string_token_length(size_t i, const std::string source_buffer);
+
+/**
+ * @brief finds the size of the next token to extract
+ * @details helper function for tokenize_buffer. Will return SIZE_MAX if
+ * it hits an invalid token, but won't signal an error immediatly.
+ */
+size_t get_token_len(size_t i, const std::string source_buffer);
 
 /**
  * @brief checks if i matches equivalent regex pattern: [$%|a-zA-Z0-9_-]
