@@ -50,7 +50,15 @@ int main(int argc, char **argv) {
 
         std::string source_path = argv[life_opts.input_file_idx];
         if (life_opts.is_binary_input) {
-                // populate_program_from_binary(cpu_handle, source_path);
+                populate_program_from_binary(final_program, source_path);
+                // verify correct ordering of bytes
+                /*
+                for (int16_t i : final_program) {
+                        int16_t lower = i & 255;
+                        int16_t upper = i >> 8;
+                        std::cout << (char)lower << (char)upper;
+                }
+                */
         } else {
                 std::ifstream source_file(source_path);
                 if (source_file.fail()) {

@@ -1,7 +1,10 @@
 # Application Binary Interface: How the Compiled Program is Layed Out
 
-The first int16_t of the program data is the program address of the
-main label, and is followed by the string data of the program.
+The first 4 int16_t's of the program are the packed chars that spell out
+"SANTIAGO" on a little endian system. This magic number just makes sure
+the binary came from the compiler. This is followed by another int16_t,
+which is the program address of the main label, and is followed by the
+string data of the program.
 
 Next, every string in the program is concatinated into the beginning of the
 program. This is done by packing every 2 chars of the string into one int16_t.

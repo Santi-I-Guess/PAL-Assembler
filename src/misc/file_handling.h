@@ -14,7 +14,12 @@ void generate_intermediates(std::string file_header,
                             std::map<std::string, int16_t> label_table);
 
 /**
- * @brief reads ascii source file into
+ * @brief populates final program from input if -b flag is given
+ */
+void populate_program_from_binary(std::deque<int16_t> &program, std::string filepath);
+
+/**
+ * @brief reads ascii source file into buffer
  */
 std::string read_file_to_buffer(std::ifstream &source_file);
 

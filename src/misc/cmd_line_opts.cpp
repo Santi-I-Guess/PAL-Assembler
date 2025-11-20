@@ -42,7 +42,7 @@ bool Cmd_Options::handle_cmd_args(int argc, char **argv) {
         } else if (input_file_idx == -1) {
                 std::cout << "An input file is required\n";
                 return false;
-        } else if (is_binary_input && (compile_only || intermediate_files)) {
+        } else if (is_binary_input && (compile_only)) {
                 std::cout << "Binary input is already compiled\n";
                 return false;
         }

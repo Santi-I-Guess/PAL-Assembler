@@ -24,7 +24,26 @@ void generate_intermediates(std::string file_header,
         }
 }
 
+void populate_program_from_binary(std::deque<int16_t> &program, std::string filepath) {
+        std::ifstream source_bin(filepath, std::ios::binary);
+        if (source_bin.fail()) {
+                std::cerr << "Failed to open input file\n";
+                std::exit(1);
+        }
+        // move ptr to end of file, read ptr pos, move ptr to start of file
+        source_bin.seekg(0, std::ios_base::end);
+        size_t file_size = source_bin.tellg();
+        source_bin.seekg(0, std::ios::beg);
+        for (size_t i = 0; i < file_size; i += 2) {
+                int16_t lower = (int16_t)source_bin.get();
+                int16_t upper = (int16_t)source_bin.get();
+                int16_t final = (upper << 8) | lower;
+                program.push_back(final);
+        }
+}
+
 std::string read_file_to_buffer(std::ifstream &source_file) {
+        // move ptr to end of file, read ptr pos, move ptr to start of file
         source_file.seekg(0, std::ios_base::end);
         size_t file_size = source_file.tellg();
         source_file.seekg(0, std::ios_base::beg);

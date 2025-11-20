@@ -15,7 +15,7 @@ Debug_Info generate_program(std::deque<int16_t> &program,
         std::map<int16_t, int16_t> &str_idx_offsets = program_info.str_idx_offsets;
 
         // Step 1: calculate string data offset, store string idx offsets
-        int16_t entry_offset = 1; // main label
+        int16_t entry_offset = 5; // main label + 'SA' 'NT' 'IA' 'GO'
         int16_t num_strings = 0;
         for (std::string i : tokens) {
                 if (i.back() != '\"')
@@ -30,8 +30,12 @@ Debug_Info generate_program(std::deque<int16_t> &program,
                 num_strings++;
         }
 
-        // Step 2: add entry offset to beginning of program
+        // Step 2: add entry offset and magic number to beginning of program
         program.push_front(label_table.at("main") + entry_offset);
+        program.push_front((int16_t)(0x4f47)); // GO
+        program.push_front((int16_t)(0x4149)); // IA
+        program.push_front((int16_t)(0x544e)); // NT
+        program.push_front((int16_t)(0x4153)); // SA
 
         // Step 3: translate normal instructions and arguments
         int16_t num_seen_strs = 0;
@@ -117,8 +121,8 @@ std::deque<int16_t> translate_string(std::string stripped_quote) {
         if (intermediate.size() % 2 == 1)
                 intermediate.push_back('\0');
         for (size_t idx = 0; idx < intermediate.size(); idx += 2) {
-                int16_t upper = (int16_t)(intermediate.at(idx + 1));
                 int16_t lower = (int16_t)(intermediate.at(idx));
+                int16_t upper = (int16_t)(intermediate.at(idx + 1));
                 int16_t final = (upper << 8) | lower;
                 result.push_back(final);
         }
