@@ -1,10 +1,13 @@
 # to ignore executable files
 *
-!Makefile
-!Doxyfile
-!*/
 !*.*
 build/*
-*.txt
-*.bin
+testing/[^.]*
+docs/[^.]*
+!docs/Doxyfile
 *.bak
+*.bin
+*.ods
+*.pdf
+*.txt
+*.typ

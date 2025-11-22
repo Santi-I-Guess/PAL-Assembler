@@ -78,15 +78,16 @@ debug:
 .PHONY: all clean depend submission debug
 .DEFAULT: all
 
+# L6A: -MM has no option to prefix a build dir
 # DEPENDENCIES
-blueprint.o: src/assembler/blueprint.cpp src/assembler/blueprint.h \
+build/blueprint.o: src/assembler/blueprint.cpp src/assembler/blueprint.h \
  src/assembler/common_values.h
-tokenizer.o: src/assembler/tokenizer.cpp src/assembler/tokenizer.h
-translation.o: src/assembler/translation.cpp \
+build/tokenizer.o: src/assembler/tokenizer.cpp src/assembler/tokenizer.h
+build/translation.o: src/assembler/translation.cpp \
  src/assembler/common_values.h src/assembler/translation.h
-cmd_line_opts.o: src/misc/cmd_line_opts.cpp src/misc/cmd_line_opts.h
-file_handling.o: src/misc/file_handling.cpp src/misc/file_handling.h
-main.o: src/main.cpp src/assembler/blueprint.h \
+build/cmd_line_opts.o: src/misc/cmd_line_opts.cpp src/misc/cmd_line_opts.h
+build/file_handling.o: src/misc/file_handling.cpp src/misc/file_handling.h
+build/main.o: src/main.cpp src/assembler/blueprint.h \
  src/assembler/common_values.h src/assembler/common_values.h \
  src/assembler/tokenizer.h src/assembler/translation.h \
  src/misc/cmd_line_opts.h src/misc/file_handling.h
