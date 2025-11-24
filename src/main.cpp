@@ -25,6 +25,8 @@
 // every subdirectory of src is isolated in dependencies and function
 // make tests eventually
 
+// TODO: allow piping in program if no file path is provided
+
 int main(int argc, char **argv) {
         Cmd_Options life_opts;
         bool valid_cmd_arg_combo = life_opts.handle_cmd_args(argc, argv);

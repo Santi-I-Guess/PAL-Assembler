@@ -4,6 +4,8 @@
 #include <deque>
 #include <iomanip>
 #include <iostream>
+#include <string>
+#include <sstream>
 
 #include "../common_values.h"
 #include "cpu_handle.h"
@@ -60,18 +62,23 @@ void print_arg(
         Program_State &curr_state,
         size_t &num_args_left
 ) {
+        // for little endian systems
+        std::stringstream aux_stream;
+        std::string aux_string;
         std::cout << std::setbase(10) << std::right;
         std::cout << std::setw(7);
         if ((curr >> 14) & 1) {
-                // literal
+                // literal bitmask
                 curr ^= (int16_t)(1 << 14);
-                std::cout << "$";
+                aux_stream << "$";
         } else if ((curr >> 13) & 1) {
-                // stack offset
+                // stack offset bitmask
                 curr ^= (int16_t)(1 << 13);
-                std::cout << "%";
+                aux_stream << "%";
         }
-        std::cout << curr;
+        aux_stream << curr;
+        std::getline(aux_stream, aux_string);
+        std::cout << aux_string;
         num_args_left--;
         if (num_args_left == 0) {
                 curr_state = READING_MNEMONIC;
@@ -165,4 +172,4 @@ void CPU_Handle::interpret_program() const {
                         break;
                 }
         }
-};
+}
