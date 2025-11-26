@@ -7,7 +7,7 @@
  * @brief prints info and exits if assembler failed
  * @details helper function for main.cpp
  */
-void handle_generation_res(Debug_Info res);
+void handle_assemble_res(Debug_Info res);
 
 /**
  * @brief prints info and exits if grammar checker caught an error

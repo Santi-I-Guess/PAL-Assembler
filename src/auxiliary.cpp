@@ -7,7 +7,7 @@
 // refactoring functions for main.cpp, therefore i'll allow includes from
 // other modules here
 
-void handle_generation_res(Debug_Info res) {
+void handle_assemble_res(Debug_Info res) {
         switch (res.assembler_retval) {
         case ACCEPTABLE_2:
                 break;

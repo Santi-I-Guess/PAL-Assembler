@@ -9,6 +9,7 @@ CPPVERSION = -std=c++17
 ARCHIVE_EXTENSION = zip
 
 # $(OS) is defined for windows machines, but not unix
+# also, why is -Force a positional flag? I really dislike powershell
 ifeq ($(OS),Windows_NT)
 	TARGET = $(PROJECT).exe
 	DEL = del

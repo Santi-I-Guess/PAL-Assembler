@@ -20,7 +20,7 @@ enum Atom_Type {
 
 // many values between Grammar_Retval and Assembler_Retval are only
 // slightly different, because I made the blueprint functions before
-// generate_program. I want to check twice on the same function, but
+// assemble_program. I want to check twice on the same function, but
 // can't have the same name used in two different enums, so that's why
 // there are almost exactly the same names
 
@@ -75,7 +75,7 @@ struct Program_Info {
 /**
  * @brief hashmap that defines arguments of instructions in assembly language
  * @details even though every instruction needs a mnemonic, it's left in here
- * so that the inner loop of generate_program doesn't need to have extra
+ * so that the inner loop of assemble_program doesn't need to have extra
  * logic for the first argument (i == 0)
  */
 const std::map<std::string, std::deque<Atom_Type>> BLUEPRINTS = {

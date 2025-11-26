@@ -12,7 +12,6 @@
 #include <iostream>
 #include <random>
 #include <string>
-#include <sstream>
 
 #include "auxiliary.h"
 #include "common_values.h"
@@ -89,12 +88,11 @@ int main(int argc, char **argv) {
                 handle_grammar_check_res(res);
 
                 // Step 3: generate program
-                // str_idx_offsets should be empty
                 Program_Info program_info = {};
                 program_info.tokens = tokens;
                 program_info.label_table = label_table;
-                res = generate_program(final_program, program_info);
-                handle_generation_res(res);
+                res = assemble_program(final_program, program_info);
+                handle_assemble_res(res);
         }
 
         if (life_opts.assemble_only) {

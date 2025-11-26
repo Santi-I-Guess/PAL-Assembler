@@ -65,11 +65,16 @@ void print_arg(
         // for little endian systems
         std::stringstream aux_stream;
         std::string aux_string;
-        std::cout << std::setbase(10) << std::right;
+        std::cout << std::setbase(6) << std::right;
         std::cout << std::setw(7);
         if ((curr >> 14) & 1) {
                 // literal bitmask
-                curr ^= (int16_t)(1 << 14);
+                // works because two's compliment negatives requires 14th
+                // bit as 1 to properly interpret, while positive numbers
+                // are using 14th bit to figure out how to interpret in the
+                // user program
+                if (curr >= 0)
+                        curr ^= (int16_t)(1 << 14);
                 aux_stream << "$";
         } else if ((curr >> 13) & 1) {
                 // stack offset bitmask
@@ -93,41 +98,42 @@ void print_chars(
         Program_State &curr_state,
         size_t &curr_str_idx)
 {
-        int16_t higher = curr >> 8;
-        int16_t lower = curr & 0xff;
-        if (curr == 0 && curr_str_idx > 0) {
-                // end of string
-                // why is this never being run?
+        int16_t higher   = curr >> 8;
+        int16_t lower    = curr & 0xff;
+        bool is_str_end  = (curr == 0) && (curr_str_idx > 0);
+        bool is_data_end = (curr == (int16_t)0xffff);
+        bool is_str_beg  = (curr_str_idx == 0) && (curr > 0);
+
+        if (is_str_end) {
                 std::cout << "\"\n";
                 curr_str_idx = 0;
-        } else if (curr == (int16_t)(0xffff)) {
-                // end of string data
+                return;
+        } else if (is_data_end) {
                 std::cout << "--- Program Data ---\n";
                 curr_state = READING_MNEMONIC;
-        } else {
-                // ensure programs with no string don't
-                // add extraneous programs
-                if (curr_str_idx == 0 && curr) {
-                        // start of string
-                        std::cout << "\"";
-                }
-                curr_str_idx += 2;
-                if (curr) {
-                        if (lower == '\n')
-                                std::cout << "\\n";
-                        else
-                                std::cout << (char)lower;
-                        if (higher == '\n')
-                                std::cout << "\n";
-                        else
-                                std::cout << (char)higher;
-                }
+                return;
+        }
+        // ensure programs with no string don't
+        // add extraneous programs
+        if (is_str_beg)
+                // start of string
+                std::cout << "\"";
+        curr_str_idx += 2;
+        if (curr) {
+                if (lower == '\n')
+                        std::cout << "\\n";
+                else
+                        std::cout << (char)lower;
+                if (higher == '\n')
+                        std::cout << "\n";
+                else
+                        std::cout << (char)higher;
         }
 }
 
 void print_entry_label(int16_t curr, Program_State &curr_state) {
-        std::cout << std::setbase(16) << "0x" << curr;
-        std::cout << ": main label addr\n";
+        std::cout << std::setbase(16);
+        std::cout << "--- Entry @ 0x" << curr << " ---\n";
         std::cout << "--- String Data ---\n";
         curr_state = READING_STR;
 }
@@ -137,8 +143,13 @@ void print_mnemonic(
         Program_State &curr_state,
         size_t &num_args_left
 ) {
-        std::cout << std::left << std::setw(9);
-        std::cout << DEREFERENCE_TABLE.at(curr);
+        std::stringstream aux_stream;
+        std::string aux_string;
+        // (0xff) INS ARG1  ARG2  ARG3
+        aux_stream << "( " << std::right << std::setw(2) <<  curr << " ) ";
+        aux_stream << DEREFERENCE_TABLE.at(curr);
+        std::getline(aux_stream, aux_string);
+        std::cout << std::left << std::setw(14) << aux_string;
         num_args_left = BLUEPRINTS.at(DEREFERENCE_TABLE.at(curr)).size() - 1;
         if (num_args_left > 0)
                 curr_state = READING_ARGS;
@@ -150,7 +161,26 @@ void CPU_Handle::interpret_program() const {
         Program_State curr_state = READING_ENTRY_LABEL;
         size_t curr_str_idx = 0;
         size_t num_args_left = 0;
-        // start at 4 to skip SANTIAGO
+        int16_t header[4] = {
+                program_data[0],
+                program_data[1],
+                program_data[2],
+                program_data[3]
+        };
+        int16_t magic_nums[4] = {
+                0x4153,
+                0x544e,
+                0x4149,
+                0x4f47
+        };
+        if ((header[0] != magic_nums[0])
+                || (header[1] != magic_nums[1])
+                || (header[2] != magic_nums[2])
+                || (header[3] != magic_nums[3])) {
+                std::cout << "--- *Warning*: Magic Number Mismatch ---\n";
+        }
+
+        // start at 4 to skip magic numbers
         for (size_t i = 4; i < prog_size; ++i) {
                 int16_t curr = program_data[i];
                 switch (curr_state) {

@@ -6,10 +6,10 @@
 #include "../common_values.h"
 #include "translation.h"
 
-// TODO: reduce max indentation to 3 levels: refactor step 3 of generate_program
+// TODO: reduce max indentation to 3 levels: refactor step 3 of assemble_program
 // TODO: refactor instances of 80+ chars
 
-Debug_Info generate_program(
+Debug_Info assemble_program(
         std::deque<int16_t> &program,
         Program_Info program_info
 ) {
