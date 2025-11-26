@@ -12,6 +12,7 @@
 #include <iostream>
 #include <random>
 #include <string>
+#include <sstream>
 
 #include "auxiliary.h"
 #include "common_values.h"
@@ -33,11 +34,11 @@ int main(int argc, char **argv) {
         if (!valid_cmd_arg_combo)
                 return 0;
 
-        // produce intermediate file header
+        // produce random file header for intermediate files
         // makes running multiple tests in a row unlikely to overwrite data
         std::random_device rd;
         std::mt19937 mt(rd());
-        std::uniform_int_distribution rand_letter(0, 25);
+        std::uniform_int_distribution<int> rand_letter(0, 25);
         std::string file_header = "";
         for (int i = 0; i < 10; ++i) {
                 char curr_letter;
@@ -50,19 +51,33 @@ int main(int argc, char **argv) {
         // cpu_handle
         std::deque<int16_t> final_program = {};
 
-        std::string source_path = argv[life_opts.input_file_idx];
         if (life_opts.is_binary_input) {
-                populate_program_from_binary(final_program, source_path);
+                std::string bin_source_path = argv[life_opts.input_file_idx];
+                populate_program_from_binary(final_program, bin_source_path);
         } else {
-                std::ifstream source_file(source_path);
-                if (source_file.fail()) {
-                        std::cerr << "Failed to open input file\n";
-                        return 1;
+                std::string source_buffer = "";
+                if (life_opts.input_file_idx != -1) {
+                        std::string source_path = argv[life_opts.input_file_idx];
+                        std::ifstream source_file(source_path);
+                        if (source_file.fail()) {
+                                std::cerr << "Failed to open input file\n";
+                                return 1;
+                        }
+                        source_buffer = read_file_to_buffer(source_file);
+                        source_file.close();
+                } else {
+                        source_buffer = "";
+                        while (1) {
+                                std::string aux_string = "";
+                                std::getline(std::cin, aux_string);
+                                if (aux_string == "; EOF")
+                                        break;
+                                source_buffer += aux_string + "\n";
+                        }
                 }
 
                 // Step 1: tokenize and define labels
                 // label_table also removes label definitions from tokens
-                std::string source_buffer = read_file_to_buffer(source_file);
                 std::deque<std::string> tokens = create_tokens(source_buffer);
                 std::map<std::string, int16_t> label_table = create_label_map(tokens);
                 if (life_opts.intermediate_files)
@@ -82,7 +97,7 @@ int main(int argc, char **argv) {
                 handle_generation_res(res);
         }
 
-        if (life_opts.compile_only) {
+        if (life_opts.assemble_only) {
                 bool res_temp;
                 res_temp = write_program_to_sink(final_program, file_header);
                 if (!res_temp) {

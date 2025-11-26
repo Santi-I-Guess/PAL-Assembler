@@ -10,12 +10,11 @@
  * @brief container for cmd line inputs and flags
  */
 struct Cmd_Options {
-        bool compile_only;          ///< -c
+        bool assemble_only;         ///< -c
         bool executable_help;       ///< -h
         int input_file_idx;         ///< init to -1
         bool intermediate_files;    ///< -s
         bool is_binary_input;       ///< -b
-        bool line_by_line_printing; ///< -p
 
         Cmd_Options();
         bool handle_cmd_args(int argc, char **argv); ///< stores flags

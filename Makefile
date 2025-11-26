@@ -3,12 +3,13 @@
 CXX = g++
 CXXFLAGS_DEBUG = -g
 CXXFLAGS_WARN  = -Wall -Werror -Wextra -Wconversion -Wdouble-promotion \
-				 -Wunreachable-code -Wshadow -Wpedantic -Wno-conversion
+				 -Wunreachable-code -Wshadow -Wpedantic
 CPPVERSION = -std=c++17
 
 ARCHIVE_EXTENSION = zip
 
-ifeq ($(OS), Windows_NT)
+# $(OS) is defined for windows machines, but not unix
+ifeq ($(OS),Windows_NT)
 	TARGET = $(PROJECT).exe
 	DEL = del
 	DEL_FLAGS = -Force
@@ -29,10 +30,11 @@ else
 	SEPERATOR=/
 endif
 
-# note to self: both () and {} can be used for variables
 PROJECT = final_project
-SRC_DIRS  = src$(SEPERATOR)assembler src$(SEPERATOR)misc \
-			src$(SEPERATOR)simulator src
+SRC_DIRS  = src$(SEPERATOR)assembler \
+			src$(SEPERATOR)misc \
+			src$(SEPERATOR)simulator \
+			src
 SRC_FILES = $(foreach dir, $(SRC_DIRS), $(wildcard ${dir}$(SEPERATOR)*.cpp))
 H_FILES   = $(foreach dir, $(SRC_DIRS), $(wildcard ${dir}$(SEPERATOR)*.h))
 OBJECTS = $(patsubst %.cpp, build$(SEPERATOR)%.o, $(notdir $(SRC_FILES)))
@@ -40,7 +42,6 @@ REZ_FILES = resources/pseudo_assembly_assembler.png
 USERNAME  = santiago_sagastegui
 
 # https://www.gnu.org/software/make/manual/html_node/File-Name-Functions.html
-# this is why you read documentation, kids
 
 BUILD_DIR = build
 

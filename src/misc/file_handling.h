@@ -4,6 +4,7 @@
 #include <deque>
 #include <map>
 #include <string>
+#include <fstream>
 
 /**
  * @brief generates token file and labels file
@@ -20,6 +21,7 @@ void populate_program_from_binary(std::deque<int16_t> &program, std::string file
 
 /**
  * @brief reads ascii source file into buffer
+ * @details istream instead of ifstream to ensure std::cin works as in input
  */
 std::string read_file_to_buffer(std::ifstream &source_file);
 
@@ -29,7 +31,7 @@ std::string read_file_to_buffer(std::ifstream &source_file);
 bool write_labels_to_sink(std::map<std::string, int16_t> label_table, std::string header);
 
 /**
- * @brief writes intermediate file for compiled progra
+ * @brief writes intermediate file for assembled progra
  */
 bool write_program_to_sink(std::deque<int16_t> program, std::string header);
 

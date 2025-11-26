@@ -53,7 +53,7 @@ class CPU_Handle {
         int16_t prog_ctr; /** program counter / instruction pointer */
         int16_t stack_ptr; /** stack counter / pointer */
         int16_t program_mem[2048]; /** holds ram and stack memory */
-        int16_t *program_data; /** compiled program */
+        int16_t *program_data; /** assembled program */
 
         size_t prog_size; /** size of program data */
 public:

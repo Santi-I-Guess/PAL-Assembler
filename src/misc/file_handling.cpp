@@ -1,10 +1,10 @@
+#include <cstdlib>
 #include <deque>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <map>
 #include <string>
-#include <cstdlib>
 
 #include "file_handling.h"
 
@@ -50,7 +50,6 @@ std::string read_file_to_buffer(std::ifstream &source_file) {
         std::string source_buffer = "";
         for (size_t i = 0; i < file_size; ++i)
                 source_buffer += (char)source_file.get();
-        source_file.close();
         return source_buffer;
 }
 

@@ -142,3 +142,7 @@ i16, or an assembler error will occur.
 Certain command line flags are provided to the program executable to make
 certain common operations repeatable. Descriptions can be provided using
 -h or --help as a command line argument.
+If no input file is provided, the program will await input from STDIN. Users
+can then input instructions and label definitions just like for an input file.
+The program will continue to take in input until the input line matches
+"^; EOF$" (where ^ and $ are regex symbols), and process the input normally
