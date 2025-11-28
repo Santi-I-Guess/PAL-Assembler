@@ -144,5 +144,8 @@ certain common operations repeatable. Descriptions can be provided using
 -h or --help as a command line argument.
 If no input file is provided, the program will await input from STDIN. Users
 can then input instructions and label definitions just like for an input file.
-The program will continue to take in input until the input line matches
-"^; EOF$" (where ^ and $ are regex symbols), and process the input normally
+The program will continue to take in input until an empty line is inputted.
+This is particularly useful for testing smaller programs without making an
+entire file, such as
+- <code>printf "main: EXIT\n" | ./final_project</code>
+- <code>Write-Output "main: EXIT\n" | .\\final/project<code>

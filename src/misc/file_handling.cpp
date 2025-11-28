@@ -31,7 +31,7 @@ std::string get_source_buffer(std::string source_path, bool use_stdin) {
                 do {
                         std::getline(std::cin, aux_string);
                         source_buffer += aux_string + "\n";
-                } while (aux_string != "; EOF");
+                } while (aux_string != "");
         } else {
                 std::ifstream source_file(source_path);
                 if (source_file.fail()) {
