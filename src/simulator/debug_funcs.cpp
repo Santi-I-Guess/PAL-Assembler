@@ -60,7 +60,7 @@ void print_instruction(
         // note to self: std::getline sets EOF bit of stream
 
         // set instruction part to be right aligned with 14 chars
-        std::string mnem_name = DEREFERENCE_TABLE.at(curr);
+        std::string mnem_name = DEREFERENCE_TABLE[curr];
         out_stream << "#";
         out_stream << std::right << std::setw(4) << int_idx << ":";
         out_stream << std::right << std::setw(3) << mnemonic_idx << " ";

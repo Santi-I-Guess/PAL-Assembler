@@ -128,18 +128,18 @@ const std::map<std::string, int16_t> OPCODE_TABLE = {
 };
 
 /**
- * @brief dereference hashmap for CPU_Handle::interpret_program()
- * @details opposite hashmap to OPCODE_TABLE
+ * @brief dereference array for CPU_Handle::interpret_program()
+ * @details opposite to OPCODE_TABLE
  */
-const std::map<int16_t, std::string> DEREFERENCE_TABLE = {
-        {0,    "NOP"}, {1,     "MOV"}, {2,    "INC"}, {3,   "DEC"},
-        {4,    "ADD"}, {5,     "SUB"}, {6,    "MUL"}, {7,   "DIV"},
-        {8,    "AND"}, {9,      "OR"}, {10,   "NOT"}, {11,  "XOR"},
-        {12,   "LSH"}, {13,    "RSH"}, {14,   "CMP"}, {15,  "JMP"},
-        {16,   "JEQ"}, {17,    "JNE"}, {18,   "JGE"}, {19,  "JGR"},
-        {20,   "JLE"}, {21,    "JLS"}, {22,  "CALL"}, {23,  "RET"},
-        {24,  "PUSH"}, {25,    "POP"}, {26, "WRITE"}, {27, "READ"},
-        {28, "PRINT"}, {29, "SPRINT"}, {30,  "EXIT"}
+const std::string DEREFERENCE_TABLE[31] = {
+        "NOP",   "MOV",    "INC",   "DEC",
+        "ADD",   "SUB",    "MUL",   "DIV",
+        "AND",   "OR",     "NOT",   "XOR",
+        "LSH",   "RSH",    "CMP",   "JMP",
+        "JEQ",   "JNE",    "JGE",   "JGR",
+        "JLE",   "JLS",    "CALL",  "RET",
+        "PUSH",  "POP",    "WRITE", "READ",
+        "PRINT", "SPRINT", "EXIT"
 };
 
 /**
