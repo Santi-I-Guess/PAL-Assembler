@@ -86,6 +86,7 @@ int main(int argc, char **argv) {
                         std::cerr << "Failed to open token sink file\n";
                         return 1;
                 }
+                return 0;
         }
 
         // note to self: can i create something like gdb?? PALdb? pdb?

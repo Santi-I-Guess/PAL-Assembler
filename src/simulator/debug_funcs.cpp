@@ -88,13 +88,18 @@ void print_instruction(
                         curr_arg ^= (int16_t)(1 << 13);
                         arg_stream << "%";
                         arg_stream << curr_arg;
+                } else if ((curr_arg >> 12) & 1) {
+                        curr_arg ^= (int16_t)(1 << 12);
+                        arg_stream << "#";
+                        arg_stream << curr_arg;
                 } else if ((arg_type == REGISTER) || (arg_type == SOURCE)) {
                         arg_stream << "R";
                         arg_stream << (char)('A' + curr_arg);
                 } else {
-                        arg_stream << "#";
+                        arg_stream << "?";
                         arg_stream << curr_arg;
                 }
+
                 arg_string = arg_stream.str();
                 out_stream << std::right << std::setw(8) << arg_string;
         }
@@ -182,7 +187,7 @@ void print_pdb_help() {
         std::cout << BOLD "list" CLEAR "\n";
         std::cout << "    show the next instruction to be performed\n";
         std::cout << "    useful for debugging branching instructions and SPRINT\n";
-        std::cout << BOLD "step" CLEAR "\n";
+        std::cout << BOLD "next" CLEAR "\n";
         std::cout << "    continue program until next instruction\n";
         std::cout << BOLD "print" CLEAR " <register|stack offset|ram address>\n";
         std::cout << "    print value in program's memory\n";
@@ -199,7 +204,7 @@ void print_instruction_simple(int16_t *program_data, int16_t prog_ctr) {
         // first, the mnemoinc
         int16_t curr = program_data[prog_ctr];
         std::string mnem_name = DEREFERENCE_TABLE[curr];
-        out_stream << std::right << std::setw(7) << mnem_name;
+        out_stream << std::left << std::setw(7) << mnem_name;
 
         // second, the arguments
         int16_t ins_size = (int16_t)(BLUEPRINTS.at(mnem_name).size());
@@ -219,11 +224,15 @@ void print_instruction_simple(int16_t *program_data, int16_t prog_ctr) {
                         curr_arg ^= (int16_t)(1 << 13);
                         arg_stream << "%";
                         arg_stream << curr_arg;
+                } else if ((curr_arg >> 12) & 1) {
+                        curr_arg ^= (int16_t)(1 << 12);
+                        arg_stream << "#";
+                        arg_stream << curr_arg;
                 } else if ((arg_type == REGISTER) || (arg_type == SOURCE)) {
                         arg_stream << "R";
                         arg_stream << (char)('A' + curr_arg);
                 } else {
-                        arg_stream << "#";
+                        arg_stream << "?";
                         arg_stream << curr_arg;
                 }
                 arg_string = arg_stream.str();

@@ -16,6 +16,18 @@ some changes to make usage simple.
 - -h, --help
 - -s, --save-temps
 
+## PAL Debugger Commands
+- break <program address>
+- clear
+- continue
+- delete <program address>?
+- help
+- interpret
+- list
+- next
+- print <register|stack offset|ram address>
+- quit
+
 ## Assembly Language
 - 16 bit registers
 - 8 general purpose registers, 2 comparison registers (nonaccessable)

@@ -39,6 +39,51 @@ CPU_Handle::~CPU_Handle() {
         prog_size = 0;
 }
 
+int16_t CPU_Handle::dereference_value(int16_t given_value) {
+        int16_t intended_value = 0;
+        if ((given_value >> 14) & 1) {
+                // literal value
+                if (given_value >= 0)
+                        given_value ^= (int16_t)(1 << 14);
+                intended_value = given_value;
+        } else if ((given_value >> 13) & 1) {
+                // stack offest
+                // stack[0] starts at program_mem[1536]
+                given_value ^= (int16_t)(1 << 13);
+                if (given_value > stack_ptr) {
+                        std::cout << "Error: " << error_messages[1];
+                        std::cout << "\n";
+                        std::exit(1);
+                }
+                intended_value = program_mem[1536 + stack_ptr - given_value];
+        } else if ((given_value >> 12) & 1) {
+                // string literal
+                given_value ^= (int16_t)(1 << 12);
+                intended_value = given_value;
+        } else {
+                // register idx
+                switch (given_value) {
+                case  0: intended_value = reg_a;     break;
+                case  1: intended_value = reg_b;     break;
+                case  2: intended_value = reg_c;     break;
+                case  3: intended_value = reg_d;     break;
+                case  4: intended_value = reg_e;     break;
+                case  5: intended_value = reg_f;     break;
+                case  6: intended_value = reg_g;     break;
+                case  7: intended_value = reg_h;     break;
+                case  8: intended_value = stack_ptr; break;
+                case  9: intended_value = prog_ctr;  break;
+                case 10: intended_value = reg_cmp_a; break;
+                case 11: intended_value = reg_cmp_b; break;
+                default:
+                        std::cout << "Error: " << error_messages[2];
+                        std::cout << "\n";
+                        std::exit(1);
+                }
+        }
+        return intended_value;
+}
+
 void CPU_Handle::load_program(const std::deque<int16_t> given_program) {
         if (!program_data) {
                 program_data = new int16_t[given_program.size()];
@@ -68,12 +113,13 @@ void CPU_Handle::run_program() {
 void CPU_Handle::run_program_debug() {
         int16_t num_instructions_left = 0;
         bool hit_exit = false;
-
+        bool continue_cond = false;
         std::vector<int16_t> breakpoints = {};
+
+        // to ensure all breakpoints are valid addresses
         std::vector<int16_t> mnemonic_addrs = {};
         int16_t temp_idx = 0;
-        // move temp_idx to first mnemonic
-        while ((program_data[temp_idx-1] != (int16_t)0xffff) && (temp_idx < prog_size))
+        while ((program_data[temp_idx - 1] != (int16_t)0xffff) && (temp_idx < prog_size))
                 temp_idx++;
         while (temp_idx < prog_size) {
                 mnemonic_addrs.push_back(temp_idx);
@@ -83,12 +129,12 @@ void CPU_Handle::run_program_debug() {
                 temp_idx += (int16_t)curr_blueprint.size();
         }
 
-        std::cout << "PAL Debugger (PDB)\n";
+        std::cout << "PAL Debugger (PalDB)\n";
         std::cout << "For help, type \"help\"\n\n";
 
         // pause when no more instructions
         while (!hit_exit) {
-                std::cout << "(pdb) ";
+                std::cout << "(PalDB) > ";
                 std::string command;
                 std::getline(std::cin, command);
 
@@ -111,10 +157,25 @@ void CPU_Handle::run_program_debug() {
                         }
                         // check for 2nd argumenteak funname
                         // check 2nd argument is valid offset
+                        int16_t awaiting = (int16_t)std::stoi(cmd_tokens.at(1));
+                        bool is_valid = false;
+                        for (int16_t address : mnemonic_addrs) {
+                                if (awaiting == address) {
+                                        is_valid = true;
+                                        break;
+                                }
+                        }
+
+                        if (is_valid) {
+                                breakpoints.push_back(awaiting);
+                                std::cout << "added " << awaiting << "\n";
+                        } else {
+                                std::cout << awaiting << " is not a valid breakpoint\n";
+                        }
                 } else if (cmd_tokens.front() == "clear") {
                         system("clear");
                 } else if (cmd_tokens.front() == "continue") {
-                        num_instructions_left = -1;
+                        continue_cond = true;
                 } else if (cmd_tokens.front()[0] == 'd') {
                         // delete
                         if (cmd_tokens.size() != 2) {
@@ -146,6 +207,7 @@ void CPU_Handle::run_program_debug() {
                         else
                                 print_instruction_simple(program_data, prog_ctr);
                 } else if (cmd_tokens.front()[0] == 'n') {
+                        // next
                         if (cmd_tokens.size() == 2) {
                                 // allow 1+ steps
                                 int16_t num_steps = (int16_t)std::stoi(cmd_tokens.at(1));
@@ -157,16 +219,57 @@ void CPU_Handle::run_program_debug() {
 
                         // next
                 } else if (cmd_tokens.front()[0] == 'p') {
+                        if (cmd_tokens.size() != 2) {
+                                std::cout << "no arguments provided\n";
+                                continue;
+                        }
+
+                        if (cmd_tokens.at(1) == "RA") {
+                                std::cout << "RA = " << reg_a << "\n";
+                        } else if (cmd_tokens.at(1) == "RB") {
+                                std::cout << "RB = "<< reg_b << "\n";
+                        } else if (cmd_tokens.at(1) == "RC") {
+                                std::cout << "RC = "<< reg_c << "\n";
+                        } else if (cmd_tokens.at(1) == "RD") {
+                                std::cout << "RD = "<< reg_d << "\n";
+                        } else if (cmd_tokens.at(1) == "RE") {
+                                std::cout << "RE = "<< reg_e << "\n";
+                        } else if (cmd_tokens.at(1) == "RF") {
+                                std::cout << "RF = "<< reg_f << "\n";
+                        } else if (cmd_tokens.at(1) == "RG") {
+                                std::cout << "RG = "<< reg_g << "\n";
+                        } else if (cmd_tokens.at(1) == "RH") {
+                                std::cout << "RH = "<< reg_h << "\n";
+                        } else if (cmd_tokens.at(1) == "CMP1") {
+                                std::cout << "RH = "<< reg_cmp_a << "\n";
+                        } else if (cmd_tokens.at(1) == "CMP2") {
+                                std::cout << "RH = "<< reg_cmp_b << "\n";
+                        } else if (cmd_tokens.at(1) == "RSP") {
+                                std::cout << "RSP = "<< stack_ptr << "\n";
+                        } else if (cmd_tokens.at(1) == "RIP") {
+                                std::cout << "RIP = "<< prog_ctr << "\n";
+                        } else {
+                                std::cout << "unrecognized value\n";
+                        }
+
                         // print
                         // check for 2nd argument
                 } else if (cmd_tokens.front()[0] == 'q') {
                         // quit
                         break;
+                } else {
+                        std::cout << "unrecognized command\n";
                 }
 
                 bool previously_ran = false;
-                while (!hit_exit && num_instructions_left > 0) {
+                while (!hit_exit && (num_instructions_left > 0 || continue_cond)) {
                         // run_instructions
+                        for (int16_t address : breakpoints) {
+                                if (prog_ctr == address) {
+                                        continue_cond = false;
+                                        num_instructions_left = 0;
+                                }
+                        }
                         next_instruction(hit_exit);
                         num_instructions_left--;
                         previously_ran = true;
@@ -261,70 +364,4 @@ void CPU_Handle::next_instruction(bool &hit_exit) {
                 ins_exit(*this);
                 hit_exit = true;
         }
-}
-
-
-int16_t CPU_Handle::dereference_value(int16_t given_value) {
-        int16_t intended_value = 0;
-        if ((given_value >> 14) & 1) {
-                // literal value
-                if (given_value >= 0)
-                        given_value ^= (int16_t)(1 << 14);
-                intended_value = given_value;
-        } else if ((given_value >> 13) & 1) {
-                // stack offest
-                // stack[0] starts at program_mem[1536]
-                given_value ^= (int16_t)(1 << 13);
-                if (given_value > stack_ptr) {
-                        std::cout << "Error: " << error_messages[1];
-                        std::cout << "\n";
-                        std::exit(1);
-                }
-                intended_value = program_mem[1536 + stack_ptr - given_value];
-        } else {
-                // register idx
-                switch (given_value) {
-                case 0:
-                        intended_value = reg_a;
-                        break;
-                case 1:
-                        intended_value = reg_b;
-                        break;
-                case 2:
-                        intended_value = reg_c;
-                        break;
-                case 3:
-                        intended_value = reg_d;
-                        break;
-                case 4:
-                        intended_value = reg_e;
-                        break;
-                case 5:
-                        intended_value = reg_f;
-                        break;
-                case 6:
-                        intended_value = reg_g;
-                        break;
-                case 7:
-                        intended_value = reg_h;
-                        break;
-                case 8:
-                        intended_value = stack_ptr;
-                        break;
-                case 9:
-                        intended_value = prog_ctr;
-                        break;
-                case 10:
-                        intended_value = reg_cmp_a;
-                        break;
-                case 11:
-                        intended_value = reg_cmp_b;
-                        break;
-                default:
-                        std::cout << "Error: " << error_messages[2];
-                        std::cout << "\n";
-                        std::exit(1);
-                }
-        }
-        return intended_value;
 }

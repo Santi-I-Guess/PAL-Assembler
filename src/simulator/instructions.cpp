@@ -18,7 +18,7 @@ void ins_mov(CPU_Handle &cpu_handle) {
         int16_t dest = cpu_handle.dereference_value(program_data[prog_ctr + 1]);
         int16_t value = cpu_handle.dereference_value(program_data[prog_ctr + 2]);
 
-        if (0 <= dest || dest >= 8) {
+        if (dest < 0 || dest > 7) {
                 std::cout << "Error: " << error_messages[0] << "\n";
                 std::exit(1);
         }
@@ -42,7 +42,7 @@ void ins_inc(CPU_Handle &cpu_handle) {
         int16_t &prog_ctr = cpu_handle.prog_ctr;
 
         int16_t dest = cpu_handle.dereference_value(program_data[prog_ctr + 1]);
-        if (0 <= dest || dest >= 8) {
+        if (dest < 0 || dest > 7) {
                 std::cout << "Error: " << error_messages[0] << "\n";
                 std::exit(1);
         }
@@ -66,7 +66,7 @@ void ins_dec(CPU_Handle &cpu_handle) {
         int16_t &prog_ctr = cpu_handle.prog_ctr;
 
         int16_t dest = cpu_handle.dereference_value(program_data[prog_ctr + 1]);
-        if (0 <= dest || dest >= 8) {
+        if (dest < 0 || dest > 7) {
                 std::cout << "Error: " << error_messages[0] << "\n";
                 std::exit(1);
         }
@@ -92,7 +92,7 @@ void ins_add(CPU_Handle &cpu_handle) {
         int16_t dest = cpu_handle.dereference_value(program_data[prog_ctr + 1]);
         int16_t src_1 = cpu_handle.dereference_value(program_data[prog_ctr + 2]);
         int16_t src_2 = cpu_handle.dereference_value(program_data[prog_ctr + 3]);
-        if (0 <= dest || dest >= 8) {
+        if (dest < 0 || dest > 7) {
                 std::cout << "Error: " << error_messages[0] << "\n";
                 std::exit(1);
         }
@@ -119,7 +119,7 @@ void ins_sub(CPU_Handle &cpu_handle) {
         int16_t dest = cpu_handle.dereference_value(program_data[prog_ctr + 1]);
         int16_t src_1 = cpu_handle.dereference_value(program_data[prog_ctr + 2]);
         int16_t src_2 = cpu_handle.dereference_value(program_data[prog_ctr + 3]);
-        if (0 <= dest || dest >= 8) {
+        if (dest < 0 || dest > 7) {
                 std::cout << "Error: " << error_messages[0] << "\n";
                 std::exit(1);
         }
@@ -146,7 +146,7 @@ void ins_mul(CPU_Handle &cpu_handle) {
         int16_t dest = cpu_handle.dereference_value(program_data[prog_ctr + 1]);
         int16_t src_1 = cpu_handle.dereference_value(program_data[prog_ctr + 2]);
         int16_t src_2 = cpu_handle.dereference_value(program_data[prog_ctr + 3]);
-        if (0 <= dest || dest >= 8) {
+        if (dest < 0 || dest > 7) {
                 std::cout << "Error: " << error_messages[0] << "\n";
                 std::exit(1);
         }
@@ -173,7 +173,7 @@ void ins_div(CPU_Handle &cpu_handle) {
         int16_t dest = cpu_handle.dereference_value(program_data[prog_ctr + 1]);
         int16_t src_1 = cpu_handle.dereference_value(program_data[prog_ctr + 2]);
         int16_t src_2 = cpu_handle.dereference_value(program_data[prog_ctr + 3]);
-        if (0 <= dest || dest >= 8) {
+        if (dest < 0 || dest > 7) {
                 std::cout << "Error: " << error_messages[0] << "\n";
                 std::exit(1);
         }
@@ -204,7 +204,7 @@ void ins_and(CPU_Handle &cpu_handle) {
         int16_t dest = cpu_handle.dereference_value(program_data[prog_ctr + 1]);
         int16_t src_1 = cpu_handle.dereference_value(program_data[prog_ctr + 2]);
         int16_t src_2 = cpu_handle.dereference_value(program_data[prog_ctr + 3]);
-        if (0 <= dest || dest >= 8) {
+        if (dest < 0 || dest > 7) {
                 std::cout << "Error: " << error_messages[0] << "\n";
                 std::exit(1);
         }
@@ -231,7 +231,7 @@ void ins_or(CPU_Handle &cpu_handle) {
         int16_t dest = cpu_handle.dereference_value(program_data[prog_ctr + 1]);
         int16_t src_1 = cpu_handle.dereference_value(program_data[prog_ctr + 2]);
         int16_t src_2 = cpu_handle.dereference_value(program_data[prog_ctr + 3]);
-        if (0 <= dest || dest >= 8) {
+        if (dest < 0 || dest > 7) {
                 std::cout << "Error: " << error_messages[0] << "\n";
                 std::exit(1);
         }
@@ -257,7 +257,7 @@ void ins_not(CPU_Handle &cpu_handle) {
 
         int16_t dest = cpu_handle.dereference_value(program_data[prog_ctr + 1]);
         int16_t src_1 = cpu_handle.dereference_value(program_data[prog_ctr + 2]);
-        if (0 <= dest || dest >= 8) {
+        if (dest < 0 || dest > 7) {
                 std::cout << "Error: " << error_messages[0] << "\n";
                 std::exit(1);
         }
@@ -284,7 +284,7 @@ void ins_xor(CPU_Handle &cpu_handle) {
         int16_t dest = cpu_handle.dereference_value(program_data[prog_ctr + 1]);
         int16_t src_1 = cpu_handle.dereference_value(program_data[prog_ctr + 2]);
         int16_t src_2 = cpu_handle.dereference_value(program_data[prog_ctr + 3]);
-        if (0 <= dest || dest >= 8) {
+        if (dest < 0 || dest > 7) {
                 std::cout << "Error: " << error_messages[0] << "\n";
                 std::exit(1);
         }
@@ -311,7 +311,7 @@ void ins_lsh(CPU_Handle &cpu_handle) {
         int16_t dest = cpu_handle.dereference_value(program_data[prog_ctr + 1]);
         int16_t src_1 = cpu_handle.dereference_value(program_data[prog_ctr + 2]);
         int16_t src_2 = cpu_handle.dereference_value(program_data[prog_ctr + 3]);
-        if (0 <= dest || dest >= 8) {
+        if (dest < 0 || dest > 7) {
                 std::cout << "Error: " << error_messages[0] << "\n";
                 std::exit(1);
         }
@@ -343,7 +343,7 @@ void ins_rsh(CPU_Handle &cpu_handle) {
         int16_t dest = cpu_handle.dereference_value(program_data[prog_ctr + 1]);
         int16_t src_1 = cpu_handle.dereference_value(program_data[prog_ctr + 2]);
         int16_t src_2 = cpu_handle.dereference_value(program_data[prog_ctr + 3]);
-        if (0 <= dest || dest >= 8) {
+        if (dest < 0 || dest > 7) {
                 std::cout << "Error: " << error_messages[0] << "\n";
                 std::exit(1);
         }
@@ -514,7 +514,7 @@ void ins_pop(CPU_Handle &cpu_handle) {
 
         int16_t dest = cpu_handle.dereference_value(program_data[prog_ctr + 1]);
         int16_t value = program_mem[1536 + stack_ptr];
-        if (0 <= dest || dest >= 8) {
+        if (dest < 0 || dest > 7) {
                 std::cout << "Error: " << error_messages[0] << "\n";
                 std::exit(1);
         }

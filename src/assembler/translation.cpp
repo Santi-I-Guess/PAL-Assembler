@@ -162,8 +162,9 @@ int16_t translate_token(std::string token, Atom_Type atom_type,
                 aux_stream >> aux_int;
                 aux_int |= (int16_t)(1 << 14); // bitmask
                 return aux_int;
-        case LITERAL_STR: // the idx, not the string itself
-                return str_idx_offsets.at(num_seen_strs);
+        case LITERAL_STR:
+                // the idx, not the string itself
+                return str_idx_offsets.at(num_seen_strs) | (1 << 12);
         case MNEMONIC:
                 return OPCODE_TABLE.at(token);
         case REGISTER:
