@@ -17,15 +17,15 @@ some changes to make usage simple.
 - -s, --save-temps
 
 ## PAL Debugger Commands
-- break <program address>
+- break \<program address\>
 - clear
 - continue
-- delete <program address>?
+- delete \<program address\>?
 - help
 - interpret
 - list
 - next
-- print <register|stack offset|ram address>
+- print \<register|stack offset|ram address\>
 - quit
 
 ## Assembly Language
