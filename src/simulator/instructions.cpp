@@ -469,20 +469,19 @@ void ins_call(CPU_Handle &cpu_handle) {
         int16_t &call_stack_ptr = cpu_handle.call_stack_ptr;
         int16_t &prog_ctr = cpu_handle.prog_ctr;
         int16_t new_address = program_data[prog_ctr + 1];
-        call_stack[call_stack_ptr] = prog_ctr + 2;
+        call_stack[call_stack_ptr] = prog_ctr + INSTRUCTION_LENS[22];
         call_stack_ptr++;
         prog_ctr = new_address;
-        // always jumps, so INSTRUCTION_LENS[22]
 }
 
 void ins_ret(CPU_Handle &cpu_handle) {
         int16_t *call_stack = cpu_handle.call_stack;
         int16_t &call_stack_ptr = cpu_handle.call_stack_ptr;
         int16_t &prog_ctr = cpu_handle.prog_ctr;
-        int16_t new_address = call_stack[call_stack_ptr];
         call_stack_ptr--;
+        int16_t new_address = call_stack[call_stack_ptr];
         prog_ctr = new_address;
-        // always jumps, so INSTRUCTION_LENS[23] unneeded
+        // prog_ctr points to next instruction, so INSTRUCTION_LENS[23] unneeded
 }
 
 void ins_push(CPU_Handle &cpu_handle) {
@@ -512,8 +511,10 @@ void ins_pop(CPU_Handle &cpu_handle) {
                 std::exit(1);
         }
 
-        int16_t dest = program_data[prog_ctr + 1];
+        stack_ptr--;
         int16_t value = program_mem[1536 + stack_ptr];
+        int16_t dest = program_data[prog_ctr + 1];
+
         if (dest < 0 || dest > 7) {
                 std::cout << "Error: " << error_messages[0] << "\n";
                 std::exit(1);

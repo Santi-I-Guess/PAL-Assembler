@@ -55,7 +55,9 @@ int16_t CPU_Handle::dereference_value(int16_t given_value) {
                         std::cout << "\n";
                         std::exit(1);
                 }
-                intended_value = program_mem[1536 + stack_ptr - given_value];
+                // -1, because stack_ptr points to memory of next element,
+                // not top element
+                intended_value = program_mem[1536 + stack_ptr - given_value - 1];
         } else if ((given_value >> 12) & 1) {
                 // string literal
                 given_value ^= (int16_t)(1 << 12);

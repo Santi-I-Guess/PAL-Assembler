@@ -9,10 +9,10 @@
 
 const std::string error_messages[6] = {
         "attemped to mutate immutable destination",
-        "attemped to access stack by offset before stack base"
-        "attemped to access unknown register"
-        "attemped to push past stack bounds"
-        "attemped to push before stack bounds"
+        "attemped to access stack by offset before stack base",
+        "attemped to access unknown register",
+        "attemped to push past stack bounds",
+        "attemped to push before stack bounds",
         "attemped to access out of bounds memory"
 };
 
