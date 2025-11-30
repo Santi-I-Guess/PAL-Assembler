@@ -8,6 +8,64 @@
 #define BOLD "\x1b[1m"
 #define CLEAR "\x1b[0m"
 
+void interpret_program(const CPU_Handle &cpu_handle) {
+        Program_State_Enum curr_state = READING_ENTRY_LABEL;
+        int16_t header[4] = {
+                cpu_handle.program_data[0],
+                cpu_handle.program_data[1],
+                cpu_handle.program_data[2],
+                cpu_handle.program_data[3]
+        };
+        int16_t magic_nums[4] = {
+                0x4153,
+                0x544e,
+                0x4149,
+                0x4f47
+        };
+        if ((header[0] != magic_nums[0])
+                || (header[1] != magic_nums[1])
+                || (header[2] != magic_nums[2])
+                || (header[3] != magic_nums[3])) {
+                std::cout << "--- *Warning*: Magic Number Mismatch ---\n";
+        }
+
+        // I mean, after it hits the first mnemonic, it's expected that
+        // it's only going to see mnemonics afterwards
+
+        // start at 4 to skip magic numbers
+        int16_t curr_str_idx = 0;
+        int16_t int_idx = 4;
+        int16_t mnemonic_idx = 0;
+        while (int_idx < cpu_handle.prog_size) {
+                int16_t curr = cpu_handle.program_data[int_idx];
+                switch (curr_state) {
+                case NONE:
+                        break;
+                case READING_ENTRY_LABEL:
+                        std::cout << "--- Main @ " << curr << " ---\n";
+                        std::cout << "--- String Data ---\n";
+                        curr_state = READING_STR;
+                        int_idx++;
+                        break;
+                case READING_MNEMONIC:
+                        print_instruction(
+                                curr,
+                                mnemonic_idx,
+                                int_idx, // &
+                                cpu_handle.program_data
+                        );
+                        break;
+                case READING_STR:
+                        // keep int_idx here: not all control paths return at end
+                        print_chars(curr, curr_str_idx, int_idx, curr_state); // &
+                        int_idx++;
+                        break;
+                default: /* impossible */
+                        break;
+                }
+        }
+}
+
 void pdb_handle_delete(
         const std::vector<std::string> cmd_tokens,
         std::vector<int16_t> &breakpoints
@@ -172,91 +230,6 @@ void print_instruction(
         int_idx += ins_size;
 }
 
-void interpret_program(const CPU_Handle &cpu_handle) {
-        Program_State_Enum curr_state = READING_ENTRY_LABEL;
-        int16_t header[4] = {
-                cpu_handle.program_data[0],
-                cpu_handle.program_data[1],
-                cpu_handle.program_data[2],
-                cpu_handle.program_data[3]
-        };
-        int16_t magic_nums[4] = {
-                0x4153,
-                0x544e,
-                0x4149,
-                0x4f47
-        };
-        if ((header[0] != magic_nums[0])
-                || (header[1] != magic_nums[1])
-                || (header[2] != magic_nums[2])
-                || (header[3] != magic_nums[3])) {
-                std::cout << "--- *Warning*: Magic Number Mismatch ---\n";
-        }
-
-        // I mean, after it hits the first mnemonic, it's expected that
-        // it's only going to see mnemonics afterwards
-
-        // start at 4 to skip magic numbers
-        int16_t curr_str_idx = 0;
-        int16_t int_idx = 4;
-        int16_t mnemonic_idx = 0;
-        while (int_idx < cpu_handle.prog_size) {
-                int16_t curr = cpu_handle.program_data[int_idx];
-                switch (curr_state) {
-                case NONE:
-                        break;
-                case READING_ENTRY_LABEL:
-                        std::cout << "--- Main @ " << curr << " ---\n";
-                        std::cout << "--- String Data ---\n";
-                        curr_state = READING_STR;
-                        int_idx++;
-                        break;
-                case READING_MNEMONIC:
-                        print_instruction(
-                                curr,
-                                mnemonic_idx,
-                                int_idx, // &
-                                cpu_handle.program_data
-                        );
-                        break;
-                case READING_STR:
-                        // keep int_idx here: not all control paths return at end
-                        print_chars(curr, curr_str_idx, int_idx, curr_state); // &
-                        int_idx++;
-                        break;
-                default: /* impossible */
-                        break;
-                }
-        }
-}
-
-void print_pdb_help() {
-        // if you're wondering why I don't just use std::endl, it's because
-        // I'm trying to prevent stdout flushing every single line
-        std::cout << BOLD "break" CLEAR " <program address>\n";
-        std::cout << "    set a breakpoint at a specified address, which halts execution\n";
-        std::cout << BOLD "clear" CLEAR "\n";
-        std::cout << "    clear the console\n";
-        std::cout << BOLD "continue" CLEAR "\n";
-        std::cout << "    continue program execution until EXIT or next breakpoint\n";
-        std::cout << BOLD "delete" CLEAR " <program address>\n";
-        std::cout << "    delete breakpoint at a specified address\n";
-        std::cout << BOLD "help" CLEAR "\n";
-        std::cout << "    show this help screen\n";
-        std::cout << BOLD "interpret" CLEAR "\n";
-        std::cout << "    show disassembled program.\n";
-        std::cout << BOLD "list" CLEAR "\n";
-        std::cout << "    show the next instruction to be performed\n";
-        std::cout << "    useful for debugging branching instructions and SPRINT\n";
-        std::cout << BOLD "next" CLEAR "\n";
-        std::cout << "    continue program until next instruction\n";
-        std::cout << BOLD "print" CLEAR " <register|stack offset|ram address>\n";
-        std::cout << "    print value in program's memory\n";
-        std::cout << BOLD "quit" CLEAR "\n";
-        std::cout << "    quit debugger and program execution\n\n";
-}
-
-
 void print_instruction_simple(int16_t *program_data, int16_t prog_ctr) {
         // most of this is just copy and paste from print_instruction
         std::string out_string = "";
@@ -307,4 +280,30 @@ void print_instruction_simple(int16_t *program_data, int16_t prog_ctr) {
         // print instruction buffer
         out_string = out_stream.str();
         std::cout << out_string << "\n";
+}
+
+void print_pdb_help() {
+        // if you're wondering why I don't just use std::endl, it's because
+        // I'm trying to prevent stdout flushing every single line
+        std::cout << BOLD "break" CLEAR " <program address>\n";
+        std::cout << "    set a breakpoint at a specified address, which halts execution\n";
+        std::cout << BOLD "clear" CLEAR "\n";
+        std::cout << "    clear the console\n";
+        std::cout << BOLD "continue" CLEAR "\n";
+        std::cout << "    continue program execution until EXIT or next breakpoint\n";
+        std::cout << BOLD "delete" CLEAR " <program address>\n";
+        std::cout << "    delete breakpoint at a specified address\n";
+        std::cout << BOLD "help" CLEAR "\n";
+        std::cout << "    show this help screen\n";
+        std::cout << BOLD "interpret" CLEAR "\n";
+        std::cout << "    show disassembled program.\n";
+        std::cout << BOLD "list" CLEAR "\n";
+        std::cout << "    show the next instruction to be performed\n";
+        std::cout << "    useful for debugging branching instructions and SPRINT\n";
+        std::cout << BOLD "next" CLEAR "\n";
+        std::cout << "    continue program until next instruction\n";
+        std::cout << BOLD "print" CLEAR " <register|stack offset|ram address>\n";
+        std::cout << "    print value in program's memory\n";
+        std::cout << BOLD "quit" CLEAR "\n";
+        std::cout << "    quit debugger and program execution\n\n";
 }

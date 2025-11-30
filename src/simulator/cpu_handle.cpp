@@ -195,9 +195,10 @@ void CPU_Handle::run_program() {
 void CPU_Handle::run_program_debug() {
         int16_t num_instructions_left = 0;
         bool hit_exit = false;
-        bool continue_cond = false;
+        bool continue_cond = false; // to ensure running after continue cmd
+        bool jump_breakpoint = false; // for running after hitting breakpoint
         std::vector<int16_t> breakpoints = {};
-        std::vector<int16_t> mnemonic_addrs = {};
+        std::vector<int16_t> mnemonic_addrs = {}; // to verify breakpoints are valid
 
         // to ensure all breakpoints are valid addresses
         int16_t temp_idx = 0;
@@ -257,22 +258,28 @@ void CPU_Handle::run_program_debug() {
                         } else {
                                 std::cout << awaiting << " is not a valid breakpoint\n";
                         }
+                        continue;
                 } else if (cmd_tokens.front() == "clear") {
                         system("clear");
+                        continue;
                 } else if (cmd_tokens.front() == "continue") {
                         continue_cond = true;
                 } else if (cmd_tokens.front()[0] == 'd') {
                         // delete
                         pdb_handle_delete(cmd_tokens, breakpoints);
+                        continue;
                 } else if (cmd_tokens.front()[0] == 'h') {
                         // help
                         print_pdb_help();
+                        continue;
                 } else if (cmd_tokens.front()[0] == 'i') {
                         // interpret
                         interpret_program(*this);
+                        continue;
                 } else if (cmd_tokens.front()[0] == 'l') {
                         // next instruction to run
                         print_instruction_simple(program_data, prog_ctr);
+                        continue;
                 } else if (cmd_tokens.front()[0] == 'n') {
                         // next
                         if (cmd_tokens.size() == 2) {
@@ -288,29 +295,46 @@ void CPU_Handle::run_program_debug() {
                 } else if (cmd_tokens.front()[0] == 'p') {
                         // print
                         pdb_handle_print(cmd_tokens, *this);
+                        continue;
                 } else if (cmd_tokens.front()[0] == 'q') {
                         // quit
                         break;
+                        continue;
                 } else {
                         std::cout << "unrecognized command\n";
+                        continue;
                 }
 
                 bool previously_ran = false;
-                while (!hit_exit && (num_instructions_left > 0 || continue_cond)) {
-                        // run_instructions
-                        for (int16_t address : breakpoints) {
-                                if (prog_ctr == address) {
-                                        continue_cond = false;
-                                        num_instructions_left = 0;
-                                        break;
+                while (num_instructions_left > 0 || continue_cond) {
+                        // run instructions
+
+                        // handle breakpoints
+                        if (jump_breakpoint) {
+                                jump_breakpoint = false;
+                        } else {
+                                for (int16_t address : breakpoints) {
+                                        if (prog_ctr == address) {
+                                                continue_cond = false;
+                                                num_instructions_left = 0;
+                                                jump_breakpoint = true;
+                                                break;
+                                        }
                                 }
                         }
+
+                        // instead of goto
+                        if (!continue_cond && num_instructions_left == 0)
+                                break;
+
                         next_instruction(hit_exit);
+                        previously_ran = true;
+                        // don't track num_instructions_left after continue cmd
                         if (!continue_cond)
                                 num_instructions_left--;
-                        previously_ran = true;
+                        if (hit_exit)
+                                break;
                 }
-
                 // prevent extraneous print when starting debugger
                 if (!hit_exit && previously_ran) {
                         // print next instruction to run
