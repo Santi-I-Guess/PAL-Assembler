@@ -62,7 +62,7 @@ class CPU_Handle {
         int16_t stack_ptr; /** stack counter / pointer */
         int16_t call_stack_ptr;
         int16_t call_stack[1024]; /** holds returns for call stack */
-        int16_t program_mem[2048]; /** holds ram and stack memory */
+        int16_t program_mem[8192]; /** holds ram and stack memory */
         int16_t *program_data; /** assembled program */
         int16_t prog_size; /** size of program data */
 public:

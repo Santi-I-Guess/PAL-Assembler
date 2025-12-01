@@ -312,12 +312,12 @@ void ins_push(CPU_Handle &cpu_handle) {
         int16_t &prog_ctr = cpu_handle.prog_ctr;
         int16_t &stack_ptr = cpu_handle.stack_ptr;
         int16_t *program_mem = cpu_handle.program_mem;
-        if (stack_ptr == 512) {
+        if (stack_ptr == 2048) {
                 std::cout << "Error: " << error_messages[STACK_PUSH_ERROR] << "\n";
                 std::exit(1);
         }
         int16_t argument = cpu_handle.dereference_value(cpu_handle.get_program_data(prog_ctr + 1));
-        program_mem[1536 + stack_ptr] = argument;
+        program_mem[6144 + stack_ptr] = argument;
         stack_ptr++;
 
         prog_ctr += INSTRUCTION_LENS[24];
@@ -328,13 +328,13 @@ void ins_pop(CPU_Handle &cpu_handle) {
         int16_t &stack_ptr = cpu_handle.stack_ptr;
         int16_t *program_mem = cpu_handle.program_mem;
 
-        if (stack_ptr == 0) {
+        if (stack_ptr <= 0) {
                 std::cout << "Error: " << error_messages[STACK_POP_ERROR] << "\n";
                 std::exit(1);
         }
 
         stack_ptr--;
-        int16_t value = program_mem[1536 + stack_ptr];
+        int16_t value = program_mem[6144 + stack_ptr];
         int16_t dest = cpu_handle.get_program_data(prog_ctr + 1);
 
         update_register(cpu_handle, dest, value);
@@ -348,7 +348,7 @@ void ins_write(CPU_Handle &cpu_handle) {
 
         int16_t source = cpu_handle.dereference_value(cpu_handle.get_program_data(prog_ctr + 1));
         int16_t address = cpu_handle.dereference_value(cpu_handle.get_program_data(prog_ctr + 2));
-        if (address < 0 || address > 1535) {
+        if (address < 0 || address > 6143) {
                 std::cout << "Error: " << error_messages[RAM_OUT_OF_BOUNDS] << "\n";
                 std::exit(1);
         }
@@ -363,7 +363,7 @@ void ins_read(CPU_Handle &cpu_handle) {
 
         int16_t dest = cpu_handle.get_program_data(prog_ctr + 1);
         int16_t address = cpu_handle.dereference_value(cpu_handle.get_program_data(prog_ctr + 2));
-        if (address < 0 || address > 1535) {
+        if (address < 0 || address > 6143) {
                 std::cout << "Error: " << error_messages[RAM_OUT_OF_BOUNDS] << "\n";
                 std::exit(1);
         }
@@ -422,7 +422,7 @@ void ins_input(CPU_Handle &cpu_handle) {
         int16_t &prog_ctr = cpu_handle.prog_ctr;
         int16_t &stack_ptr = cpu_handle.stack_ptr;
         int16_t *program_mem = cpu_handle.program_mem;
-        if (stack_ptr == 512) {
+        if (stack_ptr == 2048) {
                 std::cout << "Error: " << error_messages[STACK_PUSH_ERROR] << "\n";
                 std::exit(1);
         }
@@ -433,7 +433,7 @@ void ins_input(CPU_Handle &cpu_handle) {
                 std::cout << "Error: " << error_messages[INPUT_ERROR] << "\n";
                 std::exit(1);
         }
-        program_mem[1536 + stack_ptr] = value;
+        program_mem[6144 + stack_ptr] = value;
         stack_ptr++;
         prog_ctr += INSTRUCTION_LENS[31];
 }

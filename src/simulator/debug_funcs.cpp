@@ -191,7 +191,7 @@ void pdb_handle_print(
                 } else {
                         std::cout << cmd_tokens.at(1) << " = ";
                         // CPU_Handle.see dereference_value
-                        std::cout << cpu_handle.program_mem[1536 + cpu_handle.stack_ptr - value - 1] << "\n";
+                        std::cout << cpu_handle.program_mem[6144 + cpu_handle.stack_ptr - value - 1] << "\n";
                 }
         } else if (cmd_tokens.at(1).at(0) == 'M') {
                 // mem address: expect MEM[num]
@@ -206,8 +206,8 @@ void pdb_handle_print(
                         return;
                 }
                 int16_t value = (int16_t)std::stoi(temp);
-                if (value < 0 || value > 1535) {
-                        std::cout << "Cannot access mem value outside [0,1535]\n";;
+                if (value < 0 || value > 6143) {
+                        std::cout << "Cannot access mem value outside [0,6143]\n";
                 } else {
                         std::cout << cmd_tokens.at(1) << " = ";
                         std::cout << cpu_handle.program_mem[value] << "\n";
