@@ -7,8 +7,10 @@
 # - all labels called by branching instructions are defined
 # - at least one EXIT instruction after main label definition
 
-import instructions
+import random
+import sys
 
+import instructions
 
 # helper function for write_program
 def is_label(x) -> bool:
@@ -44,8 +46,30 @@ def print_ins(curr_ins, max_sizes):
 if __name__ == "__main__":
     program_buffer = instructions.gen_raw_program()
     program_buffer = instructions.insert_label_defs(program_buffer)
+
+    if len(sys.argv) == 2:
+        if sys.argv[1][0] == "e":  # generate erroneous error instead
+            error_bits = [True] + [False, False, False, False, False]
+            random.shuffle(error_bits)
+            program_buffer = instructions.insert_errors(program_buffer, error_bits)
+            print("; --- gibberish erroneous program ---")
+            if error_bits[0]:  # EXPECTED_MNEMONIC
+                print("; --- expected mnemonic ---")
+            if error_bits[1]:  # INVALID_ATOM
+                print("; --- invalid atom ---")
+            if error_bits[2]:  # MISSING_ARGUMENTS
+                print("; --- missing arguments ---")
+            if error_bits[3]:  # MISSING_EXIT
+                print("; --- missing exit ---")
+            if error_bits[4]:  # MISSING_MAIN
+                print("; --- missing main ---")
+            if error_bits[5]:  # UNKNOWN_LABEL
+                print("; --- unknown label ---")
+
+    else:
+        print("; --- gibberish valid program ---")
+
     max_sizes = get_alignments(program_buffer)
-    print("; --- gibberish valid program ---")
     ins_num = 0
     for curr_ins in program_buffer:
         if is_label(curr_ins[0]):
