@@ -39,41 +39,41 @@ some changes to make usage simple.
 - can access stack pointer with RSP, and the instruction counter with RIP
 
 ## Instructions
-| **Mnemonic** | **Arg 1** | **Arg 2** | **Arg 3** |
-|--------------|-----------|-----------|-----------|
-| NOP          |           |           |           |
-| MOV          | dest      | src0      |           |
-| INC          | dest      |           |           |
-| DEC          | dest      |           |           |
-| ADD          | dest      | src0      | src1      |
-| SUB          | dest      | src0      | src1      |
-| MUL          | dest      | src0      | src1      |
-| DIV          | dest      | src0      | src1      |
-| AND          | dest      | src0      | src1      |
-| OR           | dest      | src0      | src1      |
-| NOT          | dest      | src0      |           |
-| XOR          | dest      | src0      | src1      |
-| LSH          | dest      | src0      | src1      |
-| RSH          | dest      | src0      | src1      |
-| CMP          | src0      | src1      |           |
-| JMP          | label     |           |           |
-| JEQ          | label     |           |           |
-| JNE          | label     |           |           |
-| JGE          | label     |           |           |
-| JGR          | label     |           |           |
-| JLE          | label     |           |           |
-| JLS          | label     |           |           |
-| CALL         | label     |           |           |
-| RET          |           |           |           |
-| PUSH         | src       |           |           |
-| POP          | dest      |           |           |
-| WRITE        | src       | addr      |           |
-| READ         | dest      | addr      |           |
-| PRINT        | src       |           |           |
-| SPRINT       | string    |           |           |
-| CPRINT       | src       |           |           |
-| INPUT        |           |           |           |
-| EXIT         |           |           |           |
+| **Mnemonic** | **Arg 1** | **Arg 2**  | **Arg 3** |
+|--------------|-----------|------------|-----------|
+| NOP          |           |            |           |
+| MOV          | dest      | src0       |           |
+| INC          | dest      |            |           |
+| DEC          | dest      |            |           |
+| ADD          | dest      | src0       | src1      |
+| SUB          | dest      | src0       | src1      |
+| MUL          | dest      | src0       | src1      |
+| DIV          | dest      | src0       | src1      |
+| AND          | dest      | src0       | src1      |
+| OR           | dest      | src0       | src1      |
+| NOT          | dest      | src0       |           |
+| XOR          | dest      | src0       | src1      |
+| LSH          | dest      | src0       | src1      |
+| RSH          | dest      | src0       | src1      |
+| CMP          | src0      | src1       |           |
+| JMP          | label     |            |           |
+| JEQ          | label     |            |           |
+| JNE          | label     |            |           |
+| JGE          | label     |            |           |
+| JGR          | label     |            |           |
+| JLE          | label     |            |           |
+| JLS          | label     |            |           |
+| CALL         | label     |            |           |
+| RET          |           |            |           |
+| PUSH         | src       |            |           |
+| POP          | dest      |            |           |
+| WRITE        | src       | addr (src) |           |
+| READ         | dest      | addr (src) |           |
+| PRINT        | src       |            |           |
+| SPRINT       | string    |            |           |
+| CPRINT       | src       |            |           |
+| INPUT        |           |            |           |
+| EXIT         |           |            |           |
 
 ## Syntax (Backus-Naur Form)
 Note: "$" in this case is not the start of a string, but the literal character \

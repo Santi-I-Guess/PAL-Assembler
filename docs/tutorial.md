@@ -90,41 +90,41 @@ are automatically included in string, and as such have no escape character.
 Every program is required to have at least one instance of the EXIT
 instruction. Failing to do so causes an assembler error.
 
-| **Mnemonic** | **Arg 1** | **Arg 2** | **Arg 3** | **Pseudocode**             |
-|--------------|-----------|-----------|-----------|----------------------------|
-| NOP          |           |           |           |                            |
-| MOV          | dest      | src0      |           | dest =  src0               |
-| INC          | dest      |           |           | dest++                     |
-| DEC          | dest      |           |           | dest--                     |
-| ADD          | dest      | src0      | src1      | dest =  src0 + src1        |
-| SUB          | dest      | src0      | src1      | dest =  src0 - src1        |
-| MUL          | dest      | src0      | src1      | dest =  src0 * src1        |
-| DIV          | dest      | src0      | src1      | dest =  src0 / src1        |
-| AND          | dest      | src0      | src1      | dest =  src0 & src1        |
-| OR           | dest      | src0      | src1      | dest =  src0 \| src1       |
-| NOT          | dest      | src0      |           | dest = ~src0               |
-| XOR          | dest      | src0      | src1      | dest =  src0 ^ src1        |
-| LSH          | dest      | src0      | src1      | dest =  src0 << src1       |
-| RSH          | dest      | src0      | src1      | dest =  src0 >> src1       |
-| CMP          | src0      | src1      |           | cmp0 =  src0; cmp1 = src1  |
-| JMP          | label     |           |           | goto label                 |
-| JEQ          | label     |           |           | goto label if cmp0 == cmp1 |
-| JNE          | label     |           |           | goto label if cmp0 != cmp1 |
-| JGE          | label     |           |           | goto label if cmp0 >= cmp1 |
-| JGR          | label     |           |           | goto label if cmp0 >  cmp1 |
-| JLE          | label     |           |           | goto label if cmp0 <= cmp1 |
-| JLS          | label     |           |           | goto label if cmp0 <  cmp1 |
-| CALL         | label     |           |           | label()                    |
-| RET          |           |           |           | return                     |
-| PUSH         | src       |           |           | push(src)                  |
-| POP          | dest      |           |           | dest = pop()               |
-| WRITE        | src       | addr      |           | ram\[addr\] = src          |
-| READ         | dest      | addr      |           | dest = ram\[addr\]         |
-| PRINT        | src       |           |           | print(src)                 |
-| SPRINT       | string    |           |           | print(string)              |
-| CPRINT       | src       |           |           | print((ascii)src)          |
-| INPUT        |           |           |           | push((int16_t)input())     |
-| EXIT         |           |           |           | exit()                     |
+| **Mnemonic** | **Arg 1** | **Arg 2**  | **Arg 3** | **Pseudocode**             |
+|--------------|-----------|------------|-----------|----------------------------|
+| NOP          |           |            |           |                            |
+| MOV          | dest      | src0       |           | dest =  src0               |
+| INC          | dest      |            |           | dest++                     |
+| DEC          | dest      |            |           | dest--                     |
+| ADD          | dest      | src0       | src1      | dest =  src0 + src1        |
+| SUB          | dest      | src0       | src1      | dest =  src0 - src1        |
+| MUL          | dest      | src0       | src1      | dest =  src0 * src1        |
+| DIV          | dest      | src0       | src1      | dest =  src0 / src1        |
+| AND          | dest      | src0       | src1      | dest =  src0 & src1        |
+| OR           | dest      | src0       | src1      | dest =  src0 \| src1       |
+| NOT          | dest      | src0       |           | dest = ~src0               |
+| XOR          | dest      | src0       | src1      | dest =  src0 ^ src1        |
+| LSH          | dest      | src0       | src1      | dest =  src0 << src1       |
+| RSH          | dest      | src0       | src1      | dest =  src0 >> src1       |
+| CMP          | src0      | src1       |           | cmp0 =  src0; cmp1 = src1  |
+| JMP          | label     |            |           | goto label                 |
+| JEQ          | label     |            |           | goto label if cmp0 == cmp1 |
+| JNE          | label     |            |           | goto label if cmp0 != cmp1 |
+| JGE          | label     |            |           | goto label if cmp0 >= cmp1 |
+| JGR          | label     |            |           | goto label if cmp0 >  cmp1 |
+| JLE          | label     |            |           | goto label if cmp0 <= cmp1 |
+| JLS          | label     |            |           | goto label if cmp0 <  cmp1 |
+| CALL         | label     |            |           | label()                    |
+| RET          |           |            |           | return                     |
+| PUSH         | src       |            |           | push(src)                  |
+| POP          | dest      |            |           | dest = pop()               |
+| WRITE        | src       | addr (src) |           | ram\[addr\] = src          |
+| READ         | dest      | addr (src) |           | dest = ram\[addr\]         |
+| PRINT        | src       |            |           | print(src)                 |
+| SPRINT       | string    |            |           | print(string)              |
+| CPRINT       | src       |            |           | print((ascii)src)          |
+| INPUT        |           |            |           | push((int16_t)input())     |
+| EXIT         |           |            |           | exit()                     |
 
 # Addressing Modes (Source Arguments)
 Registers are the medium where values are used, but without a way to put

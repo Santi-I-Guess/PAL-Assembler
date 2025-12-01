@@ -68,7 +68,7 @@ build$(SEPERATOR)%.o: %.cpp
 
 $(TARGET): $(OBJECTS)
 	@echo "building $@"
-	@$(CXX) -o $@ $^
+	@$(CXX) -o $@ $^ $(CXXFLAGS_DEBUG)
 
 # Remove-Item (del) has some weird positional things going on
 clean: | $(BUILD_DIR)

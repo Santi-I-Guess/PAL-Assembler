@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-const std::string error_messages[8] = {
+const std::string error_messages[10] = {
         "attemped to mutate immutable destination",
         "attemped to access stack by offset before stack base",
         "attemped to access unknown register",
@@ -14,7 +14,8 @@ const std::string error_messages[8] = {
         "attemped to push before stack bounds",
         "attemped to access out of bounds memory",
         "attempted to print invalid ascii character",
-        "attempted to input invalid int16_t"
+        "attempted to input invalid int16_t",
+        "attempted to run invalid opcode (suspicious corruption)"
 };
 
 /**
@@ -50,12 +51,14 @@ class CPU_Handle {
         int16_t call_stack_ptr;
         int16_t call_stack[1024]; /** holds returns for call stack */
         int16_t program_mem[2048]; /** holds ram and stack memory */
-public:
         int16_t *program_data; /** assembled program */
         int16_t prog_size; /** size of program data */
+public:
         CPU_Handle();
         ~CPU_Handle();
         int16_t dereference_value(const int16_t given_value);
+        int16_t get_program_data(const int16_t idx) const;
+        int16_t get_prog_size() const;
         void load_program(const std::vector<int16_t> given_program);
         void next_instruction(bool &hit_exit);
         void run_program();

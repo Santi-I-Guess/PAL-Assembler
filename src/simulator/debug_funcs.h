@@ -1,6 +1,10 @@
 #ifndef DEBUG_FUNCS_H
 #define DEBUG_FUNCS_H 1
 
+#include <cstdint>
+#include <string>
+#include <vector>
+
 #include "cpu_handle.h"
 
 // series of functions to be used when -d flag is on
@@ -23,6 +27,12 @@ void pdb_handle_delete(
         const std::vector<std::string> cmd_tokens,
         std::vector<int16_t> &breakpoints
 );
+
+/**
+ * @brief prints PAL debugger help when debug flag is on
+ * @details helper function of CPU_Handle:run_program_debug
+ */
+void pdb_handle_help();
 
 /**
  * @brief print interpretation of assembled program, along with addresses
@@ -53,18 +63,12 @@ void itrprt_print_chars(
 );
 
 /**
- * @brief prints PAL debugger help when debug flag is on
- * @details helper function of CPU_Handle:run_program_debug
- */
-void pdb_handle_help();
-
-/**
  * @brief prints next instruction, in a similar format to pdb_handle_interpret
  * @details helper function of CPU_Handle::run_program in debug mode
  */
 void itrprt_print_instruction(
-        const int16_t *program_data,
-        const int16_t prog_ct
+        const std::vector<int16_t> instruction,
+        const int16_t prog_ctr
 );
 
 #endif

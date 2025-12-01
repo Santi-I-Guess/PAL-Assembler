@@ -72,6 +72,10 @@ struct Program_Info {
         std::map<int16_t, int16_t> str_idx_offsets; ///< refer to abi.md
 };
 
+// it would be great if there was a structure, where one instance maps to
+//      one instruction, and all information for the instruction was
+//      packed into its instance
+
 /**
  * @brief hashmap that defines arguments of instructions in assembly language
  * @details even though every instruction needs a mnemonic, it's left in here
@@ -105,8 +109,8 @@ const std::map<std::string, std::vector<Atom_Type>> BLUEPRINTS = {
         {"RET",    {MNEMONIC                          } },
         {"PUSH",   {MNEMONIC, SOURCE                  } },
         {"POP",    {MNEMONIC, REGISTER                } },
-        {"WRITE",  {MNEMONIC, SOURCE,   LITERAL_INT   } },
-        {"READ",   {MNEMONIC, REGISTER, LITERAL_INT   } },
+        {"WRITE",  {MNEMONIC, SOURCE,   SOURCE        } },
+        {"READ",   {MNEMONIC, REGISTER, SOURCE        } },
         {"PRINT",  {MNEMONIC, SOURCE                  } },
         {"SPRINT", {MNEMONIC, LITERAL_STR             } },
         {"CPRINT", {MNEMONIC, SOURCE                  } },

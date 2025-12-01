@@ -102,13 +102,13 @@ void pdb_handle_help() {
 
 void pdb_handle_interpret(const CPU_Handle &cpu_handle) {
         Program_State_Enum curr_state = READING_ENTRY_LABEL;
-        int16_t header[4] = {
-                cpu_handle.program_data[0],
-                cpu_handle.program_data[1],
-                cpu_handle.program_data[2],
-                cpu_handle.program_data[3]
+        const int16_t header[4] = {
+                cpu_handle.get_program_data(0),
+                cpu_handle.get_program_data(1),
+                cpu_handle.get_program_data(2),
+                cpu_handle.get_program_data(3),
         };
-        int16_t magic_nums[4] = {
+        const int16_t magic_nums[4] = {
                 0x4153,
                 0x544e,
                 0x4149,
@@ -127,8 +127,12 @@ void pdb_handle_interpret(const CPU_Handle &cpu_handle) {
         // start at 4 to skip magic numbers
         int16_t curr_str_idx = 0;
         int16_t int_idx = 4;
-        while (int_idx < cpu_handle.prog_size) {
-                int16_t curr_int = cpu_handle.program_data[int_idx];
+        // auxiliary variables
+        int16_t opcode;
+        int16_t ins_len;
+        std::vector<int16_t> instruction = {};
+        while (int_idx < cpu_handle.get_prog_size()) {
+                int16_t curr_int = cpu_handle.get_program_data(int_idx);
                 switch (curr_state) {
                 case NONE:
                         break;
@@ -139,8 +143,14 @@ void pdb_handle_interpret(const CPU_Handle &cpu_handle) {
                         int_idx++;
                         break;
                 case READING_MNEMONIC:
-                        itrprt_print_instruction(cpu_handle.program_data, int_idx);
-                        int_idx += INSTRUCTION_LENS[cpu_handle.program_data[int_idx]];
+                        opcode = cpu_handle.get_program_data(int_idx);
+                        ins_len = INSTRUCTION_LENS[opcode];
+                        for (int16_t i = 0; i < ins_len; ++i) {
+                                int16_t curr_element = cpu_handle.get_program_data(int_idx + i);
+                                instruction.push_back(curr_element);
+                        }
+                        itrprt_print_instruction(instruction, int_idx);
+                        int_idx += ins_len;
                         break;
                 case READING_STR:
                         // keep int_idx here: not all control paths return at end
@@ -150,6 +160,7 @@ void pdb_handle_interpret(const CPU_Handle &cpu_handle) {
                 default: /* impossible */
                         break;
                 }
+                instruction.clear();
         }
 }
 
@@ -274,14 +285,14 @@ void itrprt_print_chars(
 }
 
 void itrprt_print_instruction(
-        const int16_t *program_data,
+        const std::vector<int16_t> instruction,
         const int16_t prog_ctr
 ) {
         std::string out_string = "";
         std::stringstream out_stream;
 
         // first, the mnemoinc
-        int16_t opcode = program_data[prog_ctr];
+        int16_t opcode = instruction.at(0);
         std::string mnem_name = DEREFERENCE_TABLE[opcode];
         out_stream << "#" << std::right << std::setw(4) << prog_ctr << ": ";
         out_stream << std::left << std::setw(7) << mnem_name;
@@ -291,7 +302,7 @@ void itrprt_print_instruction(
         for (int arg_idx = 1; arg_idx < ins_size; ++arg_idx) {
                 std::string arg_string = "";
                 std::stringstream arg_stream;
-                int16_t curr_arg = program_data[prog_ctr + arg_idx];
+                int16_t curr_arg = instruction.at(arg_idx);
                 Atom_Type arg_type = BLUEPRINTS.at(mnem_name)[arg_idx];
                 if ((curr_arg >> 14) & 1) {
                         // literal bitmask

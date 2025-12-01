@@ -88,6 +88,20 @@ int16_t CPU_Handle::dereference_value(const int16_t given_value) {
         return intended_value;
 }
 
+
+int16_t CPU_Handle::get_program_data(const int16_t idx) const {
+        if (idx < 0 || idx > 2047) {
+                std::cerr << error_messages[5] << "\n";
+                std::exit(1);
+        }
+        return program_data[idx];
+}
+
+
+int16_t CPU_Handle::get_prog_size() const {
+        return prog_size;
+}
+
 void CPU_Handle::load_program(const std::vector<int16_t> given_program) {
         if (!program_data) {
                 program_data = new int16_t[given_program.size()];
@@ -104,12 +118,15 @@ void CPU_Handle::load_program(const std::vector<int16_t> given_program) {
 }
 
 void CPU_Handle::next_instruction(bool &hit_exit) {
-
         // if program just started
         if (prog_ctr == 0)
-                prog_ctr = program_data[4];
+                prog_ctr = get_program_data(4);
 
-        int16_t opcode = program_data[prog_ctr];
+        int16_t opcode = get_program_data(prog_ctr);
+        if (opcode < 0 || opcode > 32) {
+                std::cerr << "Error: " << error_messages[8] << "\n";
+                std::exit(1);
+        }
         std::string mnem_name = DEREFERENCE_TABLE[opcode];
 
         // process instruction here
@@ -190,7 +207,7 @@ void CPU_Handle::next_instruction(bool &hit_exit) {
 void CPU_Handle::run_program() {
         bool hit_exit = false;
         if (prog_ctr == 0)
-                prog_ctr = program_data[4];
+                prog_ctr = get_program_data(4);
 
         while (!hit_exit) {
                 next_instruction(hit_exit);
@@ -206,21 +223,19 @@ void CPU_Handle::run_program_debug() {
         std::vector<int16_t> mnemonic_addrs = {}; // to verify breakpoints are valid
 
         // to ensure all breakpoints are valid addresses
-        int16_t temp_idx = 0;
-        while ((program_data[temp_idx - 1] != (int16_t)0xffff) && (temp_idx < prog_size))
+        int16_t temp_idx = 5; // SA, NT, IA, GO, main
+        while ((get_program_data(temp_idx - 1) != (int16_t)0xffff) && (temp_idx < prog_size))
                 temp_idx++;
         while (temp_idx < prog_size) {
                 mnemonic_addrs.push_back(temp_idx);
-                int16_t curr = program_data[temp_idx];
-                std::string mnemonic_str = DEREFERENCE_TABLE[curr];
-                std::vector<Atom_Type> curr_blueprint = BLUEPRINTS.at(mnemonic_str);
-                temp_idx += (int16_t)curr_blueprint.size();
+                int16_t opcode = get_program_data(temp_idx);
+                temp_idx += INSTRUCTION_LENS[opcode];
         }
 
         std::cout << "PAL Debugger (PalDB)\n";
         std::cout << "For help, type \"help\"\n\n";
 
-        prog_ctr = program_data[4];
+        prog_ctr = get_program_data(4);
 
         // pause when no more instructions
         while (!hit_exit) {
@@ -262,7 +277,14 @@ void CPU_Handle::run_program_debug() {
                         continue;
                 } else if (cmd_tokens.front()[0] == 'l') {
                         // next instruction to run
-                        itrprt_print_instruction(program_data, prog_ctr);
+                        int16_t opcode = get_program_data(prog_ctr);
+                        int16_t ins_len = INSTRUCTION_LENS[opcode];
+                        std::vector<int16_t> instruction = {};
+                        for (int16_t i = 0; i < ins_len; ++i) {
+                                int16_t curr_element = get_program_data(prog_ctr + i);
+                                instruction.push_back(curr_element);
+                        }
+                        itrprt_print_instruction(instruction, prog_ctr);
                         continue;
                 } else if (cmd_tokens.front()[0] == 'n') {
                         // next
@@ -322,9 +344,15 @@ void CPU_Handle::run_program_debug() {
                 // prevent extraneous print when starting debugger
                 if (!hit_exit && previously_ran) {
                         // print next instruction to run
-                        itrprt_print_instruction(program_data, prog_ctr);
+                        int16_t opcode = get_program_data(prog_ctr);
+                        int16_t ins_len = INSTRUCTION_LENS[opcode];
+                        std::vector<int16_t> instruction = {};
+                        for (int16_t i = 0; i < ins_len; ++i) {
+                                int16_t curr_element = get_program_data(prog_ctr + i);
+                                instruction.push_back(curr_element);
+                        }
+                        itrprt_print_instruction(instruction, prog_ctr);
                         previously_ran = false;
                 }
         }
 }
-
