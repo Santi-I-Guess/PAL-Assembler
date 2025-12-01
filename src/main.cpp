@@ -22,16 +22,8 @@
 #include "simulator/cpu_handle.h"
 
 // every subdirectory of src is isolated in dependencies and function
-// make tests eventually
 
-int main(int argc, char **argv) {
-        Cmd_Options life_opts;
-        bool valid_cmd_arg_combo = life_opts.handle_cmd_args(argc, argv);
-        if (!valid_cmd_arg_combo)
-                return 0;
-
-        // produce random file header for intermediate files
-        // makes running multiple tests in a row unlikely to overwrite data
+std::string generate_file_header() {
         std::random_device rd;
         std::mt19937 mt(rd());
         std::uniform_int_distribution<int> rand_letter(0, 25);
@@ -42,15 +34,27 @@ int main(int argc, char **argv) {
                 curr_letter = (char)letter_idx + 'a';
                 file_header += curr_letter;
         }
+        return file_header;
+}
 
-        // put assembled program here, so that assembler.h doesn't require
-        // cpu_handle
+int main(int argc, char **argv) {
+        Cmd_Options life_opts;
+        bool valid_cmd_arg_combo = life_opts.handle_cmd_args(argc, argv);
+        if (!valid_cmd_arg_combo)
+                return 0;
+
+        // produce random file header for intermediate files, which makes
+        //      running multiple tests in a row unlikely to overwrite data
+        std::string file_header = generate_file_header();
+
+        // put assembled program here, so assembler module
+        //      doesn't require cpu_handle
         std::vector<int16_t> final_program = {};
-
         if (life_opts.is_binary_input) {
                 std::string bin_source_path = argv[life_opts.input_file_idx];
                 populate_program_from_binary(final_program, bin_source_path);
         } else {
+                // store user program into string
                 std::string source_buffer = "";
                 if (life_opts.input_file_idx != -1) {
                         std::string source_path = argv[life_opts.input_file_idx];
@@ -59,19 +63,20 @@ int main(int argc, char **argv) {
                         source_buffer = get_source_buffer("", true);
                 }
 
-                // Step 1: tokenize and define labels
-                // label_table also removes label definitions from tokens
+                // Step 1: tokenize user program and define labels
+                // create_label_map also removes label definitions from tokens
                 std::vector<std::string> tokens = create_tokens(source_buffer);
                 std::map<std::string, int16_t> label_table = create_label_map(tokens);
                 if (life_opts.intermediate_files)
                         generate_intermediates(file_header, tokens, label_table);
 
-                // Step 2: grammar checking for tokenized program
+                // Step 2: perform grammar check on tokenized input
+                // functions given handle_ prefix are capable of calling exit
                 Debug_Info res;
                 res = grammar_check(tokens, label_table);
                 handle_grammar_check_res(res);
 
-                // Step 3: generate program
+                // Step 3: assemble program
                 Program_Info program_info = {};
                 program_info.tokens = tokens;
                 program_info.label_table = label_table;
@@ -79,6 +84,7 @@ int main(int argc, char **argv) {
                 handle_assemble_res(res);
         }
 
+        // write the assembled program to a binary file
         if (life_opts.assemble_only) {
                 bool res_temp;
                 res_temp = write_program_to_sink(final_program, file_header);
@@ -88,8 +94,6 @@ int main(int argc, char **argv) {
                 }
                 return 0;
         }
-
-        // note to self: can i create something like gdb?? PALdb? pdb?
 
         CPU_Handle cpu_handle;
         cpu_handle.load_program(final_program);

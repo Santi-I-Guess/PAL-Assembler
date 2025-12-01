@@ -13,36 +13,36 @@ void handle_assemble_res(Debug_Info res) {
                 break;
                 std::exit(0);
         case EXPECTED_MNEMONIC_2:
-                std::cout << "--- Assembler Error ---\n";
-                std::cout << "Mnemonic is undefined\n";
-                std::cout << "Instruction #" << res.relevant_idx << "\n";
-                std::cout << "Invalid mnemonic: " << res.relevant_tokens.at(0) << "\n";
+                std::cerr << "--- Assembler Error ---\n";
+                std::cerr << "Mnemonic is undefined\n";
+                std::cerr << "Instruction #" << res.relevant_idx << "\n";
+                std::cerr << "Invalid mnemonic: " << res.relevant_tokens.at(0) << "\n";
                 std::exit(0);
         case INVALID_ATOM_2:
-                std::cout << "--- Assembler Error ---\n";
-                std::cout << "Invalid Atom\n";
-                std::cout << "Instruction #" << res.relevant_idx << "\n";
-                std::cout << "Invalid token: " << res.relevant_tokens.at(0) << "\n";
+                std::cerr << "--- Assembler Error ---\n";
+                std::cerr << "Invalid Atom\n";
+                std::cerr << "Instruction #" << res.relevant_idx << "\n";
+                std::cerr << "Invalid token: " << res.relevant_tokens.at(0) << "\n";
                 std::exit(0);
         case MISSING_ARGUMENTS_2:
                 // is intentionally duplicate, will remove the previous
                 // MISSING_ARGUMENTS later
-                std::cout << "--- Assembler Error ---\n";
-                std::cout << "Missing arguments\n";
-                std::cout << "Instruction #" << res.relevant_idx << "\n";
-                std::cout << "Mnemonic: " << res.relevant_tokens.at(0) << "\n";
+                std::cerr << "--- Assembler Error ---\n";
+                std::cerr << "Missing arguments\n";
+                std::cerr << "Instruction #" << res.relevant_idx << "\n";
+                std::cerr << "Mnemonic: " << res.relevant_tokens.at(0) << "\n";
                 std::exit(0);
         case MISSING_MAIN_2:
-                std::cout << "--- Assembler Error ---\n";
-                std::cout << "Main label was never defined\n";
+                std::cerr << "--- Assembler Error ---\n";
+                std::cerr << "Main label was never defined\n";
                 std::exit(0);
         case UNKNOWN_LABEL_2:
-                std::cout << "--- Assembler Error ---\n";
-                std::cout << "Label is undefined\n";
-                std::cout << "Token #" << res.relevant_idx << "\n";
-                std::cout << "Invalid instruction: ";
-                std::cout << res.relevant_tokens.at(0) << " ";
-                std::cout << res.relevant_tokens.at(1) << "\n";
+                std::cerr << "--- Assembler Error ---\n";
+                std::cerr << "Label is undefined\n";
+                std::cerr << "Token #" << res.relevant_idx << "\n";
+                std::cerr << "Invalid instruction: ";
+                std::cerr << res.relevant_tokens.at(0) << " ";
+                std::cerr << res.relevant_tokens.at(1) << "\n";
         }
 }
 
@@ -51,38 +51,38 @@ void handle_grammar_check_res(Debug_Info res) {
         case ACCEPTABLE:
                 break;
         case EXPECTED_MNEMONIC:
-                std::cout << "--- Grammar Error ---\n";
-                std::cout << "Expected mnemonic\n";
-                std::cout << "Instruction #" << res.relevant_idx << "\n";
-                std::cout << "Actual Symbol: " << res.relevant_tokens.at(0) << "\n";
+                std::cerr << "--- Grammar Error ---\n";
+                std::cerr << "Expected mnemonic\n";
+                std::cerr << "Instruction #" << res.relevant_idx << "\n";
+                std::cerr << "Actual Symbol: " << res.relevant_tokens.at(0) << "\n";
                 std::exit(0);
         case INVALID_ATOM:
-                std::cout << "--- Grammar Error ---\n";
-                std::cout << "Invalid atom\n";
-                std::cout << "Instruction #" << res.relevant_idx << "\n";
-                std::cout << "Mnemonic: " << res.relevant_tokens.at(0) << "\n";
-                std::cout << "Invalid symbol: " << res.relevant_tokens.at(1) << "\n";
+                std::cerr << "--- Grammar Error ---\n";
+                std::cerr << "Invalid atom\n";
+                std::cerr << "Instruction #" << res.relevant_idx << "\n";
+                std::cerr << "Mnemonic: " << res.relevant_tokens.at(0) << "\n";
+                std::cerr << "Invalid symbol: " << res.relevant_tokens.at(1) << "\n";
                 std::exit(0);
         case MISSING_ARGUMENTS:
-                std::cout << "--- Grammar Error ---\n";
-                std::cout << "Missing arguments\n";
-                std::cout << "Instruction #" << res.relevant_idx << "\n";
-                std::cout << "Mnemonic: " << res.relevant_tokens.at(0) << "\n";
+                std::cerr << "--- Grammar Error ---\n";
+                std::cerr << "Missing arguments\n";
+                std::cerr << "Instruction #" << res.relevant_idx << "\n";
+                std::cerr << "Mnemonic: " << res.relevant_tokens.at(0) << "\n";
                 std::exit(0);
         case MISSING_EXIT:
-                std::cout << "--- Grammar Error ---\n";
-                std::cout << "Missing EXIT instruction\n";
+                std::cerr << "--- Grammar Error ---\n";
+                std::cerr << "Missing EXIT instruction\n";
                 std::exit(0);
         case MISSING_MAIN:
-                std::cout << "--- Grammar Error ---\n";
-                std::cout << "Missing MAIN label\n";
+                std::cerr << "--- Grammar Error ---\n";
+                std::cerr << "Missing MAIN label\n";
                 std::exit(0);
         case UNKNOWN_LABEL:
-                std::cout << "--- Grammar Error ---\n";
-                std::cout << "Attempted to call unknown label\n";
-                std::cout << "Instruction #" << res.relevant_idx << "\n";
-                std::cout << "Mnemonic: " << res.relevant_tokens.at(0) << "\n";
-                std::cout << "Invalid symbol: " << res.relevant_tokens.at(1) << "\n";
+                std::cerr << "--- Grammar Error ---\n";
+                std::cerr << "Attempted to call unknown label\n";
+                std::cerr << "Instruction #" << res.relevant_idx << "\n";
+                std::cerr << "Mnemonic: " << res.relevant_tokens.at(0) << "\n";
+                std::cerr << "Invalid symbol: " << res.relevant_tokens.at(1) << "\n";
                 std::exit(0);
         }
 }
