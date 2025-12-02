@@ -56,10 +56,19 @@ enum Assembler_Retval {
  * and translation functions
  */
 struct Debug_Info {
-        int                     relevant_idx;     ///< any relevant idx
+        int                      relevant_idx;     ///< any relevant idx
         std::vector<std::string> relevant_tokens;  ///< any relevant tokens
-        Grammar_Retval          grammar_retval;   ///< blueprint error
-        Assembler_Retval        assembler_retval; ///< translation error
+        Grammar_Retval           grammar_retval;   ///< blueprint error
+        Assembler_Retval         assembler_retval; ///< translation error
+};
+
+/**
+ * @brief contiaer struct for syntax and semantic errors
+ */
+struct Debug_Info_2 {
+        int line_num;
+        std::string line;
+        std::string message;
 };
 
 /**

@@ -15,7 +15,7 @@ enum ERROR_ENUM {
         RAM_OUT_OF_BOUNDS,
         ASCII_ERROR,
         INPUT_ERROR,
-        CORRUPTION
+        UNKNOWN_OPCODE
 };
 
 const std::string error_messages[9] = {

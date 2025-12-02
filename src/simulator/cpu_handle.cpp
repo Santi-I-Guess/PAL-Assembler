@@ -91,7 +91,7 @@ int16_t CPU_Handle::dereference_value(const int16_t given_value) {
 
 int16_t CPU_Handle::get_program_data(const int16_t idx) const {
         if (idx < 0 || idx > prog_size) {
-                std::cerr << error_messages[CORRUPTION] << "\n";
+                std::cerr << error_messages[UNKNOWN_OPCODE] << "\n";
                 std::exit(1);
         }
         return program_data[idx];
@@ -124,7 +124,7 @@ void CPU_Handle::next_instruction(bool &hit_exit) {
 
         int16_t opcode = get_program_data(prog_ctr);
         if (opcode < 0 || opcode > (int16_t)(sizeof(INSTRUCTION_LENS) / sizeof(int16_t))) {
-                std::cerr << "Error: " << error_messages[CORRUPTION] << "\n";
+                std::cerr << "Error: " << error_messages[UNKNOWN_OPCODE] << "\n";
                 std::exit(1);
         }
         std::string mnem_name = DEREFERENCE_TABLE[opcode];

@@ -39,6 +39,7 @@ std::string generate_file_header() {
 
 int main(int argc, char **argv) {
         Cmd_Options life_opts;
+        // TODO: split handle_cmd_args into store_args and is_valid_args
         bool valid_cmd_arg_combo = life_opts.handle_cmd_args(argc, argv);
         if (!valid_cmd_arg_combo)
                 return 0;
@@ -65,6 +66,8 @@ int main(int argc, char **argv) {
 
                 // Step 1: tokenize user program and define labels
                 // create_label_map also removes label definitions from tokens
+                // TODO: store associated enum for each token instead of
+                //       quitting early, then check each enum for validitiy
                 std::vector<std::string> tokens = create_tokens(source_buffer);
                 std::map<std::string, int16_t> label_table = create_label_map(tokens);
                 if (life_opts.intermediate_files)
