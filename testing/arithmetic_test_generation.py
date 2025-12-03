@@ -45,8 +45,8 @@ registers = ["RA", "RB", "RC", "RD",
 
 
 def clamp(result) -> int:
-    if -1 < result and result < 1:
-        return 0
+    if abs(result) < 1:
+        result = 0
     elif result > 4096:
         return 4096
     elif result < -4096:
@@ -63,72 +63,74 @@ if __name__ == "__main__":
         if operation == "ADD":
             result = arg_1 + arg_2
             result = clamp(result)
-            print(f"    SPRINT \"{arg_1}+{arg_2} = {result}\"")
-            print("    SPRINT \"        -> \"")
-            print(f"    {operation} RA, ${arg_1}, ${arg_2}")
+            print(f"    SPRINT \"{arg_1:>6} + {arg_2:<6} = {result:<6}\"")
+            print("    SPRINT \"  -> \"")
+            print(f"    {operation} RA, ${arg_1:<6}, ${arg_2:<6}")
         elif operation == "SUB":
             result = arg_1 - arg_2
             result = clamp(result)
-            print(f"    SPRINT \"{arg_1}-{arg_2} = {result}\"")
-            print("    SPRINT \"        -> \"")
-            print(f"    {operation} RA, ${arg_1}, ${arg_2}")
+            print(f"    SPRINT \"{arg_1:>6} - {arg_2:<6} = {result:<6}\"")
+            print("    SPRINT \"  -> \"")
+            print(f"    {operation} RA, ${arg_1:<6}, ${arg_2:<6}")
         elif operation == "MUL":
             result = arg_1 * arg_2
+            # result_bin = bin(result)[2:]
+            # result = int(result_bin[len(result_bin)-8:], 2)
             result = clamp(result)
-            print(f"    SPRINT \"{arg_1}*{arg_2} = {result}\"")
-            print("    SPRINT \"        -> \"")
-            print(f"    {operation} RA, ${arg_1}, ${arg_2}")
+            print(f"    SPRINT \"{arg_1:>6} * {arg_2:<6} = {result:<6}\"")
+            print("    SPRINT \"  -> \"")
+            print(f"    {operation} RA, ${arg_1:<6}, ${arg_2:<6}")
         elif operation == "DIV":
             if arg_2 == 0:
                 result = 1
             else:
-                result = math.floor(arg_1 / arg_2)
+                result = math.trunc(arg_1 / arg_2)
             if -1 < result and result < 1:
                 result = 0
             result = clamp(result)
-            print(f"    SPRINT \"{arg_1}/{arg_2} = {result}\"")
-            print("    SPRINT \"        -> \"")
-            print(f"    {operation} RA, ${arg_1}, ${arg_2}")
+            print(f"    SPRINT \"{arg_1:>6} / {arg_2:<6} = {result:<6}\"")
+            print("    SPRINT \"  -> \"")
+            print(f"    {operation} RA, ${arg_1:<6}, ${arg_2:<6}")
         elif operation == "AND":
             result = arg_1 & arg_2
             result = clamp(result)
-            print(f"    SPRINT \"{arg_1}&{arg_2} = {result}\"")
-            print("    SPRINT \"        -> \"")
-            print(f"    {operation} RA, ${arg_1}, ${arg_2}")
+            print(f"    SPRINT \"{arg_1:>6} & {arg_2:<6} = {result:<6}\"")
+            print("    SPRINT \"  -> \"")
+            print(f"    {operation} RA, ${arg_1:<6}, ${arg_2:<6}")
         elif operation == "OR":
             result = arg_1 | arg_2
             result = clamp(result)
-            print(f"    SPRINT \"{arg_1}|{arg_2} = {result}\"")
-            print("    SPRINT \"        -> \"")
-            print(f"    {operation} RA, ${arg_1}, ${arg_2}")
+            print(f"    SPRINT \"{arg_1:>6} | {arg_2:<6} = {result:<6}\"")
+            print("    SPRINT \"  -> \"")
+            print(f"    {operation} RA, ${arg_1:<6}, ${arg_2:<6}")
         elif operation == "NOT":
             result = 65536 - arg_1
             result = clamp(result)
-            print(f"    SPRINT \"~{arg_1} = {result}\"")
-            print("    SPRINT \"        -> \"")
-            print(f"    {operation} RA, ${arg_1}")
+            print(f"    SPRINT \"~{arg_1:>6} = {result:<6}\"")
+            print("    SPRINT \"  -> \"")
+            print(f"    {operation} RA, ${arg_1:<6}")
         elif operation == "XOR":
             result = arg_1 ^ arg_2
             result = clamp(result)
-            print(f"    SPRINT \"{arg_1}^{arg_2} = {result}\"")
-            print("    SPRINT \"        -> \"")
-            print(f"    {operation} RA, ${arg_1}, ${arg_2}")
+            print(f"    SPRINT \"{arg_1:>6} ^ {arg_2:<6} = {result:<6}\"")
+            print("    SPRINT \"  -> \"")
+            print(f"    {operation} RA, ${arg_1:<6}, ${arg_2:<6}")
         elif operation == "LSH":
             if arg_2 < 0:
                 arg_2 = 0
             result = arg_1 << arg_2
             result = clamp(result)
-            print(f"    SPRINT \"{arg_1}|{arg_2} = {result}\"")
-            print("    SPRINT \"        -> \"")
-            print(f"    {operation} RA, ${arg_1}, ${arg_2}")
+            print(f"    SPRINT \"{arg_1:>6} | {arg_2:<6} = {result:<6}\"")
+            print("    SPRINT \"  -> \"")
+            print(f"    {operation} RA, ${arg_1:<6}, ${arg_2:<6}")
         elif operation == "RSH":
             if arg_2 < 0:
                 arg_2 = 0
             result = arg_1 >> arg_2
             result = clamp(result)
-            print(f"    SPRINT \"{arg_1}|{arg_2} = {result}\"")
-            print("    SPRINT \"        -> \"")
-            print(f"    {operation} RA, ${arg_1}, ${arg_2}")
+            print(f"    SPRINT \"{arg_1:>6} | {arg_2:<6} = {result:<6}\"")
+            print("    SPRINT \"  -> \"")
+            print(f"    {operation} RA, ${arg_1:<6}, ${arg_2:<6}")
         print("    PRINT RA")
         print("    CPRINT $10")
     print("    EXIT")

@@ -6,9 +6,8 @@
 // handle preprocessing of tokens before translation
 
 #include "../common_values.h"
-#include "tokenizer.h"
 
-enum Grammar_Retval_2 {
+enum Grammar_Retval {
         EXPECTED_MNEMONIC_E,
         ACCEPTABLE_E,
         INVALID_ATOM_E,
@@ -21,7 +20,7 @@ enum Grammar_Retval_2 {
 
 struct Debug_Info_2 {
         int line_num;
-        Grammar_Retval_2 grammar_retval;
+        Grammar_Retval grammar_retval;
         Token relevant_token;
 };
 
@@ -37,12 +36,10 @@ std::map<std::string, int16_t> create_label_map(
  * @details checks for unknown mnemonics, invalid atoms, missing arguments,
  * missing EXIT program, missing main label, or calling an undefined label
  */
-Debug_Info_2 grammar_check_2(
+Debug_Info_2 grammar_check(
         const std::vector<Token> tokens,
         const std::map<std::string, int16_t> label_map
 );
-
-//---------------------------------------------------------------------------
 
 /**
  * @brief checks if a token matches the expected atom type
@@ -55,14 +52,3 @@ bool is_valid_atom(const Atom_Type atom_type, const std::string token);
  * @details helper function of is_valid_atom
  */
 bool is_valid_i16(const std::string token);
-
-/**
- * @brief does basic grammar checking of program
- * @details checks for unknown mnemonics, invalid atoms, missing arguments,
- * missing EXIT program, missing main label, or calling an undefined label
- */
-Debug_Info grammar_check(
-        const std::vector<std::string> tokens,
-        const std::map<std::string, int16_t> label_table
-);
-

@@ -85,11 +85,23 @@ pointer to the stack and jumps to the specified label. To return, use the RET
 instruction, which jumps to the value at the top of the stack and subsequently
 pops the stack.
 
-## Program Instructions
+## Program / MISC Instructions
 PRINT is used to print an integer to stdout, while SPRINT is used specifically
-to print string literals. Strings must be surrounded by double quotes, and support
+to print string literals. CPRINT is used to print an integer, casted to
+a char. This is especially useful for printing spaces and newlines, since
+a space is ascii code 32, and a newline is ascii code 10. The main reason
+this instruction exists is to not clutter the string literal data section
+of a program with single letters, for debugging purposes.
+
+For SPRINT, Strings must be surrounded by double quotes, and support
 two escaped characters: the double quote, and the newline. Null terminators
 are automatically included in string, and as such have no escape character.
+
+INPUT takes in a single integer from stdin, and pushes the resulting
+integer onto the stack. If the user inputs a single ascii character, such
+as a letter or number, then the ascii value of will be pushed to the stack.
+This makes elementary char operations possible, since lowercase letters
+have ascii values exactly 32 greater than their uppercase alternates.
 
 Every program is required to have at least one instance of the EXIT
 instruction, or the program will refuse to assemble.

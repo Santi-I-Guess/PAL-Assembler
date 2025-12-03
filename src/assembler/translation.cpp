@@ -5,33 +5,32 @@
 
 #include "../common_values.h"
 #include "translation.h"
+#include "blueprint.h"
 
-// TODO: reduce max indentation to 3 levels: refactor step 3 of assemble_program
-// TODO: refactor instances of 80+ chars
-
-Debug_Info assemble_program(
-        std::vector<int16_t> &program,
-        Program_Info program_info
+std::vector<int16_t> assemble_program(
+        const std::vector<Token> tokens,
+        const std::map<std::string, int16_t> label_map
 ) {
-        Debug_Info context;
-        context.assembler_retval = ACCEPTABLE_2;
-        std::vector<std::string> &tokens = program_info.tokens;
-        std::map<std::string, int16_t> &label_table = program_info.label_table;
-        std::map<int16_t, int16_t> &str_idx_offsets = program_info.str_idx_offsets;
-
-        // Step 1: calculate entry_offset, store string idx offsets
-        int16_t entry_offset = 5; // 'SA','NT','IA','GO', entry_addr
+        // Step 1: calculate main address offset, store string indexes and addresses
+        std::vector<int16_t> program = {};
+        std::vector<int16_t> string_elements = {};
+        std::map<int16_t, int16_t> string_addrs = {}; /* {index, address} */
+        int16_t main_addr_offset = 5; // 4 magic numbers + main addr itself
         int16_t num_strings = 0;
-        for (std::string i : tokens) {
-                // skip if not a string
-                if (i.back() != '\"')
+        for (Token i : tokens) {
+                if (i.type != T_STRING_LIT)
                         continue;
-                i = i.substr(1, i.length() - 2); // strip quotes
-                std::vector<int16_t> string_output = translate_string(i);
-                str_idx_offsets.insert({num_strings, entry_offset});
-                entry_offset += (int16_t)(string_output.size());
+                i.data = i.data.substr(1, i.data.length() - 2); // strip quotes
+                std::vector<int16_t> translated_string = translate_string(i.data);
+                std::vector<int16_t>::iterator first, second;
+                first = translated_string.begin();
+                second = translated_string.end();
+                string_elements.insert(string_elements.end(), first, second);
+                string_addrs.insert({num_strings, main_addr_offset});
+                main_addr_offset += (int16_t)translated_string.size();
                 num_strings++;
         }
+
         // Step 2: add entry offset and magic number to beginning of program
         program.push_back((int16_t)(0x4153)); // SA
         program.push_back((int16_t)(0x544e)); // NT
@@ -39,86 +38,74 @@ Debug_Info assemble_program(
         program.push_back((int16_t)(0x4f47)); // GO
         // ensure 0 element buffer between entry addr and first opcode
         if (num_strings == 0)
-                entry_offset++;
-        // increase offset for 0xffff after strings get parsed
-        entry_offset++;
-        program.push_back(label_table.at("main") + entry_offset);
+                main_addr_offset++;
+        // increase offset for 0xffff element after strings get parsed
+        main_addr_offset++;
+        program.push_back(label_map.at("main") + main_addr_offset);
 
-        // Step 2.5: add string literal data
-        for (std::string i : tokens) {
-                // skip if not a string
-                if (i.back() != '\"')
-                        continue;
-                i = i.substr(1, i.length() - 2); // strip quotes
-                std::vector<int16_t> string_output = translate_string(i);
-                for (int16_t j : string_output) {
-                        program.push_back(j);
-                }
+        // Step 3: add string literal data to program
+        if (num_strings > 0) {
+                std::vector<int16_t>::iterator first, second;
+                first = string_elements.begin();
+                second = string_elements.end();
+                program.insert(program.end(), first, second);
+        } else {
+                // add zero buffer if not included
+                program.push_back((int16_t)0x0000);
         }
-        // marks end of strings
-        if (num_strings == 0)
-                program.push_back((int16_t)(0x0));
-        program.push_back((int16_t)(0xffff));
+        program.push_back((int16_t)0xffff);
 
-        // Step 3: translate normal instructions and arguments
+        // Step 4: translate normal instructions and arguments
         int16_t num_seen_strs = 0;
-        int16_t debug_instruction_idx = 0;
         size_t token_idx = 0;
         while (token_idx < tokens.size()) {
+                Token first_token = tokens.at(token_idx);
                 std::vector<Atom_Type> curr_blueprint;
-                curr_blueprint = BLUEPRINTS.at(tokens.at(token_idx));
-                for (size_t idx = 0; idx < curr_blueprint.size(); ++idx) {
-                        bool res = is_valid_key(
-                                tokens.at(token_idx + idx),
-                                curr_blueprint.at(idx),
-                                program_info
-                        );
-                        if (!res) {
-                                context.assembler_retval = INVALID_ATOM_2;
-                                context.relevant_idx = debug_instruction_idx;
-                                context.relevant_tokens = {tokens.at(token_idx + idx)};
-                                return context;
+                curr_blueprint = BLUEPRINTS.at(first_token.data);
+                for (size_t ins_idx = 0; ins_idx < curr_blueprint.size(); ins_idx++) {
+                        Token curr_token = tokens.at(token_idx + ins_idx);
+                        int16_t translated = 0;
+                        std::stringstream aux_stream;
+                        std::string stripped_token = "";
+                        if (curr_token.data.length() >= 2)
+                                stripped_token = curr_token.data.substr(1, curr_token.data.length() - 1);
+                        switch (curr_token.type) {
+                        case T_INTEGER_LIT:
+                                aux_stream << stripped_token;
+                                aux_stream >> translated;
+                                translated |= (int16_t)(1 << 14); // addressing mode bitmask
+                                break;
+                        case T_LABEL_DEF:
+                                break;
+                        case T_LABEL_REF:
+                                translated = label_map.at(curr_token.data) + main_addr_offset;
+                                break;
+                        case T_MNEMONIC:
+                                translated = OPCODE_TABLE.at(curr_token.data);
+                                break;
+                        case T_REGISTER:
+                                translated = REGISTER_TABLE.at(curr_token.data);
+                                break;
+                        case T_STACK_OFF:
+                                aux_stream << stripped_token;
+                                aux_stream >> translated;
+                                translated |= (int16_t)(1 << 13); // addressing mode bitmask
+                                break;
+                        case T_STRING_LIT:
+                                translated = string_addrs.at(num_seen_strs);
+                                translated |= (int16_t)(1 << 12); // addressing mode bitmask
+                                break;
+                        default: /* impossible */
+                                break;
                         }
-                        int16_t translated = translate_token(
-                                tokens.at(token_idx + idx),
-                                curr_blueprint.at(idx),
-                                program_info,
-                                num_seen_strs,
-                                entry_offset
-                        );
                         program.push_back(translated);
-                        if (curr_blueprint.at(idx) == LITERAL_STR)
+                        if (curr_blueprint.at(ins_idx) == LITERAL_STR)
                                 num_seen_strs++;
                 }
                 token_idx += curr_blueprint.size();
-                debug_instruction_idx++;
         }
 
-        return context;
-}
-
-bool is_valid_key(
-        const std::string token,
-        const Atom_Type atom_type,
-        const Program_Info program_info
-) {
-        const std::map<std::string, int16_t> &label_table = program_info.label_table;
-
-        switch (atom_type) {
-        case LABEL:
-                return label_table.find(token) != label_table.end();
-        case MNEMONIC:
-                return OPCODE_TABLE.find(token) != OPCODE_TABLE.end();
-        case REGISTER:
-                return REGISTER_TABLE.find(token) != REGISTER_TABLE.end();
-        case SOURCE:
-                if (token.front() == 'R')
-                        return REGISTER_TABLE.find(token) != REGISTER_TABLE.end();
-                else
-                        return true;
-        default:
-                return true;
-        }
+        return program;
 }
 
 std::vector<int16_t> translate_string(const std::string stripped_quote) {
@@ -157,49 +144,4 @@ std::vector<int16_t> translate_string(const std::string stripped_quote) {
         result.push_back(0);
         result.shrink_to_fit();
         return result;
-}
-
-int16_t translate_token(
-        const std::string token,
-        const Atom_Type atom_type,
-        const Program_Info program_info,
-        const int16_t num_seen_strs,
-        const int16_t entry_offset
-) {
-        std::map<int16_t, int16_t> str_idx_offsets = program_info.str_idx_offsets;
-        std::map<std::string, int16_t> label_table = program_info.label_table;
-        std::stringstream aux_stream;
-        int16_t aux_int;
-        std::string stripped_token;
-        switch (atom_type) {
-        case LABEL:
-                return label_table.at(token) + entry_offset;
-        case LITERAL_INT:
-                stripped_token = token.substr(1, token.length() - 1);
-                aux_stream << stripped_token;
-                aux_stream >> aux_int;
-                aux_int |= (int16_t)(1 << 14); // bitmask
-                return aux_int;
-        case LITERAL_STR:
-                // the idx, not the string itself
-                return str_idx_offsets.at(num_seen_strs) | (1 << 12);
-        case MNEMONIC:
-                return OPCODE_TABLE.at(token);
-        case REGISTER:
-                return REGISTER_TABLE.at(token);
-        case SOURCE:
-                if (token.front() == '$')
-                        return translate_token(token, LITERAL_INT, program_info, num_seen_strs, entry_offset);
-                else if (token.front() == 'R')
-                        return translate_token(token, REGISTER, program_info, num_seen_strs, entry_offset);
-                else
-                        return translate_token(token, STACK_OFFSET, program_info, num_seen_strs, entry_offset);
-        case STACK_OFFSET:
-                stripped_token = token.substr(1, token.length() - 1);
-                aux_stream << stripped_token;
-                aux_stream >> aux_int;
-                aux_int |= (int16_t)(1 << 13); // bitmask
-                return aux_int;
-        }
-        return 0; // impossible
 }

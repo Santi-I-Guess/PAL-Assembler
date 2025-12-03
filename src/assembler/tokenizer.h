@@ -5,21 +5,7 @@
 #include <vector>
 #include <string>
 
-enum Token_Type {
-        T_INTEGER_LIT,
-        T_LABEL_DEF,
-        T_LABEL_REF,
-        T_MNEMONIC,
-        T_REGISTER,
-        T_STACK_OFF,
-        T_STRING_LIT,
-};
-
-struct Token {
-        std::string data; ///< the data
-        int line_num;  ///< line number from original input
-        Token_Type type;  ///< type of the token
-};
+#include "../common_values.h"
 
 /**
  * @brief tokenizes the user input, and associates types to each token

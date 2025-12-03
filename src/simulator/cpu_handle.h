@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "../common_values.h"
+
 enum ERROR_ENUM {
         IMMUTABLE_MUTATION = 0,
         STACK_ACCESS_ERROR,
@@ -18,7 +20,7 @@ enum ERROR_ENUM {
         UNKNOWN_OPCODE
 };
 
-const std::string error_messages[9] = {
+const std::string ERROR_MESSAGES[9] = {
         "attemped to mutate immutable destination",
         "attemped to access stack by offset before stack base",
         "attemped to access unknown register",
@@ -43,8 +45,6 @@ enum Program_State_Enum {
 
 /**
  * @brief Container class for memory during program simulation
- * @details last 512 int's are reserved for the program's stack,
- * which therefore occupies program_mem's indices 1536-2047
  */
 class CPU_Handle {
         // general purpose registers
@@ -62,7 +62,7 @@ class CPU_Handle {
         int16_t stack_ptr; /** stack counter / pointer */
         int16_t call_stack_ptr;
         int16_t call_stack[1024]; /** holds returns for call stack */
-        int16_t program_mem[8192]; /** holds ram and stack memory */
+        int16_t program_mem[RAM_SIZE]; /** holds ram and stack memory */
         int16_t *program_data; /** assembled program */
         int16_t prog_size; /** size of program data */
 public:

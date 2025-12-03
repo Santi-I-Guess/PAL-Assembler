@@ -10,6 +10,7 @@ Cmd_Options::Cmd_Options() {
         intermediate_files    = false;
         is_binary_input       = false;
         is_debug              = false;
+        test_only             = false;
 }
 
 /* auxiliary function to handle command line arguments
@@ -29,6 +30,8 @@ void Cmd_Options::store_cmd_args(const int argc, char ** const argv) {
                         intermediate_files = true;
                 else if (curr_arg == "-d" || curr_arg == "--debug") 
                         is_debug = true;
+                else if (curr_arg == "-t" || curr_arg == "--test-only") 
+                        test_only = true;
                 else if (curr_arg[0] == '-') 
                         std::cout << "Unrecognized option: " << curr_arg << "\n";
                 else 
@@ -54,6 +57,10 @@ bool Cmd_Options::is_valid_args() {
                 std::cout << "Flag Error: No intermediate files are generated";
                 std::cout << " with pre-assembled input\n";
                 return false;
+        } else if (is_binary_input && test_only) {
+                std::cout << "Flag Error: No non-simulation side effects are";
+                std::cout << "generated with pre-assembled input\n";
+                return false;
         }
         return true;
 }
@@ -74,6 +81,10 @@ void print_help() {
         "      show this help screen\n\n"
         "  -s, --save-temps\n"
         "      create and run ascii source file as normal, but also create \n"
-        "      intermediate ascii files for tokenizer and label table.\n\n";
+        "      intermediate ascii files for tokenizer and label table.\n\n"
+        "  -t, --test-only\n"
+        "      go through the assembler process, but do not simulate the"
+              "program. most useful with -s, or to experiment with errors\n\n";
+        ;
         std::cout << help_buffer;
 }

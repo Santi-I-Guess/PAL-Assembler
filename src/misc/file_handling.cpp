@@ -8,22 +8,53 @@
 
 #include "file_handling.h"
 
-void generate_intermediates(
+void generate_debug_file(
         const std::string file_header,
-        const std::vector<std::string> tokens,
+        const std::vector<Token> tokens,
         const std::map<std::string, int16_t> label_table
 ) {
-        bool res_temp;
-        res_temp = write_tokens_to_sink(tokens, file_header);
-        if (!res_temp) {
+        std::ofstream sink_file("debug_symbols_" + file_header + ".txt");
+        if (sink_file.fail()) {
                 std::cerr << "Failed to open token sink file\n";
                 std::exit(1);
         }
-        res_temp = write_labels_to_sink(label_table, file_header);
-        if (!res_temp) {
-                std::cerr << "Failed to open label sink file\n";
-                std::exit(1);
+        // print tokens and their types
+        for (Token i: tokens) {
+                sink_file << std::left << std::setw(20);
+                switch (i.type) {
+                case T_INTEGER_LIT:
+                        sink_file << "integer literal";  break;
+                case T_LABEL_DEF:
+                        sink_file << "label definition"; break;
+                case T_LABEL_REF:
+                        sink_file << "label reference";  break;
+                case T_MNEMONIC:
+                        sink_file << "mnemonic";         break;
+                case T_REGISTER:
+                        sink_file << "register";         break;
+                case T_STACK_OFF:
+                        sink_file << "stack offset";     break;
+                case T_STRING_LIT:
+                        sink_file << "string literal";   break;
+                }
+                sink_file << std::left << std::setw(25) << i.data;
+                sink_file << " (" << i.line_num << ")\n";
         }
+        std::map<std::string, int16_t>::const_iterator it;
+        size_t max_label_size = 0;
+        // get formatting sizes
+        for (it = label_table.cbegin(); it != label_table.cend(); ++it) {
+                size_t label_len = (it->first).length();
+                if (label_len > max_label_size)
+                        max_label_size = label_len;
+        }
+        // print labels and their addresses
+        for (it = label_table.cbegin(); it != label_table.cend(); ++it) {
+                sink_file << std::left << std::setw((int)max_label_size);
+                sink_file << (it->first) << " = ";
+                sink_file << (it->second) << "\n";
+        }
+        sink_file.close();
 }
 
 std::string get_source_buffer(
@@ -75,32 +106,6 @@ void populate_program_from_binary(
         }
 }
 
-bool write_labels_to_sink(
-        const std::map<std::string, int16_t> label_table,
-        const std::string header
-) {
-        std::ofstream sink_file("intermediate_labels_" + header + ".txt");
-        if (sink_file.fail()) {
-                return false;
-        }
-        std::map<std::string, int16_t>::const_iterator it;
-        size_t max_label_size = 0;
-        // get formatting sizes
-        for (it = label_table.cbegin(); it != label_table.cend(); ++it) {
-                size_t label_len = (it->first).length();
-                if (label_len > max_label_size)
-                        max_label_size = label_len;
-        }
-        // print
-        for (it = label_table.cbegin(); it != label_table.cend(); ++it) {
-                sink_file << std::left << std::setw((int)max_label_size);
-                sink_file << (it->first) << " = ";
-                sink_file << (it->second) << "\n";
-        }
-        sink_file.close();
-        return true;
-}
-
 bool write_program_to_sink(
         const std::vector<int16_t> program,
         const std::string header
@@ -112,18 +117,5 @@ bool write_program_to_sink(
         // interpret integer as c style string, and write
         for (int16_t i : program)
                 sink_file.write((char*) &i, sizeof(int16_t));
-        return true;
-}
-
-bool write_tokens_to_sink(
-        const std::vector<std::string> tokens,
-        const std::string header
-) {
-        std::ofstream sink_file("intermediate_tokens_" + header + ".txt");
-        if (sink_file.fail())
-                return false;
-        for (std::string i: tokens)
-                sink_file << i << "\n";
-        sink_file.close();
         return true;
 }

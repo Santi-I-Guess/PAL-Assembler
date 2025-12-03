@@ -6,13 +6,14 @@
 #include <string>
 #include <fstream>
 
+#include "../common_values.h"
+
 /**
- * @brief generates token file and labels file
- * @details wrapper function of write_tokens_to_sink and write_labels_to_sink
+ * @brief generates file of program's label_table and filtered_tokens
  */
-void generate_intermediates(
+void generate_debug_file(
         const std::string file_header,
-        const std::vector<std::string> tokens,
+        const std::vector<Token> tokens,
         const std::map<std::string, int16_t> label_table
 );
 
@@ -34,26 +35,10 @@ void populate_program_from_binary(
 );
 
 /**
- * @brief writes intermediate file for label
- */
-bool write_labels_to_sink(
-        const std::map<std::string, int16_t> label_table,
-        const std::string header
-);
-
-/**
- * @brief writes intermediate file for assembled progra
+ * @brief writes assembled program to sink
  */
 bool write_program_to_sink(
         const std::vector<int16_t> program,
-        const std::string header
-);
-
-/**
- * @brief writes intermediate file for token
- */
-bool write_tokens_to_sink(
-        const std::vector<std::string> tokens,
         const std::string header
 );
 

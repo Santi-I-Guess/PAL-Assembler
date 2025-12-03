@@ -6,13 +6,15 @@
 #include <sstream>
 
 #include "../common_values.h"
-#include "tokenizer.h"
 #include "blueprint.h"
 
 std::map<std::string, int16_t> create_label_map(
         const std::vector<Token> tokens
 ) {
         std::map<std::string, int16_t> label_map;
+        // declarations themselves aren't translated into the binary program,
+        //      so they need to be accounted for when calculating addresses
+        int16_t num_seen_declarations= 0;
         for (int16_t prog_addr = 0; prog_addr < (int16_t)tokens.size(); ++prog_addr) {
                 Token curr_token = tokens.at(prog_addr);
                 if (curr_token.type != T_LABEL_DEF)
@@ -20,13 +22,14 @@ std::map<std::string, int16_t> create_label_map(
                 std::string label_name = curr_token.data;
                 // remove colon
                 label_name = label_name.substr(0, label_name.length()-1);
-                label_map.insert({label_name, prog_addr});
+                label_map.insert({label_name, prog_addr - num_seen_declarations});
+                num_seen_declarations++;
         }
         return label_map;
 }
 
 
-Debug_Info_2 grammar_check_2(
+Debug_Info_2 grammar_check(
         const std::vector<Token> tokens,
         const std::map<std::string, int16_t> label_map
 ) {
@@ -185,73 +188,4 @@ bool is_valid_i16(const std::string token) {
         if (value < (int32_t)INT16_MIN)
                 return false;
         return true;
-}
-
-Debug_Info grammar_check(
-        const std::vector<std::string> tokens,
-        const std::map<std::string, int16_t> label_table
-) {
-        // std::vector::pop_front makes std::vector::erase irrelevant
-        // (saves on copies)
-
-        Debug_Info context;
-        context.grammar_retval = ACCEPTABLE;
-        if (label_table.find("main") == label_table.end()) {
-                context.grammar_retval = MISSING_MAIN;
-                return context;
-        }
-        // make sure there's at least one EXIT instruction
-        bool seen_exit = false;
-        for (std::string i : tokens) {
-                if (i == "EXIT") {
-                        seen_exit = true;
-                        break;
-                }
-        }
-        if (!seen_exit) {
-                context.grammar_retval = MISSING_EXIT;
-                return context;
-        }
-
-        // map has std::map::find, which makes checking easy
-        int debug_instruction_idx = 0;
-        size_t token_idx = 0;
-        while (token_idx < tokens.size()) {
-                // check front token is a known mnemonic
-                if (BLUEPRINTS.find(tokens.at(token_idx)) == BLUEPRINTS.end()) {
-                        context.relevant_idx = debug_instruction_idx;
-                        context.relevant_tokens = {tokens.at(token_idx)};
-                        context.grammar_retval = EXPECTED_MNEMONIC;
-                        return context;
-                }
-                std::vector<Atom_Type> curr_blueprint;
-                curr_blueprint = BLUEPRINTS.at(tokens.at(token_idx));
-                curr_blueprint.shrink_to_fit();
-                // check there are enough tokens to warrent argument check
-                if (tokens.size() < curr_blueprint.size()) {
-                        context.relevant_idx = debug_instruction_idx;
-                        context.relevant_tokens = {tokens.at(token_idx)};
-                        context.grammar_retval = MISSING_ARGUMENTS;
-                        return context;
-                }
-                // check each argument type
-                for (size_t i = 0; i < curr_blueprint.size(); ++i) {
-                        if (!is_valid_atom(curr_blueprint.at(i), tokens.at(token_idx + i))) {
-                                context.relevant_idx = debug_instruction_idx;
-                                context.relevant_tokens = {tokens.at(token_idx), tokens.at(token_idx + i)};
-                                context.grammar_retval = INVALID_ATOM;
-                                return context;
-                        }
-                        bool lbl_chk_1 = curr_blueprint.at(i) == LABEL;
-                        bool lbl_chk_2 = label_table.find(tokens.at(token_idx + i)) == label_table.end();
-                        if (lbl_chk_1 && lbl_chk_2) {
-                                context.relevant_idx = debug_instruction_idx;
-                                context.relevant_tokens = {tokens.at(token_idx), tokens.at(token_idx + i)};
-                                context.grammar_retval = UNKNOWN_LABEL;
-                        }
-                }
-                token_idx += curr_blueprint.size();
-                debug_instruction_idx++;
-        }
-        return context;
 }

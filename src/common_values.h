@@ -5,6 +5,11 @@
 #include <string>
 #include <map>
 
+// stack size should be 1/4 the ram size
+#define RAM_SIZE 8192
+#define STACK_START 6144
+#define STACK_SIZE 2048
+
 /**
  * @brief enum for atom (a.k.a. argument) type
  */
@@ -18,58 +23,20 @@ enum Atom_Type {
         STACK_OFFSET,
 };
 
-// many values between Grammar_Retval and Assembler_Retval are only
-// slightly different, because I made the blueprint functions before
-// assemble_program. I want to check twice on the same function, but
-// can't have the same name used in two different enums, so that's why
-// there are almost exactly the same names
-
-/**
- * @brief enum for errors in blueprint functions
- */
-enum Grammar_Retval {
-        EXPECTED_MNEMONIC,
-        ACCEPTABLE,
-        INVALID_ATOM,
-        MISSING_ARGUMENTS,
-        MISSING_EXIT,
-        MISSING_MAIN,
-        UNKNOWN_LABEL,
+enum Token_Type {
+        T_INTEGER_LIT,
+        T_LABEL_DEF,
+        T_LABEL_REF,
+        T_MNEMONIC,
+        T_REGISTER,
+        T_STACK_OFF,
+        T_STRING_LIT,
 };
 
-/**
- * @brief enum for errors in translation functions
- * @details this is deprecated, and basically just duplicates of
- * Grammar_Retval, but im keeping in here for now
- */
-enum Assembler_Retval {
-        ACCEPTABLE_2,
-        EXPECTED_MNEMONIC_2,
-        INVALID_ATOM_2,
-        UNKNOWN_LABEL_2,
-        MISSING_ARGUMENTS_2,
-        MISSING_MAIN_2,
-};
-
-/**
- * @brief container struct for debugging / error catching in blueprint
- * and translation functions
- */
-struct Debug_Info {
-        int                      relevant_idx;     ///< any relevant idx
-        std::vector<std::string> relevant_tokens;  ///< any relevant tokens
-        Grammar_Retval           grammar_retval;   ///< blueprint error
-        Assembler_Retval         assembler_retval; ///< translation error
-};
-
-/**
- * @brief container struct for pass info through translation tokens
- * @details as of Tue 18.Nov.2025, this has no applications yet
- */
-struct Program_Info {
-        std::vector<std::string> tokens;             ///< tokens from user program
-        std::map<std::string, int16_t> label_table; ///< labels from user program
-        std::map<int16_t, int16_t> str_idx_offsets; ///< refer to abi.md
+struct Token {
+        int line_num;     ///< line number from original input
+        Token_Type type;  ///< type of the token
+        std::string data; ///< the data
 };
 
 // it would be great if there was a structure, where one instance maps to

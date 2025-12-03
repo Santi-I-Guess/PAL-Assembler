@@ -13,6 +13,7 @@ two_digits:
     JMP align_right_final
 align_right_final:
     PRINT %0
+    CPRINT $124
     POP RA ; dump parameter
     RET
 
@@ -32,6 +33,7 @@ print_row:
 
 main:
     ; RA as both value and ctr
+    SPRINT "Multiplication tables 2-10\n"
     MOV RA, $2
     main_loop:
     PUSH RA

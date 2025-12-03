@@ -13,8 +13,8 @@ std::vector<Token> create_tokens(const std::string source_buffer) {
         int line_num = 1;
         // line_num should increase only if it's in the same step that
         //      mutates buff_idx or token_idx
-        while (buff_idx < buff_len) {
         next_lexeme:
+        while (buff_idx < buff_len) {
                 char curr = source_buffer[buff_idx];
                 // increase buff_idx until not on whitespace
                 while (buff_idx < buff_len) {

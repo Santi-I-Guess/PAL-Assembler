@@ -28,7 +28,7 @@ CPU_Handle::CPU_Handle() {
         call_stack_ptr = 0;
         // i know int16_t should always be 2 bytes by definition, but whatever
         memset(call_stack, 0, sizeof(int16_t) * 1024);
-        memset(program_mem, 0, sizeof(int16_t) * 8192);
+        memset(program_mem, 0, sizeof(int16_t) * STACK_SIZE);
         program_data = nullptr;
 }
 
@@ -49,17 +49,16 @@ int16_t CPU_Handle::dereference_value(const int16_t given_value) {
                         intended_value ^= (int16_t)(1 << 14);
         } else if ((given_value >> 13) & 1) {
                 // stack offest
-                // stack[0] starts at program_mem[6144]
                 intended_address = given_value;
                 intended_address ^= (int16_t)(1 << 13);
                 if (intended_address > stack_ptr || stack_ptr <= 0) {
-                        std::cout << "Error: " << error_messages[STACK_ACCESS_ERROR];
+                        std::cout << "\x1b[34mRuntime Error:\x1b[0m " << ERROR_MESSAGES[STACK_ACCESS_ERROR];
                         std::cout << "\n";
                         std::exit(1);
                 }
                 // -1, because stack_ptr points to memory of next element,
                 // not top element
-                intended_value = program_mem[6144 + stack_ptr - intended_address - 1];
+                intended_value = program_mem[STACK_START + stack_ptr - intended_address - 1];
         } else if ((given_value >> 12) & 1) {
                 // string literal
                 intended_value = given_value;
@@ -80,7 +79,7 @@ int16_t CPU_Handle::dereference_value(const int16_t given_value) {
                 case 10: intended_value = reg_cmp_a; break;
                 case 11: intended_value = reg_cmp_b; break;
                 default:
-                        std::cout << "Error: " << error_messages[UNKNOWN_REGISTER];
+                        std::cout << "\x1b[34mRuntime Error:\x1b[0m " << ERROR_MESSAGES[UNKNOWN_REGISTER];
                         std::cout << "\n";
                         std::exit(1);
                 }
@@ -91,7 +90,7 @@ int16_t CPU_Handle::dereference_value(const int16_t given_value) {
 
 int16_t CPU_Handle::get_program_data(const int16_t idx) const {
         if (idx < 0 || idx > prog_size) {
-                std::cerr << error_messages[UNKNOWN_OPCODE] << "\n";
+                std::cerr << ERROR_MESSAGES[UNKNOWN_OPCODE] << "\n";
                 std::exit(1);
         }
         return program_data[idx];
@@ -124,7 +123,7 @@ void CPU_Handle::next_instruction(bool &hit_exit) {
 
         int16_t opcode = get_program_data(prog_ctr);
         if (opcode < 0 || opcode > (int16_t)(sizeof(INSTRUCTION_LENS) / sizeof(int16_t))) {
-                std::cerr << "Error: " << error_messages[UNKNOWN_OPCODE] << "\n";
+                std::cerr << "\x1b[34mRuntime Error:\x1b[0m " << ERROR_MESSAGES[UNKNOWN_OPCODE] << "\n";
                 std::exit(1);
         }
         std::string mnem_name = DEREFERENCE_TABLE[opcode];

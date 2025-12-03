@@ -173,6 +173,15 @@ void pdb_handle_print(
                 return;
         }
 
+        std::map<std::string, int16_t*> reg_addr_map = {
+                {"RA", &cpu_handle.reg_a},      {"RB", &cpu_handle.reg_b},
+                {"RC", &cpu_handle.reg_c},      {"RD", &cpu_handle.reg_d},
+                {"RE", &cpu_handle.reg_e},      {"RF", &cpu_handle.reg_f},
+                {"RG", &cpu_handle.reg_g},      {"RH", &cpu_handle.reg_h},
+                {"RH", &cpu_handle.reg_cmp_a},  {"RH", &cpu_handle.reg_cmp_b},
+                {"RSP", &cpu_handle.stack_ptr}, {"RIP", &cpu_handle.prog_ctr}
+        };
+
         if (cmd_tokens.at(1).at(0) == '%') {
                 // stack offset: expect %num
                 std::string temp = "";
@@ -190,8 +199,8 @@ void pdb_handle_print(
                         std::cout << "Cannot access stack with offset outside [0,stack_ptr - 1]\n";
                 } else {
                         std::cout << cmd_tokens.at(1) << " = ";
-                        // CPU_Handle.see dereference_value
-                        std::cout << cpu_handle.program_mem[6144 + cpu_handle.stack_ptr - value - 1] << "\n";
+                        // CPU_Handle see dereference_value
+                        std::cout << cpu_handle.program_mem[STACK_START + cpu_handle.stack_ptr - value - 1] << "\n";
                 }
         } else if (cmd_tokens.at(1).at(0) == 'M') {
                 // mem address: expect MEM[num]
@@ -206,36 +215,17 @@ void pdb_handle_print(
                         return;
                 }
                 int16_t value = (int16_t)std::stoi(temp);
-                if (value < 0 || value > 6143) {
-                        std::cout << "Cannot access mem value outside [0,6143]\n";
+                if (value < 0 || value >= STACK_START) {
+                        std::cout << "Cannot access mem value outside [0," << STACK_SIZE << "]\n";
                 } else {
                         std::cout << cmd_tokens.at(1) << " = ";
                         std::cout << cpu_handle.program_mem[value] << "\n";
                 }
-        } else if (cmd_tokens.at(1) == "RA") {
-                std::cout << "RA = " << cpu_handle.reg_a << "\n";
-        } else if (cmd_tokens.at(1) == "RB") {
-                std::cout << "RB = " << cpu_handle.reg_b << "\n";
-        } else if (cmd_tokens.at(1) == "RC") {
-                std::cout << "RC = " << cpu_handle.reg_c << "\n";
-        } else if (cmd_tokens.at(1) == "RD") {
-                std::cout << "RD = " << cpu_handle.reg_d << "\n";
-        } else if (cmd_tokens.at(1) == "RE") {
-                std::cout << "RE = " << cpu_handle.reg_e << "\n";
-        } else if (cmd_tokens.at(1) == "RF") {
-                std::cout << "RF = " << cpu_handle.reg_f << "\n";
-        } else if (cmd_tokens.at(1) == "RG") {
-                std::cout << "RG = " << cpu_handle.reg_g << "\n";
-        } else if (cmd_tokens.at(1) == "RH") {
-                std::cout << "RH = " << cpu_handle.reg_h << "\n";
-        } else if (cmd_tokens.at(1) == "CMP1") {
-                std::cout << "RH = " << cpu_handle.reg_cmp_a << "\n";
-        } else if (cmd_tokens.at(1) == "CMP2") {
-                std::cout << "RH = " << cpu_handle.reg_cmp_b << "\n";
-        } else if (cmd_tokens.at(1) == "RSP") {
-                std::cout << "RSP = " << cpu_handle.stack_ptr << "\n";
-        } else if (cmd_tokens.at(1) == "RIP") {
-                std::cout << "RIP = " << cpu_handle.prog_ctr << "\n";
+        }
+
+        if (reg_addr_map.find(cmd_tokens.at(1)) != reg_addr_map.end()) {
+                int16_t value = *reg_addr_map.at(cmd_tokens.at(1));
+                std::cout << cmd_tokens.at(1) << " = " << value << "\n";
         } else {
                 std::cout << "unrecognized value\n";
         }
