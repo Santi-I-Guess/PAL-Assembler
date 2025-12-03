@@ -15,6 +15,7 @@ some changes to make usage simple.
 - -d, --debug
 - -h, --help
 - -s, --save-temps
+- -t, --test-only
 
 ## PAL Debugger Commands
 - break \<program address\>
@@ -31,11 +32,12 @@ some changes to make usage simple.
 ## Assembly Language
 - 16 bit registers
 - 8 general purpose registers, 2 comparison registers (nonaccessable)
-- given 1024 address RAM with 4 memory access instructions (PUSH, POP, READ,
+- given 3000 address RAM with 4 memory access instructions (PUSH, POP, READ,
   WRITE)
-- can print integer values with PRINT, and string literals with SPRINT
+- can print integer values with PRINT, ascii characters with CPRINT, and
+  string literals with SPRINT
 - can define labels with \<string\>:
-- can access stack without pop using stack offset notation (see below)
+- can access stack without pop using stack offset addressing (see below)
 - can access stack pointer with RSP, and the instruction counter with RIP
 
 ## Instructions
@@ -94,6 +96,8 @@ Note: "$" in this case is not the start of a string, but the literal character \
 ## Other quirks
 - every program is required to have a main label and at least one EXIT instruction
 - SPRINT supports newlines and escaped double quotes
-- there are 2048 addresses allotted to the program simulation
-- the stack occupies the last 512 elements of RAM block, where the address
-  1536 corresponds to %0 when no elements are on the stack
+- INPUT supports single ascii characters and integers
+- values are clamped to \[-4096,4096\]
+- there are 3000 addresses allotted to the program's runtime memory
+- the stack occupies the last 750 elements of RAM block, where the address
+  2250 corresponds to %0 when no elements are on the stack

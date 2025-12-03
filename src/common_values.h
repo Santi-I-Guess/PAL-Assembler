@@ -5,10 +5,10 @@
 #include <string>
 #include <map>
 
-// stack size should be 1/4 the ram size
-#define RAM_SIZE 8192
-#define STACK_START 6144
-#define STACK_SIZE 2048
+// stack size last 1/4 of the RAM
+#define RAM_SIZE 3000
+#define STACK_START 2250
+#define STACK_SIZE 750
 
 /**
  * @brief enum for atom (a.k.a. argument) type

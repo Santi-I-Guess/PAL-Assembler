@@ -430,7 +430,9 @@ void ins_input(CPU_Handle &cpu_handle) {
         int16_t value;
         std::string user_input;
         std::getline(std::cin, user_input);
-        if (user_input.length() == 1 && isascii(user_input.at(0))) {
+        if (user_input.length() == 0) {
+                std::cout << "\x1b[34mRuntime Error:\x1b[0m " << ERROR_MESSAGES[INPUT_ERROR] << "\n";
+        } else if (user_input.length() == 1 && isascii(user_input.at(0))) {
                 // if user inputs a letter, interpret it's ascii value
                 value = (int16_t)((char)user_input.at(0));
         } else {
