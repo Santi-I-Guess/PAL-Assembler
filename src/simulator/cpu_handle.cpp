@@ -8,7 +8,7 @@
 
 #include "../common_values.h"
 #include "cpu_handle.h"
-#include "debug_funcs.h"
+#include "pal_debugger.h"
 #include "instructions.h"
 
 CPU_Handle::CPU_Handle() {

@@ -94,26 +94,24 @@ submission: | $(BUILD_DIR)
 .DEFAULT: all
 
 # DEPENDENCIES
-build/blueprint.o: src/assembler/blueprint.cpp src/assembler/../common_values.h \
- src/assembler/blueprint.h
-build/tokenizer.o: src/assembler/tokenizer.cpp src/assembler/../common_values.h \
- src/assembler/tokenizer.h
-build/translation.o: src/assembler/translation.cpp \
- src/assembler/../common_values.h src/assembler/translation.h \
- src/assembler/blueprint.h
+build/helper.o: src/assembler/helper.cpp src/assembler/../common_values.h \
+ src/assembler/helper.h
+build/synthesis.o: src/assembler/synthesis.cpp src/assembler/../common_values.h \
+ src/assembler/helper.h src/assembler/synthesis.h
 build/cmd_line_opts.o: src/misc/cmd_line_opts.cpp src/misc/cmd_line_opts.h
 build/file_handling.o: src/misc/file_handling.cpp src/misc/file_handling.h \
  src/misc/../common_values.h
 build/cpu_handle.o: src/simulator/cpu_handle.cpp \
  src/simulator/../common_values.h src/simulator/cpu_handle.h \
- src/simulator/debug_funcs.h src/simulator/instructions.h
-build/debug_funcs.o: src/simulator/debug_funcs.cpp src/simulator/debug_funcs.h \
- src/simulator/cpu_handle.h src/simulator/../common_values.h
+ src/simulator/pal_debugger.h src/simulator/instructions.h
 build/instructions.o: src/simulator/instructions.cpp \
  src/simulator/../common_values.h src/simulator/cpu_handle.h \
  src/simulator/instructions.h
-build/main.o: src/main.cpp src/assembler/blueprint.h \
- src/assembler/../common_values.h src/assembler/tokenizer.h \
- src/assembler/translation.h src/common_values.h src/misc/cmd_line_opts.h \
- src/misc/file_handling.h src/misc/../common_values.h \
- src/simulator/cpu_handle.h
+build/pal_debugger.o: src/simulator/pal_debugger.cpp \
+ src/simulator/pal_debugger.h src/simulator/cpu_handle.h \
+ src/simulator/../common_values.h
+build/main.o: src/main.cpp src/assembler/synthesis.h \
+ src/assembler/../common_values.h src/common_values.h \
+ src/misc/cmd_line_opts.h src/misc/file_handling.h \
+ src/misc/../common_values.h src/simulator/cpu_handle.h \
+ src/simulator/../common_values.h

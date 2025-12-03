@@ -22,16 +22,13 @@
 #include <string>
 #include <sstream>
 
-#include "assembler/blueprint.h"
-#include "assembler/tokenizer.h"
-#include "assembler/translation.h"
+#include "assembler/synthesis.h"
 #include "common_values.h"
 #include "misc/cmd_line_opts.h"
 #include "misc/file_handling.h"
 #include "simulator/cpu_handle.h"
 
 // every subdirectory of src is isolated in dependencies and function
-
 
 std::string generate_file_header() {
         std::random_device rd;
@@ -87,7 +84,7 @@ int main(int argc, char **argv) {
                 if (life_opts.intermediate_files)
                         generate_debug_file(file_header, filtered_tokens, label_map);
 
-                Debug_Info_2 context = grammar_check(filtered_tokens, label_map);
+                Debug_Info context = grammar_check(filtered_tokens, label_map);
                 std::string aux_string;
                 std::stringstream aux_stream;
                 switch (context.grammar_retval) {

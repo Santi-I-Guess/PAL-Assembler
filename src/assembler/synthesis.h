@@ -1,9 +1,10 @@
+#ifndef SYNTHESIS_H
+#define SYNTHESIS_H 1
+
 #include <cstdint>
 #include <map>
 #include <string>
 #include <vector>
-
-// handle preprocessing of tokens before translation
 
 #include "../common_values.h"
 
@@ -18,11 +19,19 @@ enum Grammar_Retval {
         UNKNOWN_MNEMONIC_E,
 };
 
-struct Debug_Info_2 {
+struct Debug_Info {
         int line_num;
         Grammar_Retval grammar_retval;
         Token relevant_token;
 };
+
+/**
+ * @brief assembles the final program into a vector of int16_t's
+ */
+std::vector<int16_t> assemble_program(
+        const std::vector<Token> tokens,
+        const std::map<std::string, int16_t> label_map
+);
 
 /**
  * @brief obtains the addresses of user defined labels
@@ -32,23 +41,22 @@ std::map<std::string, int16_t> create_label_map(
 );
 
 /**
- * @brief does basic grammar checking of program
- * @details checks for unknown mnemonics, invalid atoms, missing arguments,
- * missing EXIT program, missing main label, or calling an undefined label
+ * @brief tokenizes the user input, and associates types to each token
  */
-Debug_Info_2 grammar_check(
+std::vector<Token> create_tokens(const std::string source_buffer);
+
+/**
+ * @brief does basic grammar checking of program
+ */
+Debug_Info grammar_check(
         const std::vector<Token> tokens,
         const std::map<std::string, int16_t> label_map
 );
 
 /**
- * @brief checks if a token matches the expected atom type
- * @details helper function of grammar_check
+ * @brief translates a single string into series of int16_t's with a null int16_t
+ * @details helper function of assemble_program
  */
-bool is_valid_atom(const Atom_Type atom_type, const std::string token);
+std::vector<int16_t> translate_string(const std::string stripped_token);
 
-/**
- * @brief checks if string is within bounds of INT16_MAX and INT16_MIN
- * @details helper function of is_valid_atom
- */
-bool is_valid_i16(const std::string token);
+#endif

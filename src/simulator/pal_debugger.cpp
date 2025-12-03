@@ -2,7 +2,7 @@
 #include <iomanip>
 #include <iostream>
 
-#include "debug_funcs.h"
+#include "pal_debugger.h"
 #include "cpu_handle.h"
 #include "../common_values.h"
 

@@ -7,7 +7,7 @@
 
 #include "cpu_handle.h"
 
-// series of functions to be used when -d flag is on
+// series of functions for the Pal Debugger
 
 /**
  * @brief handle break command for PAL Debugger
