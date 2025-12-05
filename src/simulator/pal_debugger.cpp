@@ -144,7 +144,7 @@ void pdb_handle_disassemble(const CPU_Handle &cpu_handle) {
                         break;
                 case READING_MNEMONIC:
                         opcode = cpu_handle.get_program_data(int_idx);
-                        ins_len = INSTRUCTION_LENS[opcode];
+                        ins_len = (int16_t)INS_BLUEPRINTS.at(get_mnem_name(opcode)).length;
                         for (int16_t i = 0; i < ins_len; ++i) {
                                 int16_t curr_element = cpu_handle.get_program_data(int_idx + i);
                                 instruction.push_back(curr_element);

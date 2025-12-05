@@ -39,3 +39,13 @@ and if it is, it will open the controlling terminal device. On linux systems,
 this is /dev/tty, and I think on windows it's CONIN$, but i'm not 100%
 sure on that. This allows the debugger to take in user input while also
 taking in piped input.
+
+# How can I add my own instructions?
+If you get bored and want to add your own instructions, there's just 4
+steps you got to follow
+1. Add the opcode, mnemonic, and blueprint to INS_BLUEPRINTS in
+   src/common_values.h
+2. create a function with your own implementation
+3. add the function declaration to to instructions.h and put inside the
+   cpu_handle class (in src/simulator/cpu_handle.h) as a public friend function
+4. append your instruction to the if statement in cpu_handle::next_instruction

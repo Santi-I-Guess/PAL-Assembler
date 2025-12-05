@@ -76,6 +76,7 @@ some changes to make usage simple.
 | SPRINT       | string    |            |           |
 | CPRINT       | src       |            |           |
 | INPUT        |           |            |           |
+| SINPUT       |           |            |           |
 | RAND         |           |            |           |
 | EXIT         |           |            |           |
 

@@ -125,10 +125,10 @@ void CPU_Handle::next_instruction(bool &hit_exit, bool continue_cond) {
                 prog_ctr = get_program_data(4);
 
         int16_t opcode = get_program_data(prog_ctr);
-        if (opcode < 0 || opcode > (int16_t)(sizeof(INSTRUCTION_LENS) / sizeof(int16_t))) {
+        if (opcode < 0 || opcode >= (int16_t)INS_BLUEPRINTS.size()) {
                 handle_runtime_error(UNKNOWN_OPCODE);
         }
-        std::string mnem_name = DEREFERENCE_TABLE[opcode];
+        std::string mnem_name = get_mnem_name(opcode);
 
         // process instruction here
         // not using switch with opcode in case more instructions are added later
@@ -207,6 +207,8 @@ void CPU_Handle::next_instruction(bool &hit_exit, bool continue_cond) {
                         std::cout << "\n";
         } else if (mnem_name == "INPUT") {
                 ins_input(*this);
+        } else if (mnem_name == "SINPUT") {
+                ins_sinput(*this);
         } else if (mnem_name == "RAND") {
                 ins_rand(*this);
         } else if (mnem_name == "EXIT") {
@@ -239,7 +241,7 @@ void CPU_Handle::run_program_debug() {
         while (temp_idx < prog_size) {
                 mnemonic_addrs.push_back(temp_idx);
                 int16_t opcode = get_program_data(temp_idx);
-                temp_idx += INSTRUCTION_LENS[opcode];
+                temp_idx += (int16_t)INS_BLUEPRINTS.at(get_mnem_name(opcode)).length;
         }
 
         std::cout << "PAL Debugger (PalDB)\n";
@@ -306,7 +308,7 @@ void CPU_Handle::run_program_debug() {
                 } else if (cmd_tokens.front()[0] == 'l') {
                         // next instruction to run
                         int16_t opcode = get_program_data(prog_ctr);
-                        int16_t ins_len = INSTRUCTION_LENS[opcode];
+                        int16_t ins_len = (int16_t)INS_BLUEPRINTS.at(get_mnem_name(opcode)).length;
                         std::vector<int16_t> instruction = {};
                         for (int16_t i = 0; i < ins_len; ++i) {
                                 int16_t curr_element = get_program_data(prog_ctr + i);
@@ -372,7 +374,7 @@ void CPU_Handle::run_program_debug() {
                 if (!hit_exit && previously_ran) {
                         // print next instruction to run
                         int16_t opcode = get_program_data(prog_ctr);
-                        int16_t ins_len = INSTRUCTION_LENS[opcode];
+                        int16_t ins_len = (int16_t)INS_BLUEPRINTS.at(get_mnem_name(opcode)).length;
                         std::vector<int16_t> instruction = {};
                         for (int16_t i = 0; i < ins_len; ++i) {
                                 int16_t curr_element = get_program_data(prog_ctr + i);

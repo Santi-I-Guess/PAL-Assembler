@@ -103,54 +103,9 @@ const std::map<std::string, Instruction_Data> INS_BLUEPRINTS = {
         {"SPRINT", Instruction_Data(30, "SPRINT", {MNEMONIC, LITERAL_STR})},
         {"CPRINT", Instruction_Data(31, "CPRINT", {MNEMONIC, SOURCE})},
         {"INPUT",  Instruction_Data(32, "INPUT",  {MNEMONIC})},
-        {"RAND",   Instruction_Data(33, "RAND",   {MNEMONIC})},
-        {"EXIT",   Instruction_Data(34, "EXIT",   {MNEMONIC})},
-};
-
-/**
- * @brief hashmap for valid opcodes for each mnemoinc in assembly language
- */
-const std::map<std::string, int16_t> OPCODE_TABLE = {
-        {"NOP",    0}, {"MOV",    1}, {"INC",     2}, {"DEC",     3},
-        {"ADD",    4}, {"SUB",    5}, {"MUL",     6}, {"DIV",     7},
-        {"MOD",    8}, {"AND",    9}, {"OR",     10}, {"NOT",    11},
-        {"XOR",   12}, {"LSH",   13}, {"RSH",    14}, {"CMP",    15},
-        {"JMP",   16}, {"JEQ",   17}, {"JNE",    18}, {"JGE",    19},
-        {"JGR",   20}, {"JLE",   21}, {"JLS",    22}, {"CALL",   23},
-        {"RET",   24}, {"PUSH",  25}, {"POP",    26}, {"WRITE",  27},
-        {"READ",  28}, {"PRINT", 29}, {"SPRINT", 30}, {"CPRINT", 31},
-        {"INPUT", 32}, {"RAND",  33}, {"EXIT",   34},
-};
-
-/**
- * @brief table for lengths, in opcode order, for instruction functions
- */
-const int16_t INSTRUCTION_LENS[35] = {
-        1, 3, 2, 2,
-        4, 4, 4, 4,
-        4, 4, 4, 3,
-        4, 4, 4, 3,
-        2, 2, 2, 2,
-        2, 2, 2, 2,
-        1, 2, 2, 3,
-        3, 2, 2, 2,
-        1, 1, 1
-};
-
-/**
- * @brief dereference array for CPU_Handle::interpret_program()
- * @details opposite to OPCODE_TABLE
- */
-const std::string DEREFERENCE_TABLE[35] = {
-        "NOP",   "MOV",   "INC",    "DEC",
-        "ADD",   "SUB",   "MUL",    "DIV",
-        "MOD",   "AND",   "OR",     "NOT",
-        "XOR",   "LSH",   "RSH",    "CMP",
-        "JMP",   "JEQ",   "JNE",    "JGE",
-        "JGR",   "JLE",   "JLS",    "CALL",
-        "RET",   "PUSH",  "POP",    "WRITE",
-        "READ",  "PRINT", "SPRINT", "CPRINT",
-        "INPUT", "RAND",  "EXIT"
+        {"SINPUT", Instruction_Data(33, "INPUT",  {MNEMONIC})},
+        {"RAND",   Instruction_Data(34, "RAND",   {MNEMONIC})},
+        {"EXIT",   Instruction_Data(35, "EXIT",   {MNEMONIC})},
 };
 
 /**

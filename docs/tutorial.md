@@ -103,6 +103,11 @@ as a letter or number, then the ascii value of will be pushed to the stack.
 This makes elementary char operations possible, since lowercase letters
 have ascii values exactly 32 greater than their uppercase alternates.
 
+SINPUT is similar to input, except it will take each character of the input,
+convert it into the ascii value, and push each value to the stack. If no
+characters are given, it will push a newline char to the stack, to match
+INPUT behavior. SINPUT will push a null terminator.
+
 Every program is required to have at least one instance of the EXIT
 instruction, or the program will refuse to assemble.
 
@@ -141,6 +146,7 @@ instruction, or the program will refuse to assemble.
 | SPRINT       | string    |            |           | print(string)                |
 | CPRINT       | src       |            |           | print((ascii)src)            |
 | INPUT        |           |            |           | push((int16_t)input())       |
+| SINPUT       |           |            |           | push((int16_t)input())       |
 | RAND         |           |            |           | push((int16_t)rand(-100,100))|
 | EXIT         |           |            |           | exit()                       |
 

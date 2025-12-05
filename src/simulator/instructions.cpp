@@ -476,6 +476,33 @@ void ins_input(CPU_Handle &cpu_handle) {
         prog_ctr += 1;
 }
 
+void ins_sinput(CPU_Handle &cpu_handle) {
+        int16_t &prog_ctr = cpu_handle.prog_ctr;
+        int16_t &stack_ptr = cpu_handle.stack_ptr;
+        int16_t *program_mem = cpu_handle.program_mem;
+
+        std::string user_input;
+        std::getline(std::cin, user_input);
+        if (user_input.length() == 0) {
+                // empty input interpreted as newline
+                user_input = "\n";
+        }
+
+        for (char i : user_input) {
+                // push ascii value to each character
+                if (stack_ptr == STACK_SIZE) {
+                        handle_runtime_error(STACK_OVERFLOW);
+                }
+                program_mem[STACK_START + stack_ptr] = (int16_t)i;
+                stack_ptr++;
+        }
+        if (stack_ptr == STACK_SIZE) {
+                handle_runtime_error(STACK_OVERFLOW);
+        }
+        program_mem[STACK_START + stack_ptr] = (int16_t)0; // push null terminator
+        stack_ptr++;
+        prog_ctr += 1;
+}
 
 void ins_rand(CPU_Handle   &cpu_handle) {
         int16_t &prog_ctr = cpu_handle.prog_ctr;
