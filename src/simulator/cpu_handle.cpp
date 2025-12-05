@@ -291,7 +291,7 @@ void CPU_Handle::run_program_debug() {
                         continue;
                 } else if (cmd_tokens.front() == "continue") {
                         continue_cond = true;
-                } else if (cmd_tokens.front()[0] == 'd') {
+                } else if (cmd_tokens.front() == "delete") {
                         // delete
                         pdb_handle_delete(cmd_tokens, breakpoints);
                         continue;
@@ -299,9 +299,9 @@ void CPU_Handle::run_program_debug() {
                         // help
                         pdb_handle_help();
                         continue;
-                } else if (cmd_tokens.front()[0] == 'i') {
+                } else if (cmd_tokens.front() == "disassemble") {
                         // interpret
-                        pdb_handle_interpret(*this);
+                        pdb_handle_disassemble(*this);
                         continue;
                 } else if (cmd_tokens.front()[0] == 'l') {
                         // next instruction to run
@@ -312,7 +312,7 @@ void CPU_Handle::run_program_debug() {
                                 int16_t curr_element = get_program_data(prog_ctr + i);
                                 instruction.push_back(curr_element);
                         }
-                        itrprt_print_instruction(instruction, prog_ctr);
+                        disassemble_print_instruction(instruction, prog_ctr);
                         continue;
                 } else if (cmd_tokens.front()[0] == 'n') {
                         // next
@@ -378,7 +378,7 @@ void CPU_Handle::run_program_debug() {
                                 int16_t curr_element = get_program_data(prog_ctr + i);
                                 instruction.push_back(curr_element);
                         }
-                        itrprt_print_instruction(instruction, prog_ctr);
+                        disassemble_print_instruction(instruction, prog_ctr);
                         previously_ran = false;
                 }
         }

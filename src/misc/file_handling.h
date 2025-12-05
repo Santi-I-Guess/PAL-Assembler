@@ -12,9 +12,9 @@
  * @brief generates file of program's label_table and filtered_tokens
  */
 void generate_debug_file(
-        const std::string file_header,
-        const std::vector<Token> tokens,
-        const std::map<std::string, int16_t> label_table
+        const std::string &file_header,
+        const std::vector<Token> &tokens,
+        const std::map<std::string, int16_t> &label_table
 );
 
 /**
@@ -22,8 +22,8 @@ void generate_debug_file(
  * @details may exit if source_path fails
  */
 std::string get_source_buffer(
-        const std::string source_path,
-        const bool use_stdin
+        const std::string &source_path,
+        const bool &use_stdin
 );
 
 /**
@@ -31,15 +31,15 @@ std::string get_source_buffer(
  */
 void populate_program_from_binary(
         std::vector<int16_t> &program,
-        const std::string filepath
+        const std::string &filepath
 );
 
 /**
  * @brief writes assembled program to sink
  */
 bool write_program_to_sink(
-        const std::vector<int16_t> program,
-        const std::string header
+        const std::vector<int16_t> &program,
+        const std::string &header
 );
 
 #endif

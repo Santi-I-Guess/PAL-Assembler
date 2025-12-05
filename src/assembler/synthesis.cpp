@@ -12,8 +12,8 @@
 #include "synthesis.h"
 
 std::vector<int16_t> assemble_program(
-        const std::vector<Token> tokens,
-        const std::map<std::string, int16_t> label_map
+        const std::vector<Token> &tokens,
+        const std::map<std::string, int16_t> &label_map
 ) {
         // Step 1: calculate main address offset, store string indexes and addresses
         std::vector<int16_t> program = {};
@@ -113,7 +113,7 @@ std::vector<int16_t> assemble_program(
 }
 
 std::map<std::string, int16_t> create_label_map(
-        const std::vector<Token> tokens
+        const std::vector<Token> &tokens
 ) {
         std::map<std::string, int16_t> label_map;
         // declarations themselves aren't translated into the binary program,
@@ -125,14 +125,14 @@ std::map<std::string, int16_t> create_label_map(
                         continue;
                 std::string label_name = curr_token.data;
                 // remove colon
-                label_name = label_name.substr(0, label_name.length()-1);
+                label_name.pop_back();
                 label_map.insert({label_name, prog_addr - num_seen_declarations});
                 num_seen_declarations++;
         }
         return label_map;
 }
 
-std::vector<Token> create_tokens(const std::string source_buffer) {
+std::vector<Token> create_tokens(const std::string &source_buffer) {
         std::vector<Token> tokens = {};
         size_t buff_idx = 0;
         size_t buff_len = source_buffer.size();
@@ -235,8 +235,8 @@ std::vector<Token> create_tokens(const std::string source_buffer) {
 }
 
 Debug_Info grammar_check(
-        const std::vector<Token> tokens,
-        const std::map<std::string, int16_t> label_map
+        const std::vector<Token> &tokens,
+        const std::map<std::string, int16_t> &label_map
 ) {
         Debug_Info context;
         context.grammar_retval = ACCEPTABLE_E;
@@ -351,7 +351,7 @@ Debug_Info grammar_check(
         return context;
 }
 
-std::vector<int16_t> translate_string(const std::string stripped_quote) {
+std::vector<int16_t> translate_string(const std::string &stripped_quote) {
         std::vector<int16_t> result = {};
         std::vector<char> intermediate = {};
         size_t str_idx = 0;

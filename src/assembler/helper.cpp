@@ -5,7 +5,7 @@
 #include "../common_values.h"
 #include "helper.h"
 
-bool is_valid_atom(const Atom_Type atom_type, const std::string token) {
+bool is_valid_atom(const Atom_Type atom_type, const std::string &token) {
         bool first, second;
         std::string stripped_token;
         switch (atom_type) {
@@ -42,7 +42,7 @@ bool is_valid_atom(const Atom_Type atom_type, const std::string token) {
         return true;
 }
 
-bool is_valid_i16(const std::string token) {
+bool is_valid_i16(const std::string &token) {
         std::stringstream the_stream(token);
         int32_t value = 0;
         the_stream >> value;

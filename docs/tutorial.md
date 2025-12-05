@@ -201,14 +201,14 @@ will be deleted.
 ## help
 The help command shows a summary of commands that PalDB can take in.
 
-## interpret
+## disassemble
 This will print out the disassembled user program, showing program addresses
 of every instruction, the addresses to the string literal data, and the
 address of the main label.
 
 ## list
 The list command simply lists the next instruction to be performed, in a similar
-format to the interpret command. Unlike gdb, you can not list the instructions
+format to the disassemble command. Unlike gdb, you can not list the instructions
 outside the next instruction
 
 ## next

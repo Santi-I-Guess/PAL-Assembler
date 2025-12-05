@@ -10,9 +10,9 @@
 #define CLEAR "\x1b[0m"
 
 void pdb_handle_break(
-        const std::vector<std::string> cmd_tokens,
+        const std::vector<std::string> &cmd_tokens,
         std::vector<int16_t> &breakpoints,
-        const std::vector<int16_t> mnemonic_addrs
+        const std::vector<int16_t> &mnemonic_addrs
 ) {
         // break
         if (cmd_tokens.size() != 2) {
@@ -54,7 +54,7 @@ void pdb_handle_break(
 }
 
 void pdb_handle_delete(
-        const std::vector<std::string> cmd_tokens,
+        const std::vector<std::string> &cmd_tokens,
         std::vector<int16_t> &breakpoints
 ) {
         if (cmd_tokens.size() != 2) {
@@ -87,7 +87,7 @@ void pdb_handle_help() {
         std::cout << "    delete breakpoint at a specified address\n";
         std::cout << BOLD "help" CLEAR "\n";
         std::cout << "    show this help screen\n";
-        std::cout << BOLD "interpret" CLEAR "\n";
+        std::cout << BOLD "disassemble" CLEAR "\n";
         std::cout << "    show disassembled program.\n";
         std::cout << BOLD "list" CLEAR "\n";
         std::cout << "    show the next instruction to be performed\n";
@@ -100,7 +100,7 @@ void pdb_handle_help() {
         std::cout << "    quit debugger and program execution\n\n";
 }
 
-void pdb_handle_interpret(const CPU_Handle &cpu_handle) {
+void pdb_handle_disassemble(const CPU_Handle &cpu_handle) {
         Program_State_Enum curr_state = READING_ENTRY_LABEL;
         const int16_t header[4] = {
                 cpu_handle.get_program_data(0),
@@ -149,12 +149,12 @@ void pdb_handle_interpret(const CPU_Handle &cpu_handle) {
                                 int16_t curr_element = cpu_handle.get_program_data(int_idx + i);
                                 instruction.push_back(curr_element);
                         }
-                        itrprt_print_instruction(instruction, int_idx);
+                        disassemble_print_instruction(instruction, int_idx);
                         int_idx += ins_len;
                         break;
                 case READING_STR:
                         // keep int_idx here: not all control paths return at end
-                        itrprt_print_chars(curr_int, int_idx, curr_str_idx, curr_state); // &
+                        disassemble_print_chars(curr_int, int_idx, curr_str_idx, curr_state); // &
                         int_idx++;
                         break;
                 default: /* impossible */
@@ -165,7 +165,7 @@ void pdb_handle_interpret(const CPU_Handle &cpu_handle) {
 }
 
 void pdb_handle_print(
-        const std::vector<std::string> cmd_tokens,
+        const std::vector<std::string> &cmd_tokens,
         CPU_Handle &cpu_handle
 ) {
         if (cmd_tokens.size() != 2) {
@@ -230,9 +230,9 @@ void pdb_handle_print(
         }
 }
 
-void itrprt_print_chars(
-        const int16_t curr_int,
-        const int16_t int_idx,
+void disassemble_print_chars(
+        const int16_t &curr_int,
+        const int16_t &int_idx,
         int16_t &curr_str_idx,
         Program_State_Enum &curr_state
 ) {
@@ -273,9 +273,9 @@ void itrprt_print_chars(
                 std::cout << higher;
 }
 
-void itrprt_print_instruction(
-        const std::vector<int16_t> instruction,
-        const int16_t prog_ctr
+void disassemble_print_instruction(
+        const std::vector<int16_t> &instruction,
+        const int16_t &prog_ctr
 ) {
         std::string out_string = "";
         std::stringstream out_stream;

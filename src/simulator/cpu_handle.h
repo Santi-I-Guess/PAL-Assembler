@@ -126,7 +126,7 @@ public:
                 std::vector<int16_t> &breakpoints
         );
         friend void pdb_handle_print(
-                const std::vector<std::string> cmd_tokens,
+                const std::vector<std::string> &cmd_tokens,
                 CPU_Handle &cpu_handle
         );
         friend void update_register(

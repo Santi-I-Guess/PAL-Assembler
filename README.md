@@ -23,7 +23,7 @@ some changes to make usage simple.
 - continue
 - delete \<program address\>?
 - help
-- interpret
+- disassemble
 - list
 - next
 - print \<register|stack offset|ram address\>

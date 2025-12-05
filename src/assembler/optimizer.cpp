@@ -10,15 +10,41 @@
 * @brief enum for quick opcode checking, in order
 */
 enum Pseudo_Opcode {
-         NOP=0, MOV,   INC,    DEC,
-         ADD,   SUB,   MUL,    DIV,
-         MOD,   AND,   OR,     NOT,
-         XOR,   LSH,   RSH,    CMP,
-         JMP,   JEQ,   JNE,    JGE,
-         JGR,   JLE,   JLS,    CALL,
-         RET,   PUSH,  POP,    WRITE,
-         READ,  PRINT, SPRINT, CPRINT,
-         INPUT, EXIT, 
+         NOP=0,
+         MOV=1,
+         INC=2,
+         DEC=3,
+         ADD=4,
+         SUB=5,
+         MUL=6,
+         DIV=7,
+         MOD=8,
+         AND=9,
+         OR=10,
+         NOT=11,
+         XOR=12,
+         LSH=13,
+         RSH=14,
+         CMP=15,
+         JMP=16,
+         JEQ=17,
+         JNE=18,
+         JGE=19,
+         JGR=20,
+         JLE=21,
+         JLS=22,
+         CALL=23,
+         RET=24,
+         PUSH=25,
+         POP=26,
+         WRITE=27,
+         READ=28,
+         PRINT=29,
+         SPRINT=30,
+         CPRINT=31,
+         INPUT=32,
+         RAND=33,
+         EXIT=34,
 };
 
 void peephole_optimize_program(std::vector<int16_t> &program) {
@@ -99,7 +125,7 @@ void peephole_optimize_program(std::vector<int16_t> &program) {
         program.swap(fixed_program);
 }
 
-bool is_null_sequence(const std::vector<int16_t> instruction) {
+bool is_null_sequence(const std::vector<int16_t> &instruction) {
         int opcode = instruction.at(0);
         int16_t dest, src_1, src_2; // auxiliary
         switch ((Pseudo_Opcode)opcode) {
@@ -169,13 +195,14 @@ bool is_null_sequence(const std::vector<int16_t> instruction) {
         case SPRINT:
         case CPRINT:
         case INPUT:
+        case RAND:
         case EXIT:
                 return false;
         }
         return false; /* impossible */
 }
 
-bool can_constant_fold(const std::vector<int16_t> instruction) {
+bool can_constant_fold(const std::vector<int16_t> &instruction) {
         int opcode = instruction.at(0);
         int16_t src_1, src_2;
         switch ((Pseudo_Opcode)opcode) {
@@ -215,6 +242,7 @@ bool can_constant_fold(const std::vector<int16_t> instruction) {
         case SPRINT:
         case CPRINT:
         case INPUT:
+        case RAND:
         case EXIT:
                 return false;
         }
@@ -225,7 +253,7 @@ bool can_constant_fold(const std::vector<int16_t> instruction) {
 // Y = X + X -> Y = X << 1
 // Y = A * 2^N -> Y = A << N
 // Y = A / 2^N -> Y = A >> N
-bool can_reduce_strength(const std::vector<int16_t> instruction) {
+bool can_reduce_strength(const std::vector<int16_t> &instruction) {
         int opcode = instruction.at(0);
         int16_t src_1, src_2;
         switch ((Pseudo_Opcode)opcode) {
@@ -276,6 +304,7 @@ bool can_reduce_strength(const std::vector<int16_t> instruction) {
         case SPRINT:
         case CPRINT:
         case INPUT:
+        case RAND:
         case EXIT:
                 return false;
         }
@@ -290,11 +319,11 @@ int16_t get_folded_value(
 ) {
         int32_t target_value = 0;
         int16_t value_1 = arg_1;
-        int16_t value_2 = arg_1;
+        int16_t value_2 = arg_2;
         if (arg_1 >= 0)
                 value_1 = arg_1 ^ (int16_t)(1 << 14);
         if (arg_2 >= 0)
-                value_1 = arg_2 ^ (int16_t)(1 << 14);
+                value_2 = arg_2 ^ (int16_t)(1 << 14);
         if (opcode == (int16_t)ADD) {
                 target_value = value_1 + value_2;
         } else if (opcode == (int16_t)SUB) {
@@ -321,18 +350,15 @@ int16_t get_folded_value(
                 target_value = value_1 >> value_2;
         }
 
-        if (target_value > 32768) {
+        if (target_value != int32_t(int16_t(target_value))) {
                 std::cout << "\x1b[34mWarning:\x1b[0m";
-                std::cout << " Unclamped value is greater than 2**15\n";
-        } else if (target_value < -32768) {
-                std::cout << "\x1b[34mWarning:\x1b[0m";
-                std::cout << " Unclamped value is less than -2**15\n";
+                std::cout << " Result has more than 16 bits\n";
         }
 
         if (target_value > LIT_MAX_VALUE)
                 target_value = LIT_MAX_VALUE;
         else if (target_value < LIT_MIN_VALUE)
                 target_value = LIT_MIN_VALUE;
-        target_value |= (int16_t)(1 << 14); // apply literal bitmask
+        target_value |= (int32_t)(1 << 14); // apply literal bitmask
         return (int16_t)target_value;
 }

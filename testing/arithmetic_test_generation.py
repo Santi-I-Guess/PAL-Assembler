@@ -43,8 +43,8 @@ registers = ["RA", "RB", "RC", "RD",
 #       is for string offsets, and 1 << 12 is for string, that means I only
 #       have 12 bits for number range.
 
-max_value = 16383
-min_value = -16383
+max_value = 16384
+min_value = -16384
 
 
 def clamp(result) -> int:
@@ -56,7 +56,20 @@ def clamp(result) -> int:
         return min_value
     return result
 
+
+operation_map = {
+    "ADD": "+",
+    "SUB": "-",
+    "MUL": "*",
+    "DIV": "/",
+}
+
+
 if __name__ == "__main__":
+    print("""arrow_print:
+    SPRINT \"  -> \"
+    RET
+    """)
     print("main:")
     for i in range(32):
         operation = random.choice(MNEMONICS_LIST)
@@ -67,23 +80,14 @@ if __name__ == "__main__":
         if operation == "ADD":
             result = arg_1 + arg_2
             result = clamp(result)
-            print(f"    SPRINT \"{arg_1:>6} + {arg_2:<6} = {result:<6}\"")
-            print("    SPRINT \"  -> \"")
-            print(f"    {operation} RA, ${arg_1:<6}, ${arg_2:<6}")
         elif operation == "SUB":
             result = arg_1 - arg_2
             result = clamp(result)
-            print(f"    SPRINT \"{arg_1:>6} - {arg_2:<6} = {result:<6}\"")
-            print("    SPRINT \"  -> \"")
-            print(f"    {operation} RA, ${arg_1:<6}, ${arg_2:<6}")
         elif operation == "MUL":
             result = arg_1 * arg_2
             # result_bin = bin(result)[2:]
             # result = int(result_bin[len(result_bin)-8:], 2)
             result = clamp(result)
-            print(f"    SPRINT \"{arg_1:>6} * {arg_2:<6} = {result:<6}\"")
-            print("    SPRINT \"  -> \"")
-            print(f"    {operation} RA, ${arg_1:<6}, ${arg_2:<6}")
         elif operation == "DIV":
             if arg_2 == 0:
                 result = 1
@@ -91,50 +95,18 @@ if __name__ == "__main__":
                 result = math.trunc(arg_1 / arg_2)
             if -1 < result and result < 1:
                 result = 0
-            result = clamp(result)
-            print(f"    SPRINT \"{arg_1:>6} / {arg_2:<6} = {result:<6}\"")
-            print("    SPRINT \"  -> \"")
-            print(f"    {operation} RA, ${arg_1:<6}, ${arg_2:<6}")
-        elif operation == "AND":
-            result = arg_1 & arg_2
-            result = clamp(result)
-            print(f"    SPRINT \"{arg_1:>6} & {arg_2:<6} = {result:<6}\"")
-            print("    SPRINT \"  -> \"")
-            print(f"    {operation} RA, ${arg_1:<6}, ${arg_2:<6}")
-        elif operation == "OR":
-            result = arg_1 | arg_2
-            result = clamp(result)
-            print(f"    SPRINT \"{arg_1:>6} | {arg_2:<6} = {result:<6}\"")
-            print("    SPRINT \"  -> \"")
-            print(f"    {operation} RA, ${arg_1:<6}, ${arg_2:<6}")
-        elif operation == "NOT":
-            result = 65536 - arg_1
-            result = clamp(result)
-            print(f"    SPRINT \"~{arg_1:>6} = {result:<6}\"")
-            print("    SPRINT \"  -> \"")
-            print(f"    {operation} RA, ${arg_1:<6}")
-        elif operation == "XOR":
-            result = arg_1 ^ arg_2
-            result = clamp(result)
-            print(f"    SPRINT \"{arg_1:>6} ^ {arg_2:<6} = {result:<6}\"")
-            print("    SPRINT \"  -> \"")
-            print(f"    {operation} RA, ${arg_1:<6}, ${arg_2:<6}")
-        elif operation == "LSH":
-            if arg_2 < 0:
-                arg_2 = 0
-            result = arg_1 << arg_2
-            result = clamp(result)
-            print(f"    SPRINT \"{arg_1:>6} | {arg_2:<6} = {result:<6}\"")
-            print("    SPRINT \"  -> \"")
-            print(f"    {operation} RA, ${arg_1:<6}, ${arg_2:<6}")
-        elif operation == "RSH":
-            if arg_2 < 0:
-                arg_2 = 0
-            result = arg_1 >> arg_2
-            result = clamp(result)
-            print(f"    SPRINT \"{arg_1:>6} | {arg_2:<6} = {result:<6}\"")
-            print("    SPRINT \"  -> \"")
-            print(f"    {operation} RA, ${arg_1:<6}, ${arg_2:<6}")
+
+        result = clamp(result)
+        print(f"    SPRINT \"{arg_1:>6} {operation_map[operation]} {arg_2:<6} = {result:<6}\"")
+        print("    CALL arrow_print")
+        if operation == "NOT":
+            arg_1 = f"${arg_1}"
+            print(f"    {operation:<9} RA, {arg_1:>9}")
+        else:
+            arg_1 = f"${arg_1}"
+            arg_2 = f"${arg_2}"
+            print(f"    {operation:<9} RA, {arg_1:>9}, {arg_2:>9}")
+
         print("    PRINT RA")
         print("    CPRINT $10")
     print("    EXIT ")

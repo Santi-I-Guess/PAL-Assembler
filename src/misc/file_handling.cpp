@@ -9,9 +9,9 @@
 #include "file_handling.h"
 
 void generate_debug_file(
-        const std::string file_header,
-        const std::vector<Token> tokens,
-        const std::map<std::string, int16_t> label_table
+        const std::string &file_header,
+        const std::vector<Token> &tokens,
+        const std::map<std::string, int16_t> &label_table
 ) {
         std::ofstream sink_file("debug_symbols_" + file_header + ".txt");
         if (sink_file.fail()) {
@@ -19,7 +19,7 @@ void generate_debug_file(
                 std::exit(1);
         }
         // print tokens and their types
-        for (Token i: tokens) {
+        for (const Token &i: tokens) {
                 sink_file << std::left << std::setw(20);
                 switch (i.type) {
                 case T_INTEGER_LIT:
@@ -58,8 +58,8 @@ void generate_debug_file(
 }
 
 std::string get_source_buffer(
-        const std::string source_path,
-        const bool use_stdin
+        const std::string &source_path,
+        const bool &use_stdin
 ) {
         std::string source_buffer = "";
         if (use_stdin) {
@@ -87,7 +87,7 @@ std::string get_source_buffer(
 
 void populate_program_from_binary(
         std::vector<int16_t> &program,
-        const std::string file_path
+        const std::string &file_path
 ) {
         std::ifstream source_bin(file_path, std::ios::binary);
         if (source_bin.fail()) {
@@ -107,8 +107,8 @@ void populate_program_from_binary(
 }
 
 bool write_program_to_sink(
-        const std::vector<int16_t> program,
-        const std::string header
+        const std::vector<int16_t> &program,
+        const std::string &header
 ) {
         std::string file_path = "program_" + header + ".bin";
         std::ofstream sink_file(file_path, std::ios::binary);
