@@ -3,25 +3,40 @@ main:
     ; RA as temp variable, %0 as input
     SPRINT "Enter a year: "
     INPUT
-    ; yes if divisible by 400
+
+    WRITE %0, $1 ; put input into ram address 1
     MOD RA, %0, $400
-    CMP RA, $0
-    JEQ is_leap_year
-    ; else no if divisible by 100
+    WRITE RA, $2
+
     MOD RA, %0, $100
-    CMP RA, $0
-    JNE not_leap_year
-    ; else yes if divisible by 4
+    WRITE RA, $3
+
     MOD RA, %0, $4
+    WRITE RA, $4
+
+    ; if div by 400 and 100
+    READ RA, $2 ; result of INPUT % 400
+    READ RB, $3 ; result of INPUT % 100
+    ADD RC, RA, RB
+    CMP RC, $0         ; check if the sum of their mods are 0
+    JEQ is_leap_year
+
+    CMP RB, $0
+    JEQ not_leap_year
+
+    READ RA, $4 ; result of INPUT % 4
     CMP RA, $0
     JEQ is_leap_year
 not_leap_year:
-    PRINT %0
+    READ RA, $1 ; the original input
+    PRINT RA
     SPRINT " is not a leap year\n"
     JMP final
 is_leap_year:
-    PRINT %0
+    READ RA, $1 ; the original input
+    PRINT RA
     SPRINT " is a leap year\n"
+    JMP final
 final:
     EXIT
 
