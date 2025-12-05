@@ -288,7 +288,7 @@ int16_t get_folded_value(
         const int16_t arg_1,
         const int16_t arg_2
 ) {
-        int16_t target_value = 0;
+        int32_t target_value = 0;
         int16_t value_1 = arg_1;
         int16_t value_2 = arg_1;
         if (arg_1 >= 0)
@@ -320,10 +320,19 @@ int16_t get_folded_value(
         } else if (opcode == (int16_t)RSH) {
                 target_value = value_1 >> value_2;
         }
-        if (target_value < -4096)
-                target_value = -4096;
-        if (target_value > 4096)
-                target_value = 4096;
+
+        if (target_value > 32768) {
+                std::cout << "\x1b[34mWarning:\x1b[0m";
+                std::cout << " Unclamped value is greater than 2**15\n";
+        } else if (target_value < -32768) {
+                std::cout << "\x1b[34mWarning:\x1b[0m";
+                std::cout << " Unclamped value is less than -2**15\n";
+        }
+
+        if (target_value > LIT_MAX_VALUE)
+                target_value = LIT_MAX_VALUE;
+        else if (target_value < LIT_MIN_VALUE)
+                target_value = LIT_MIN_VALUE;
         target_value |= (int16_t)(1 << 14); // apply literal bitmask
-        return target_value;
+        return (int16_t)target_value;
 }

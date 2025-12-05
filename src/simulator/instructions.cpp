@@ -1,4 +1,5 @@
 #include <iostream>
+#include <random>
 #include <string>
 #include <sstream>
 
@@ -459,6 +460,23 @@ void ins_input(CPU_Handle &cpu_handle) {
         }
         value = clamp(value);
         program_mem[STACK_START + stack_ptr] = value;
+        stack_ptr++;
+        prog_ctr += 1;
+}
+
+
+void ins_rand(CPU_Handle   &cpu_handle) {
+        int16_t &prog_ctr = cpu_handle.prog_ctr;
+        int16_t &stack_ptr = cpu_handle.stack_ptr;
+        int16_t *program_mem = cpu_handle.program_mem;
+        if (stack_ptr == STACK_SIZE) {
+                handle_runtime_error(STACK_OVERFLOW);
+        }
+
+        std::random_device rd;
+        std::mt19937 mt(rd());
+        std::uniform_int_distribution<int16_t> generator((int16_t)-100, (int16_t)100);
+        program_mem[STACK_START + stack_ptr] = generator(mt);
         stack_ptr++;
         prog_ctr += 1;
 }
