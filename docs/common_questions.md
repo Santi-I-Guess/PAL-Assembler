@@ -24,3 +24,18 @@ the expected sign of the result with the actual sign, and change the
 sign if the value needed to be clamped. This makes the value a tiny
 bit more predictable, but it is recommended not to multiply by
 arguments that cause values greater than an int16_t's range.
+
+# Why are you opening the terminal device (/dev/tty and CONIN$) in the debugger?
+In earlier iterations of the assembler (look for the commit that mentions
+fixing piped input on Dec 4th), you'll notice that you can't really pipe
+a program as input, then use the debugger without std::cin freaking out.
+It's a bit of a strange issue, where stdin (fileno 0) will be set to eof
+once it's done reading, which will be the end of the program, and subsequently
+can't be used because stdin is still associated with the nameless pipe. This
+causes std::cin to not be able to clear std::cin.eof and release control.
+
+To skirt around this, the debugger will check if the input is from a pipe,
+and if it is, it will open the controlling terminal device. On linux systems,
+this is /dev/tty, and I think on windows it's CONIN$, but i'm not 100%
+sure on that. This allows the debugger to take in user input while also
+taking in piped input.
