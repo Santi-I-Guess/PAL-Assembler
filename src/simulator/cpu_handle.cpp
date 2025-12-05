@@ -49,7 +49,7 @@ CPU_Handle::~CPU_Handle() {
 
 int16_t CPU_Handle::dereference_value(const int16_t given_value) {
         int16_t intended_address = 0;
-        int16_t intended_value = 0;
+        int16_t intended_value   = 0;
         if ((given_value >> 14) & 1) {
                 // literal value
                 intended_value = given_value;

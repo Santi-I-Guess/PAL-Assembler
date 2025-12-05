@@ -41,12 +41,13 @@ registers = ["RA", "RB", "RC", "RD",
 
 # note: since 1 << 15 is the sign bit, 1 << 14 is for literals, 1 << 13
 #       is for string offsets, and 1 << 12 is for string, that means I only
-#       have 12 bits for number range.
+#       have 13 bits for number range (since it checks for literals first,
+#       we can use bits reserved for addressing in that case).
 
-max_value = 16384
-min_value = -16384
+max_value = 16383
+min_value = -16383
 
-
+ 
 def clamp(result) -> int:
     if abs(result) < 1:
         result = 0
@@ -66,12 +67,8 @@ operation_map = {
 
 
 if __name__ == "__main__":
-    print("""arrow_print:
-    SPRINT \"  -> \"
-    RET
-    """)
     print("main:")
-    for i in range(32):
+    for i in range(3):
         operation = random.choice(MNEMONICS_LIST)
         # arg_1 = int(random.triangular(min_value, max_value))
         # arg_2 = int(random.triangular(min_value, max_value))
@@ -97,8 +94,7 @@ if __name__ == "__main__":
                 result = 0
 
         result = clamp(result)
-        print(f"    SPRINT \"{arg_1:>6} {operation_map[operation]} {arg_2:<6} = {result:<6}\"")
-        print("    CALL arrow_print")
+        print("    ; next operation")
         if operation == "NOT":
             arg_1 = f"${arg_1}"
             print(f"    {operation:<9} RA, {arg_1:>9}")
@@ -106,7 +102,32 @@ if __name__ == "__main__":
             arg_1 = f"${arg_1}"
             arg_2 = f"${arg_2}"
             print(f"    {operation:<9} RA, {arg_1:>9}, {arg_2:>9}")
-
-        print("    PRINT RA")
-        print("    CPRINT $10")
-    print("    EXIT ")
+        print(f"    SPRINT \"{arg_1:<9} {operation_map[operation]} {arg_2:<9} = ${result:<6}\"")
+        print("    PUSH RA")
+        print("    CALL arrow_print")
+        # print("    check")
+        # print("    PUSH RA")
+        # print(f"    PUSH ${result}")
+        # print("    CALL check_value")
+    print("    EXIT")
+    print("""arrow_print:
+    ; %0 is the value calculated
+    SPRINT \"  -> \"
+    PRINT %0
+    CPRINT $10
+    POP RH ; dump parameter
+    RET""")
+    print("""\
+check_value:
+    ; %0 -> RA is expected, %0 -> RB is actual
+    CMP %0, %1
+    JEQ final
+    SPRINT "expected "
+    PRINT %0
+    SPRINT ", got "
+    PRINT %1
+    CPRINT $10
+final:
+    POP RH ; dump parameters
+    POP RH
+    RET""")

@@ -17,7 +17,6 @@ struct Cmd_Options {
         bool is_binary_input;    ///< -b
         bool is_debug;           ///< -d
         bool test_only;          ///< -t
-        bool optimize;           ///< -o
 
         Cmd_Options();
         void store_cmd_args(const int argc, char ** const argv); ///< store flags

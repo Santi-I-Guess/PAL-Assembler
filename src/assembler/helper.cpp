@@ -21,7 +21,7 @@ bool is_valid_atom(const Atom_Type atom_type, const std::string &token) {
                 second = token.front() == '\"';
                 return first && second;
         case MNEMONIC:
-                return BLUEPRINTS.find(token) != BLUEPRINTS.end();
+                return INS_BLUEPRINTS.find(token) != INS_BLUEPRINTS.end();
         case REGISTER:
                 // general purpose registers only
                 if (REGISTER_TABLE.find(token) == REGISTER_TABLE.end())

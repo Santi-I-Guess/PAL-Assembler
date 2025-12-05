@@ -1,11 +1,11 @@
 
-# Why am I getting plus/minus 16384?
+# Why am I getting plus/minus 16383?
 PAL uses the 14th, 13th, and 12th bit to determine the addressing mode of an
 argument, and checks the addressing mode in the order of literal, stack,
 string. To avoid strange unrepresentable ranges, all values are clamped
-to plus/minus 2**12, which is 16384. To simulate overflow / underflow,
+to plus/minus 2**14 - 1, which is 16383. To simulate overflow / underflow,
 INC and DEC will clamp to the opposite sign of their value if the register
-value goes outside \[-16384, 16384\]
+value goes outside \[-16383, 16383\]
 
 # Why does entering nothing for INPUT push $10 to the stack?
 INPUT is specifically for inputting integers, and if a letter is given, it

@@ -1,0 +1,42 @@
+#include <cstdint>
+#include <string>
+#include <vector>
+
+#include "common_values.h"
+
+Instruction_Data::Instruction_Data(
+        int16_t given_opcode,
+        std::string given_mnem_name,
+        std::vector<Atom_Type> given_blueprint
+) {
+        length = given_blueprint.size();
+        opcode = given_opcode;
+        mnem_name = given_mnem_name;
+        blueprint = given_blueprint;
+}
+
+Instruction_Data get_instruction(const int16_t &opcode) {
+        // ordered_maps are organized by key in lexographical order,
+        // not by initalization order
+        std::map<std::string, Instruction_Data>::const_iterator it;
+        for (it = INS_BLUEPRINTS.begin(); it != INS_BLUEPRINTS.end(); ++it) {
+                if (it->second.opcode == opcode)
+                        return it->second;
+        }
+        return Instruction_Data();
+}
+
+std::string get_mnem_name(const int16_t &opcode) {
+        // ordered_maps are organized by key in lexographical order,
+        // not by initalization order
+        std::map<std::string, Instruction_Data>::const_iterator it;
+        for (it = INS_BLUEPRINTS.begin(); it != INS_BLUEPRINTS.end(); ++it) {
+                if (it->second.opcode == opcode)
+                        return it->first;
+        }
+        return "";
+}
+
+int16_t get_opcode(const std::string &mnem_name) {
+        return INS_BLUEPRINTS.at(mnem_name).opcode;
+}

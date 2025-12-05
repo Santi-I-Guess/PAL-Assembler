@@ -64,9 +64,9 @@ std::vector<int16_t> assemble_program(
         size_t token_idx = 0;
         while (token_idx < tokens.size()) {
                 Token first_token = tokens.at(token_idx);
-                std::vector<Atom_Type> curr_blueprint;
-                curr_blueprint = BLUEPRINTS.at(first_token.data);
-                for (size_t ins_idx = 0; ins_idx < curr_blueprint.size(); ins_idx++) {
+                Instruction_Data curr_instruction;
+                curr_instruction = INS_BLUEPRINTS.at(first_token.data);
+                for (size_t ins_idx = 0; ins_idx < curr_instruction.length; ins_idx++) {
                         Token curr_token = tokens.at(token_idx + ins_idx);
                         int16_t translated = 0;
                         std::stringstream aux_stream;
@@ -85,7 +85,7 @@ std::vector<int16_t> assemble_program(
                                 translated = label_map.at(curr_token.data) + main_addr_offset;
                                 break;
                         case T_MNEMONIC:
-                                translated = OPCODE_TABLE.at(curr_token.data);
+                                translated = curr_instruction.opcode;
                                 break;
                         case T_REGISTER:
                                 translated = REGISTER_TABLE.at(curr_token.data);
@@ -103,10 +103,10 @@ std::vector<int16_t> assemble_program(
                                 break;
                         }
                         program.push_back(translated);
-                        if (curr_blueprint.at(ins_idx) == LITERAL_STR)
+                        if (curr_instruction.blueprint.at(ins_idx) == LITERAL_STR)
                                 num_seen_strs++;
                 }
-                token_idx += curr_blueprint.size();
+                token_idx += curr_instruction.length;
         }
 
         return program;
@@ -231,6 +231,7 @@ std::vector<Token> create_tokens(const std::string &source_buffer) {
                         buff_idx++;
                 }
         }
+
         return tokens;
 }
 
@@ -258,7 +259,7 @@ Debug_Info grammar_check(
                         context.relevant_token = first_token;
                         return context;
                 }
-                if (BLUEPRINTS.find(first_token.data) == BLUEPRINTS.end()) {
+                if (INS_BLUEPRINTS.find(first_token.data) == INS_BLUEPRINTS.end()) {
                         // mnemonic not recognized
                         context.grammar_retval = UNKNOWN_MNEMONIC_E;
                         context.line_num = first_token.line_num;
@@ -268,9 +269,10 @@ Debug_Info grammar_check(
                 if (first_token.data == "EXIT")
                         seen_exit = true;
 
-                std::vector<Atom_Type> curr_blueprint = BLUEPRINTS.at(first_token.data);
+                Instruction_Data curr_instruction = INS_BLUEPRINTS.at(first_token.data);
+                std::vector<Atom_Type> curr_blueprint = curr_instruction.blueprint;
                 // check if there are enough tokens
-                if (token_idx + curr_blueprint.size() > tokens.size()) {
+                if (token_idx + curr_instruction.length > tokens.size()) {
                         // expected arguments
                         context.grammar_retval = MISSING_ARGUMENTS_E;
                         context.line_num = first_token.line_num;
@@ -278,7 +280,7 @@ Debug_Info grammar_check(
                         return context;
                 }
 
-                for (int arg_idx = 1; arg_idx < (int)curr_blueprint.size(); arg_idx++) {
+                for (int arg_idx = 1; arg_idx < (int)curr_instruction.length; arg_idx++) {
                         // check each atom for correctness
                         Token curr_token = tokens.at(token_idx + arg_idx);
                         // to prevent mnemonic consumption causing missing exit
@@ -340,7 +342,7 @@ Debug_Info grammar_check(
                                 return context;
                         }
                 }
-                token_idx += curr_blueprint.size();
+                token_idx += curr_instruction.length;
         }
 
         // sure exit instruction exists

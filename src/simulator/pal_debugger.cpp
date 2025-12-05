@@ -277,25 +277,26 @@ void disassemble_print_instruction(
         const std::vector<int16_t> &instruction,
         const int16_t &prog_ctr
 ) {
-        std::string out_string = "";
+        std::string out_string;
         std::stringstream out_stream;
 
         // first, the mnemoinc
         int16_t opcode = instruction.at(0);
-        std::string mnem_name = DEREFERENCE_TABLE[opcode];
+        std::string mnem_name = get_mnem_name(opcode);
         out_stream << "#" << std::right << std::setw(4) << prog_ctr << ": ";
         out_stream << std::left << std::setw(7) << mnem_name;
 
         // second, the arguments
-        int16_t ins_size = INSTRUCTION_LENS[opcode];
-        for (int arg_idx = 1; arg_idx < ins_size; ++arg_idx) {
+        size_t ins_size = INS_BLUEPRINTS.at(mnem_name).length;
+        for (size_t arg_idx = 1; arg_idx < ins_size; ++arg_idx) {
                 std::string arg_string = "";
                 std::stringstream arg_stream;
                 int16_t curr_arg = instruction.at(arg_idx);
-                Atom_Type arg_type = BLUEPRINTS.at(mnem_name)[arg_idx];
+                Instruction_Data curr_instruction = INS_BLUEPRINTS.at(mnem_name);
+                Atom_Type arg_type = curr_instruction.blueprint.at(arg_idx);
                 if ((curr_arg >> 14) & 1) {
                         // literal bitmask
-                        if (curr_arg >= 0)
+                        if (curr_arg >= 0 && ((curr_arg >> 14) & 1))
                                 curr_arg ^= (int16_t)(1 << 14);
                         arg_stream << "$";
                         arg_stream << curr_arg;

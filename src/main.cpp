@@ -15,7 +15,6 @@
 #include <sstream>
 
 #include "assembler/synthesis.h"
-#include "assembler/optimizer.h"
 #include "common_values.h"
 #include "misc/cmd_line_opts.h"
 #include "misc/file_handling.h"
@@ -146,8 +145,7 @@ int main(int argc, char **argv) {
                 }
 
                 final_program = assemble_program(filtered_tokens, label_map);
-                if (life_opts.optimize)
-                        peephole_optimize_program(final_program);
+
                 // write the assembled program to a binary file
                 if (life_opts.assemble_only) {
                         bool res_temp;
