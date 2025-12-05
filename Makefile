@@ -17,7 +17,6 @@ ifeq ($(OS),Windows_NT)
 	ZIPPER = tar -a -c -f
 	ZIP_NAME = $(PROJECT)_$(USERNAME).$(ARCHIVE_EXTENSION)
 	Q =
-	SEPERATOR=\\
 else
 	TARGET = $(PROJECT)
 	DEL = rm
@@ -28,18 +27,22 @@ else
 		ARCHIVE_EXTENSION = tar.gz
 	endif
 	ZIP_NAME = $(PROJECT)_$(USERNAME).$(ARCHIVE_EXTENSION)
-	SEPERATOR=/
 endif
 
 PROJECT = final_project
-SRC_DIRS  = src$(SEPERATOR)assembler \
-			src$(SEPERATOR)misc \
-			src$(SEPERATOR)simulator \
+SRC_DIRS  = src/assembler \
+			src/misc \
+			src/simulator \
 			src
-SRC_FILES = $(foreach dir, $(SRC_DIRS), $(wildcard ${dir}$(SEPERATOR)*.cpp))
-H_FILES   = $(foreach dir, $(SRC_DIRS), $(wildcard ${dir}$(SEPERATOR)*.h))
-OBJECTS = $(patsubst %.cpp, build$(SEPERATOR)%.o, $(notdir $(SRC_FILES)))
-REZ_FILES = resources/pseudo_assembly_assembler.png
+SRC_FILES = $(foreach dir, $(SRC_DIRS), $(wildcard ${dir}/*.cpp))
+H_FILES   = $(foreach dir, $(SRC_DIRS), $(wildcard ${dir}/*.h))
+OBJECTS = $(patsubst %.cpp, build/%.o, $(notdir $(SRC_FILES)))
+REZ_FILES = resources/pseudo_assembly_assembler.png \
+			Doxyfile \
+			$(wildcard docs/*.md) \
+			$(wildcard examples/*) \
+			$(wildcard *.py) \
+			$(wildcard *.sh) \
 USERNAME  = santiago_sagastegui
 
 # https://www.gnu.org/software/make/manual/html_node/File-Name-Functions.html
@@ -62,7 +65,7 @@ $(BUILD_DIR):
 # VPATH variable specifies list of directories to search for prerequisites,
 # if prerequisite is not in current directory
 VPATH = $(SRC_DIRS)
-build$(SEPERATOR)%.o: %.cpp
+build/%.o: %.cpp
 	@echo "building $(notdir $<)"
 	@$(CXX) -o $@ -c $< $(CPPVERSION) $(CXXFLAGS_DEBUG) $(CXXFLAGS_WARN)
 
@@ -72,8 +75,11 @@ $(TARGET): $(OBJECTS)
 
 # Remove-Item (del) has some weird positional things going on
 clean: | $(BUILD_DIR)
-	@echo cleaning target and objects
-	@$(DEL) $(TARGET) $(wildcard build$(SEPERATOR)*.o) $(DEL_FLAGS)
+	@echo cleaning target
+	@$(DEL) $(TARGET) $(DEL_FLAGS)
+	@echo cleaning objects
+	@$(DEL) $(wildcard build/*.o) $(DEL_FLAGS)
+
 
 depend:
 	@sed --in-place=.bak '/^# DEPENDENCIES/,$$d' Makefile
