@@ -1,0 +1,3 @@
+; ensure arithmetic instructions are predictable
+; ensure clamping is predictable
+; ensure wrap around is predictable

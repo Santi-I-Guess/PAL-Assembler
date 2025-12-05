@@ -76,7 +76,7 @@ public:
         int16_t get_program_data(const int16_t idx) const;
         int16_t get_prog_size() const;
         void load_program(const std::vector<int16_t> given_program);
-        void next_instruction(bool &hit_exit);
+        void next_instruction(bool &hit_exit, bool continue_cond);
         void run_program();
         void run_program_debug();
 
@@ -153,7 +153,7 @@ void handle_runtime_error(Runtime_Error_Enum error_code);
  */
 
 /**
- * @fn void CPU_Handle::next_instruction(bool &hit_exit)
+ * @fn void CPU_Handle::next_instruction(bool &hit_exit, bool continue)
  * @brief simulates the next instruction to run
  * @details if an EXIT instruction is run, set hit_exit to true to end
  * execution. Runs the same in debug and normal mode

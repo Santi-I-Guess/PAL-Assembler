@@ -10,6 +10,8 @@
 #define STACK_START 2250
 #define STACK_SIZE 750
 #define CALL_STACK_SIZE 2014
+#define LIT_MIN_VALUE -16383
+#define LIT_MAX_VALUE 16383
 
 /**
  * @brief enum for atom (a.k.a. argument) type

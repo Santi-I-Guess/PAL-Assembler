@@ -1,4 +1,6 @@
 #include <iostream>
+#include <string>
+#include <sstream>
 
 #include "../common_values.h"
 #include "cpu_handle.h"
@@ -7,10 +9,10 @@
 // note to self: maybe don't hardcode values that are easy to mess up?
 
 int16_t clamp(const int16_t value) {
-        if (value > 4096)
-                return 4096;
-        else if (value < -4096)
-                return -4096;
+        if (value > LIT_MAX_VALUE)
+                return LIT_MAX_VALUE;
+        else if (value < LIT_MIN_VALUE)
+                return LIT_MIN_VALUE;
         return value;
 }
 
@@ -35,6 +37,10 @@ void ins_inc(CPU_Handle &cpu_handle) {
                 handle_runtime_error(IMMUTABLE_MUTATION);
         }
         int16_t value = cpu_handle.dereference_value(dest) + 1;
+        // simulate wrap around
+        if (value == LIT_MAX_VALUE + 1) {
+                value = LIT_MIN_VALUE;
+        }
         update_register(cpu_handle, dest, value);
 
         prog_ctr += 2;
@@ -47,6 +53,10 @@ void ins_dec(CPU_Handle &cpu_handle) {
                 handle_runtime_error(IMMUTABLE_MUTATION);
         }
         int16_t value = cpu_handle.dereference_value(dest) - 1;
+        // simulate wrap around
+        if (value == LIT_MIN_VALUE - 1) {
+                value = LIT_MAX_VALUE;
+        }
         update_register(cpu_handle, dest, value);
 
         prog_ctr += 2;
@@ -431,13 +441,21 @@ void ins_input(CPU_Handle &cpu_handle) {
         std::string user_input;
         std::getline(std::cin, user_input);
         if (user_input.length() == 0) {
-                handle_runtime_error(INPUT_ERROR);
-        } else if (user_input.length() == 1 && isascii(user_input.at(0))) {
-                // if user inputs a letter, interpret it's ascii value
+                // empty input interpreted as newline (ascii value 10)
+                user_input = "\n";
+        }
+
+        bool is_ascii_input = (user_input.length() == 1) && isascii(user_input.at(0));
+        if (!isdigit(user_input.at(0)) && is_ascii_input) {
+                // if user inputs an asciiable, interpret it's ascii value
                 value = (int16_t)((char)user_input.at(0));
         } else {
                 // else, interpret as an integer
-                value = (int16_t)std::stoi(user_input);
+                std::stringstream aux_stream;
+                aux_stream << user_input;
+                aux_stream >> value;
+                if (aux_stream.fail())
+                        handle_runtime_error(INPUT_ERROR);
         }
         value = clamp(value);
         program_mem[STACK_START + stack_ptr] = value;

@@ -1,0 +1,1 @@
+# ensure PUSH, POP, stack addressing, and INPUT are predictable

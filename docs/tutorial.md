@@ -169,7 +169,7 @@ The program will continue to take in input until an empty line is inputted.
 This is particularly useful for testing smaller programs without making an
 entire file, such as
 - <code>printf "main: EXIT\n" | ./final_project</code>
-- <code>Write-Output "main: EXIT\n" | .\\final/project</code>
+- <code>Write-Output "main: EXIT\n" | .\\final\\project</code>
 
 # Pal Debugger
 When running the program with the -d flag, the program enters the Pal Debugger

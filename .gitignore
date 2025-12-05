@@ -3,9 +3,9 @@ build/*
 docs/html
 docs/man
 testing/__pycache__
-*.bin
-*.ods
-*.pdf
-*.txt
-*.typ
+bin
+ods
+pdf
+txt
+typ
 !examples/*.txt

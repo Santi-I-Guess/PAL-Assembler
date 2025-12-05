@@ -96,6 +96,8 @@ submission: | $(BUILD_DIR)
 # DEPENDENCIES
 build/helper.o: src/assembler/helper.cpp src/assembler/../common_values.h \
  src/assembler/helper.h
+build/optimizer.o: src/assembler/optimizer.cpp src/assembler/../common_values.h \
+ src/assembler/optimizer.h
 build/synthesis.o: src/assembler/synthesis.cpp src/assembler/../common_values.h \
  src/assembler/helper.h src/assembler/synthesis.h
 build/cmd_line_opts.o: src/misc/cmd_line_opts.cpp src/misc/cmd_line_opts.h
@@ -111,7 +113,7 @@ build/pal_debugger.o: src/simulator/pal_debugger.cpp \
  src/simulator/pal_debugger.h src/simulator/cpu_handle.h \
  src/simulator/../common_values.h
 build/main.o: src/main.cpp src/assembler/synthesis.h \
- src/assembler/../common_values.h src/common_values.h \
- src/misc/cmd_line_opts.h src/misc/file_handling.h \
+ src/assembler/../common_values.h src/assembler/optimizer.h \
+ src/common_values.h src/misc/cmd_line_opts.h src/misc/file_handling.h \
  src/misc/../common_values.h src/simulator/cpu_handle.h \
  src/simulator/../common_values.h

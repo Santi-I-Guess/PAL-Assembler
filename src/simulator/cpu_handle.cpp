@@ -119,7 +119,7 @@ void CPU_Handle::load_program(const std::vector<int16_t> given_program) {
         prog_size = given_size;
 }
 
-void CPU_Handle::next_instruction(bool &hit_exit) {
+void CPU_Handle::next_instruction(bool &hit_exit, bool continue_cond) {
         // if program just started
         if (prog_ctr == 0)
                 prog_ctr = get_program_data(4);
@@ -195,10 +195,16 @@ void CPU_Handle::next_instruction(bool &hit_exit) {
                 ins_read(*this);
         } else if (mnem_name == "PRINT") {
                 ins_print(*this);
+                if (!continue_cond)
+                        std::cout << "\n";
         } else if (mnem_name == "SPRINT") {
                 ins_sprint(*this);
+                if (!continue_cond)
+                        std::cout << "\n";
         } else if (mnem_name == "CPRINT") {
                 ins_cprint(*this);
+                if (!continue_cond)
+                        std::cout << "\n";
         } else if (mnem_name == "INPUT") {
                 ins_input(*this);
         } else if (mnem_name == "EXIT") {
@@ -212,7 +218,7 @@ void CPU_Handle::run_program() {
         prog_ctr = get_program_data(4);
 
         while (!hit_exit) {
-                next_instruction(hit_exit);
+                next_instruction(hit_exit, true);
         }
 }
 
@@ -352,7 +358,7 @@ void CPU_Handle::run_program_debug() {
                         if (!continue_cond && num_instructions_left == 0)
                                 break;
 
-                        next_instruction(hit_exit);
+                        next_instruction(hit_exit, continue_cond);
                         previously_ran = true;
                         // don't track num_instructions_left after continue cmd
                         if (!continue_cond)

@@ -1,0 +1,1 @@
+; ensure CALL and RET are predictable

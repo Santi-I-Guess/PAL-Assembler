@@ -221,9 +221,8 @@ void pdb_handle_print(
                         std::cout << cmd_tokens.at(1) << " = ";
                         std::cout << cpu_handle.program_mem[value] << "\n";
                 }
-        }
-
-        if (reg_addr_map.find(cmd_tokens.at(1)) != reg_addr_map.end()) {
+        } else if (reg_addr_map.find(cmd_tokens.at(1)) != reg_addr_map.end()) {
+                // print register value
                 int16_t value = *reg_addr_map.at(cmd_tokens.at(1));
                 std::cout << cmd_tokens.at(1) << " = " << value << "\n";
         } else {
