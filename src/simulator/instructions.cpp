@@ -34,9 +34,6 @@ void ins_mov(CPU_Handle &cpu_handle) {
 void ins_inc(CPU_Handle &cpu_handle) {
         int16_t &prog_ctr = cpu_handle.prog_ctr;
         int16_t dest = cpu_handle.get_program_data(prog_ctr + 1);
-        if (dest < 0 || dest > 7) {
-                handle_runtime_error(IMMUTABLE_MUTATION);
-        }
         int16_t value = cpu_handle.dereference_value(dest) + 1;
         // simulate wrap around
         if (value == LIT_MAX_VALUE + 1) {
@@ -50,9 +47,6 @@ void ins_inc(CPU_Handle &cpu_handle) {
 void ins_dec(CPU_Handle &cpu_handle) {
         int16_t &prog_ctr = cpu_handle.prog_ctr;
         int16_t dest = cpu_handle.get_program_data(prog_ctr + 1);
-        if (dest < 0 || dest > 7) {
-                handle_runtime_error(IMMUTABLE_MUTATION);
-        }
         int16_t value = cpu_handle.dereference_value(dest) - 1;
         // simulate wrap around
         if (value == LIT_MIN_VALUE - 1) {
@@ -530,7 +524,7 @@ void update_register(
         const int16_t dest,
         const int16_t value)
 {
-        if (dest < 0 || dest > 7) {
+        if (dest < 0 || dest > 8) {
                 handle_runtime_error(IMMUTABLE_MUTATION);
         }
         int16_t clamped_value = clamp(value);
@@ -543,6 +537,12 @@ void update_register(
                 case 5: cpu_handle.reg_f = clamped_value; break;
                 case 6: cpu_handle.reg_g = clamped_value; break;
                 case 7: cpu_handle.reg_h = clamped_value; break;
+                case 8: cpu_handle.stack_ptr = clamped_value; break;
                 default: break; /* impossible */
+        }
+
+        if (value == 8 &&
+                (cpu_handle.stack_ptr < 0 || cpu_handle.stack_ptr >= STACK_SIZE)) {
+                handle_runtime_error(STACK_WRITE_ERROR);
         }
 }

@@ -26,7 +26,7 @@ bool is_valid_atom(const Atom_Type atom_type, const std::string &token) {
                 // general purpose registers only
                 if (REGISTER_TABLE.find(token) == REGISTER_TABLE.end())
                         return false;
-                return REGISTER_TABLE.at(token) < 8;
+                return REGISTER_TABLE.at(token) < 9; // first 8 & RSP
         case SOURCE:
                 if (is_valid_atom(LITERAL_INT, token))
                         return true;

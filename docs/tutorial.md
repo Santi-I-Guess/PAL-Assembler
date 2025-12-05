@@ -30,6 +30,12 @@ RIP, the instruction pointer; and CMP0 and CMP1, the comparison registers used
 in the branch instructions. These registers can only be changed through the
 use of instructions, in order to ensure their operations are valid.
 
+RSP, however, is allowed to be mutated with arithmetic instructions,
+as all strings inputted by the user at runtime are pushed to the stack.
+Allowing RSP to be written to makes string operations possible without
+moving the string to RAM. Attempting to set RSP to a negative value or
+above the MAX_STACK_SIZE will cause a STACK_WRITE_ERROR.
+
 All registers, with the exception of RIP, are guarenteed to be set to 0 at
 the start of the program.
 

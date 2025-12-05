@@ -11,6 +11,7 @@
 enum Runtime_Error_Enum {
         STACK_OVERFLOW = 0,
         STACK_UNDERFLOW,
+        STACK_WRITE_ERROR,
         CALL_STACK_OVERFLOW,
         CALL_STACK_UNDERFLOW,
         IMMUTABLE_MUTATION,
@@ -22,9 +23,10 @@ enum Runtime_Error_Enum {
         UNKNOWN_OPCODE,
 };
 
-const std::string RUNTIME_ERROR_MESSAGES[11] = {
+const std::string RUNTIME_ERROR_MESSAGES[12] = {
         "stack overflow",
         "stack underflow",
+        "attempted to write a bad stack ptr value",
         "call stack overflow",
         "call stack underflow",
         "attemped to mutate immutable destination",
