@@ -14,14 +14,15 @@ two_digits:
 align_right_final:
     PRINT %0
     CPRINT $124
-    POP RA ; dump parameter
+    POP RZ ; dump parameter
     RET
 
 print_row:
     ; RA as current multiple value, RB as ctr
     MOV RB, $1
     print_loop:
-    MUL RA, %0, RB
+    MOV RA, %0
+    MUL RA, RB
     PUSH RA
     CALL align_right
     CPRINT $32 ; space

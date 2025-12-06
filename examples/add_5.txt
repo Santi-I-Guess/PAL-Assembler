@@ -1,7 +1,8 @@
 ; add 5 to the number given by the user
 main:
     INPUT ; pushes given integer to stack
-    ADD RA, %0, $5
+    MOV RA, %0
+    ADD RA, $5
     PRINT %0
     SPRINT " + 5 = "
     PRINT RA

@@ -40,7 +40,7 @@ void ins_sprint(CPU_Handle &cpu_handle);
 void ins_cprint(CPU_Handle &cpu_handle);
 void ins_input(CPU_Handle  &cpu_handle);
 void ins_sinput(CPU_Handle &cpu_handle);
-void ins_rand(CPU_Handle   &cpu_handle);
+void ins_rand(CPU_Handle &cpu_handle);
 void ins_exit(CPU_Handle   &cpu_handle);
 void update_register(
         CPU_Handle &cpu_handle,

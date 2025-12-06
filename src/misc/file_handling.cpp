@@ -8,12 +8,12 @@
 
 #include "file_handling.h"
 
-void generate_debug_file(
+void generate_intermediate_file(
         const std::string &file_header,
         const std::vector<Token> &tokens,
         const std::map<std::string, int16_t> &label_table
 ) {
-        std::ofstream sink_file("debug_symbols_" + file_header + ".txt");
+        std::ofstream sink_file("intermediate_" + file_header + ".txt");
         if (sink_file.fail()) {
                 std::cerr << "Failed to open token sink file\n";
                 std::exit(1);

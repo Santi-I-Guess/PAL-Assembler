@@ -1,5 +1,6 @@
 import random
 import math
+import sys
 
 # generate many tests, then format into PAL language
 
@@ -67,8 +68,13 @@ operation_map = {
 
 
 if __name__ == "__main__":
+    num_tests = 0
+    if len(sys.argv) == 1:
+        num_tests = 8
+    else:
+        num_tests = int(sys.argv[1])
     print("main:")
-    for i in range(3):
+    for i in range(num_tests):
         operation = random.choice(MNEMONICS_LIST)
         # arg_1 = int(random.triangular(min_value, max_value))
         # arg_2 = int(random.triangular(min_value, max_value))
@@ -101,7 +107,8 @@ if __name__ == "__main__":
         else:
             arg_1 = f"${arg_1}"
             arg_2 = f"${arg_2}"
-            print(f"    {operation:<9} RA, {arg_1:>9}, {arg_2:>9}")
+            print(f"    MOV RA, {arg_1:>9}")
+            print(f"    {operation:<9} RA, {arg_2:>9}")
         print(f"    SPRINT \"{arg_1:<9} {operation_map[operation]} {arg_2:<9} = ${result:<6}\"")
         print("    PUSH RA")
         print("    CALL arrow_print")

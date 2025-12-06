@@ -65,7 +65,7 @@ std::vector<int16_t> assemble_program(
         while (token_idx < tokens.size()) {
                 Token first_token = tokens.at(token_idx);
                 Instruction_Data curr_instruction;
-                curr_instruction = INS_BLUEPRINTS.at(first_token.data);
+                curr_instruction = BLUEPRINTS.at(first_token.data);
                 for (size_t ins_idx = 0; ins_idx < curr_instruction.length; ins_idx++) {
                         Token curr_token = tokens.at(token_idx + ins_idx);
                         int16_t translated = 0;
@@ -259,7 +259,7 @@ Debug_Info grammar_check(
                         context.relevant_token = first_token;
                         return context;
                 }
-                if (INS_BLUEPRINTS.find(first_token.data) == INS_BLUEPRINTS.end()) {
+                if (BLUEPRINTS.find(first_token.data) == BLUEPRINTS.end()) {
                         // mnemonic not recognized
                         context.grammar_retval = UNKNOWN_MNEMONIC_E;
                         context.line_num = first_token.line_num;
@@ -269,7 +269,7 @@ Debug_Info grammar_check(
                 if (first_token.data == "EXIT")
                         seen_exit = true;
 
-                Instruction_Data curr_instruction = INS_BLUEPRINTS.at(first_token.data);
+                Instruction_Data curr_instruction = BLUEPRINTS.at(first_token.data);
                 std::vector<Atom_Type> curr_blueprint = curr_instruction.blueprint;
                 // check if there are enough tokens
                 if (token_idx + curr_instruction.length > tokens.size()) {

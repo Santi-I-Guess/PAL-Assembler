@@ -39,7 +39,8 @@ read_write_check() {
             CPRINT \$10
             INC RB
             INC RA
-            LSH RA, RB, \$1
+            MOV RA, RB
+            LSH RA, \$1
             CMP RB, \$51
             JLS again
         ;
@@ -97,7 +98,7 @@ ascii_check() {
         ; RA is the value, RB is the bounds
         POP RA
         MOV RB, RA
-        ADD RB, RB, \$26
+        ADD RB, \$26
         again_1:
         CPRINT RA
         INC RA
@@ -146,7 +147,8 @@ loop_check_2() {
         ; RA as current multiple value, RB as ctr
         MOV RB, \$1
         print_loop:
-        MUL RA, %0, RB
+        MOV RA, %0
+        MUL RA, RB
         PUSH RA
         CALL align_right
         CPRINT \$32
@@ -177,7 +179,8 @@ loop_check_2() {
             ; RB as ctr
             MOV RB, \$0
         again:
-            LSH RA, \$1, RB
+            MOV RA, \$1
+            LSH RA, RB
             PRINT RA
             CPRINT \$32
             INC RB
@@ -187,7 +190,8 @@ loop_check_2() {
             CPRINT \$10
         again_2:
             DEC RB
-            LSH RA, \$1, RB
+            MOV RA, \$1
+            LSH RA, RB
             PRINT RA
             CPRINT \$32
             CMP RB, \$0

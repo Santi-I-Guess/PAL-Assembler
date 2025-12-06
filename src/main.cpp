@@ -20,30 +20,8 @@
 #include "misc/file_handling.h"
 #include "simulator/cpu_handle.h"
 
-// every subdirectory of src is isolated in dependencies and function
-
-enum Grammar_Error_Enum {
-        EXPECTED_MNEMONIC_M = 0,
-        INVALID_ATOM_M,
-        MISSING_ARGUMENTS_M,
-        MISSING_EXIT_M,
-        MISSING_MAIN_M,
-        UNKNOWN_LABEL_M,
-        UNKNOWN_MNEMONIC_M,
-};
-
-const std::map<Grammar_Retval, Grammar_Error_Enum> G_ENUM_TRANSLATION = {
-        {EXPECTED_MNEMONIC_E, EXPECTED_MNEMONIC_M},
-        {INVALID_ATOM_E,           INVALID_ATOM_M},
-        {MISSING_ARGUMENTS_E, MISSING_ARGUMENTS_M},
-        {MISSING_EXIT_E,           MISSING_EXIT_M},
-        {MISSING_MAIN_E,           MISSING_MAIN_M},
-        {UNKNOWN_LABEL_E,         UNKNOWN_LABEL_M},
-        {UNKNOWN_MNEMONIC_E,   UNKNOWN_MNEMONIC_M},
-
-};
-
 const std::string GRAMMAR_ERROR_MESSAGES[10] = {
+        "",
         "Expected Mnemonic",
         "Invalid Atom",
         "Missing Arguments",
@@ -54,7 +32,7 @@ const std::string GRAMMAR_ERROR_MESSAGES[10] = {
 };
 
 void handle_grammar_error(
-        const Grammar_Error_Enum error_code,
+        const Grammar_Retval error_code,
         const Debug_Info context,
         const std::string erroneous_line
 ) {
@@ -67,15 +45,17 @@ void handle_grammar_error(
         std::cerr << GRAMMAR_ERROR_MESSAGES[error_code];
         // intentional lack of newline for first 5 elements
         switch (error_code) {
-        case EXPECTED_MNEMONIC_M:
-        case INVALID_ATOM_M:
-        case MISSING_ARGUMENTS_M:
-        case UNKNOWN_LABEL_M:
-        case UNKNOWN_MNEMONIC_M:
+        case ACCEPTABLE_E: /* filtered out */
+                break;
+        case EXPECTED_MNEMONIC_E:
+        case INVALID_ATOM_E:
+        case MISSING_ARGUMENTS_E:
+        case UNKNOWN_LABEL_E:
+        case UNKNOWN_MNEMONIC_E:
                 std::cerr << " \"" << context.relevant_token.data << "\"";
                 [[fallthrough]]; // c++17
-        case MISSING_EXIT_M:
-        case MISSING_MAIN_M:
+        case MISSING_EXIT_E:
+        case MISSING_MAIN_E:
                 std::cerr << "\n";
                 break;
         }
@@ -130,8 +110,10 @@ int main(int argc, char **argv) {
                         if (curr_token.type != T_LABEL_DEF)
                                 filtered_tokens.push_back(curr_token);
                 }
+
+                // generate intermediate file with tokens and labels
                 if (life_opts.intermediate_files)
-                        generate_debug_file(file_header, filtered_tokens, label_map);
+                        generate_intermediate_file(file_header, filtered_tokens, label_map);
 
                 Debug_Info context = grammar_check(filtered_tokens, label_map);
                 if (context.grammar_retval != ACCEPTABLE_E) {
@@ -140,8 +122,7 @@ int main(int argc, char **argv) {
                         aux_stream << source_buffer;
                         for (int i = 0; i < context.line_num; ++i)
                                 std::getline(aux_stream, aux_string);
-                        Grammar_Error_Enum error_code = G_ENUM_TRANSLATION.at(context.grammar_retval);
-                        handle_grammar_error(error_code, context, aux_string);
+                        handle_grammar_error(context.grammar_retval, context, aux_string);
                 }
 
                 final_program = assemble_program(filtered_tokens, label_map);

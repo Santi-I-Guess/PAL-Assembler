@@ -144,7 +144,7 @@ void pdb_handle_disassemble(const CPU_Handle &cpu_handle) {
                         break;
                 case READING_MNEMONIC:
                         opcode = cpu_handle.get_program_data(int_idx);
-                        ins_len = (int16_t)INS_BLUEPRINTS.at(get_mnem_name(opcode)).length;
+                        ins_len = (int16_t)BLUEPRINTS.at(get_mnem_name(opcode)).length;
                         for (int16_t i = 0; i < ins_len; ++i) {
                                 int16_t curr_element = cpu_handle.get_program_data(int_idx + i);
                                 instruction.push_back(curr_element);
@@ -287,12 +287,12 @@ void disassemble_print_instruction(
         out_stream << std::left << std::setw(7) << mnem_name;
 
         // second, the arguments
-        size_t ins_size = INS_BLUEPRINTS.at(mnem_name).length;
+        size_t ins_size = BLUEPRINTS.at(mnem_name).length;
         for (size_t arg_idx = 1; arg_idx < ins_size; ++arg_idx) {
                 std::string arg_string = "";
                 std::stringstream arg_stream;
                 int16_t curr_arg = instruction.at(arg_idx);
-                Instruction_Data curr_instruction = INS_BLUEPRINTS.at(mnem_name);
+                Instruction_Data curr_instruction = BLUEPRINTS.at(mnem_name);
                 Atom_Type arg_type = curr_instruction.blueprint.at(arg_idx);
                 if ((curr_arg >> 14) & 1) {
                         // literal bitmask

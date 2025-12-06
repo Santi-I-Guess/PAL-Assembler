@@ -60,33 +60,33 @@ void ins_dec(CPU_Handle &cpu_handle) {
 void ins_add(CPU_Handle &cpu_handle) {
         int16_t &prog_ctr = cpu_handle.prog_ctr;
         int16_t dest = cpu_handle.get_program_data(prog_ctr + 1);
-        int16_t raw_2 = cpu_handle.get_program_data(prog_ctr + 2);
-        int16_t raw_3 = cpu_handle.get_program_data(prog_ctr + 3);
+        int16_t raw_2 = cpu_handle.get_program_data(prog_ctr + 1);
+        int16_t raw_3 = cpu_handle.get_program_data(prog_ctr + 2);
         int16_t src_1 = cpu_handle.dereference_value(raw_2);
         int16_t src_2 = cpu_handle.dereference_value(raw_3);
         int16_t value = src_1 + src_2;
         update_register(cpu_handle, dest, value);
 
-        prog_ctr += 4;
+        prog_ctr += 3;
 }
 
 void ins_sub(CPU_Handle &cpu_handle) {
         int16_t &prog_ctr = cpu_handle.prog_ctr;
         int16_t dest = cpu_handle.get_program_data(prog_ctr + 1);
-        int16_t raw_2 = cpu_handle.get_program_data(prog_ctr + 2);
-        int16_t raw_3 = cpu_handle.get_program_data(prog_ctr + 3);
+        int16_t raw_2 = cpu_handle.get_program_data(prog_ctr + 1);
+        int16_t raw_3 = cpu_handle.get_program_data(prog_ctr + 2);
         int16_t src_1 = cpu_handle.dereference_value(raw_2);
         int16_t src_2 = cpu_handle.dereference_value(raw_3);
         int16_t value = src_1 - src_2;
         update_register(cpu_handle, dest, value);
-        prog_ctr += 4;
+        prog_ctr += 3;
 }
 
 void ins_mul(CPU_Handle &cpu_handle) {
         int16_t &prog_ctr = cpu_handle.prog_ctr;
         int16_t dest = cpu_handle.get_program_data(prog_ctr + 1);
-        int16_t raw_2 = cpu_handle.get_program_data(prog_ctr + 2);
-        int16_t raw_3 = cpu_handle.get_program_data(prog_ctr + 3);
+        int16_t raw_2 = cpu_handle.get_program_data(prog_ctr + 1);
+        int16_t raw_3 = cpu_handle.get_program_data(prog_ctr + 2);
         int16_t src_1 = cpu_handle.dereference_value(raw_2);
         int16_t src_2 = cpu_handle.dereference_value(raw_3);
         // ensure 16 bit overflow keeps the right sign before clamp
@@ -103,14 +103,14 @@ void ins_mul(CPU_Handle &cpu_handle) {
                 raw_value = LIT_MIN_VALUE;
         int16_t value = (int16_t)raw_value;
         update_register(cpu_handle, dest, value);
-        prog_ctr += 4;
+        prog_ctr += 3;
 }
 
 void ins_div(CPU_Handle &cpu_handle) {
         int16_t &prog_ctr = cpu_handle.prog_ctr;
         int16_t dest = cpu_handle.get_program_data(prog_ctr + 1);
-        int16_t raw_2 = cpu_handle.get_program_data(prog_ctr + 2);
-        int16_t raw_3 = cpu_handle.get_program_data(prog_ctr + 3);
+        int16_t raw_2 = cpu_handle.get_program_data(prog_ctr + 1);
+        int16_t raw_3 = cpu_handle.get_program_data(prog_ctr + 2);
         int16_t src_1 = cpu_handle.dereference_value(raw_2);
         int16_t src_2 = cpu_handle.dereference_value(raw_3);
         if (src_2 == 0) {
@@ -121,14 +121,14 @@ void ins_div(CPU_Handle &cpu_handle) {
         int16_t value = src_1 / src_2;
         update_register(cpu_handle, dest, value);
 
-        prog_ctr += 4;
+        prog_ctr += 3;
 }
 
 void ins_mod(CPU_Handle &cpu_handle) {
         int16_t &prog_ctr = cpu_handle.prog_ctr;
         int16_t dest = cpu_handle.get_program_data(prog_ctr + 1);
-        int16_t raw_2 = cpu_handle.get_program_data(prog_ctr + 2);
-        int16_t raw_3 = cpu_handle.get_program_data(prog_ctr + 3);
+        int16_t raw_2 = cpu_handle.get_program_data(prog_ctr + 1);
+        int16_t raw_3 = cpu_handle.get_program_data(prog_ctr + 2);
         int16_t src_1 = cpu_handle.dereference_value(raw_2);
         int16_t src_2 = cpu_handle.dereference_value(raw_3);
         if (src_2 == 0) {
@@ -139,32 +139,32 @@ void ins_mod(CPU_Handle &cpu_handle) {
         int16_t value = src_1 % src_2;
         update_register(cpu_handle, dest, value);
 
-        prog_ctr += 4;
+        prog_ctr += 3;
 }
 
 void ins_and(CPU_Handle &cpu_handle) {
         int16_t &prog_ctr = cpu_handle.prog_ctr;
         int16_t dest = cpu_handle.get_program_data(prog_ctr + 1);
-        int16_t raw_2 = cpu_handle.get_program_data(prog_ctr + 2);
-        int16_t raw_3 = cpu_handle.get_program_data(prog_ctr + 3);
+        int16_t raw_2 = cpu_handle.get_program_data(prog_ctr + 1);
+        int16_t raw_3 = cpu_handle.get_program_data(prog_ctr + 2);
         int16_t src_1 = cpu_handle.dereference_value(raw_2);
         int16_t src_2 = cpu_handle.dereference_value(raw_3);
         int16_t value = src_1 & src_2;
         update_register(cpu_handle, dest, value);
 
-        prog_ctr += 4;
+        prog_ctr += 3;
 }
 
 void ins_or(CPU_Handle &cpu_handle) {
         int16_t &prog_ctr = cpu_handle.prog_ctr;
         int16_t dest = cpu_handle.get_program_data(prog_ctr + 1);
-        int16_t raw_2 = cpu_handle.get_program_data(prog_ctr + 2);
-        int16_t raw_3 = cpu_handle.get_program_data(prog_ctr + 3);
+        int16_t raw_2 = cpu_handle.get_program_data(prog_ctr + 1);
+        int16_t raw_3 = cpu_handle.get_program_data(prog_ctr + 2);
         int16_t src_1 = cpu_handle.dereference_value(raw_2);
         int16_t src_2 = cpu_handle.dereference_value(raw_3);
         int16_t value = src_1 | src_2;
         update_register(cpu_handle, dest, value);
-        prog_ctr += 4;
+        prog_ctr += 3;
 }
 
 void ins_not(CPU_Handle &cpu_handle) {
@@ -180,20 +180,20 @@ void ins_not(CPU_Handle &cpu_handle) {
 void ins_xor(CPU_Handle &cpu_handle) {
         int16_t &prog_ctr = cpu_handle.prog_ctr;
         int16_t dest = cpu_handle.get_program_data(prog_ctr + 1);
-        int16_t raw_2 = cpu_handle.get_program_data(prog_ctr + 2);
-        int16_t raw_3 = cpu_handle.get_program_data(prog_ctr + 3);
+        int16_t raw_2 = cpu_handle.get_program_data(prog_ctr + 1);
+        int16_t raw_3 = cpu_handle.get_program_data(prog_ctr + 2);
         int16_t src_1 = cpu_handle.dereference_value(raw_2);
         int16_t src_2 = cpu_handle.dereference_value(raw_3);
         int16_t value = src_1 ^ src_2;
         update_register(cpu_handle, dest, value);
-        prog_ctr += 4;
+        prog_ctr += 3;
 }
 
 void ins_lsh(CPU_Handle &cpu_handle) {
         int16_t &prog_ctr = cpu_handle.prog_ctr;
         int16_t dest = cpu_handle.get_program_data(prog_ctr + 1);
-        int16_t raw_2 = cpu_handle.get_program_data(prog_ctr + 2);
-        int16_t raw_3 = cpu_handle.get_program_data(prog_ctr + 3);
+        int16_t raw_2 = cpu_handle.get_program_data(prog_ctr + 1);
+        int16_t raw_3 = cpu_handle.get_program_data(prog_ctr + 2);
         int16_t src_1 = cpu_handle.dereference_value(raw_2);
         int16_t src_2 = cpu_handle.dereference_value(raw_3);
         if (src_2 < 0) {
@@ -203,22 +203,22 @@ void ins_lsh(CPU_Handle &cpu_handle) {
         int16_t value = src_1 << (src_2 < 0 ? 0 : src_2);
         update_register(cpu_handle, dest, value);
 
-        prog_ctr += 4;
+        prog_ctr += 3;
 }
 
 void ins_rsh(CPU_Handle &cpu_handle) {
         int16_t &prog_ctr = cpu_handle.prog_ctr;
 
         int16_t dest = cpu_handle.get_program_data(prog_ctr + 1);
-        int16_t raw_2 = cpu_handle.get_program_data(prog_ctr + 2);
-        int16_t raw_3 = cpu_handle.get_program_data(prog_ctr + 3);
+        int16_t raw_2 = cpu_handle.get_program_data(prog_ctr + 1);
+        int16_t raw_3 = cpu_handle.get_program_data(prog_ctr + 2);
         int16_t src_1 = cpu_handle.dereference_value(raw_2);
         int16_t src_2 = cpu_handle.dereference_value(raw_3);
         if (src_2 < 0)
                 std::cout << "Warning: Negative Bitshift. Result will be src 1\n";
         int16_t value = src_1 >> (src_2 > 0 ? src_2 : 0);
         update_register(cpu_handle, dest, value);
-        prog_ctr += 4;
+        prog_ctr += 3;
 }
 
 void ins_cmp(CPU_Handle &cpu_handle) {
@@ -498,7 +498,7 @@ void ins_sinput(CPU_Handle &cpu_handle) {
         prog_ctr += 1;
 }
 
-void ins_rand(CPU_Handle   &cpu_handle) {
+void ins_rand(CPU_Handle &cpu_handle) {
         int16_t &prog_ctr = cpu_handle.prog_ctr;
         int16_t &stack_ptr = cpu_handle.stack_ptr;
         int16_t *program_mem = cpu_handle.program_mem;
@@ -524,20 +524,21 @@ void update_register(
         const int16_t dest,
         const int16_t value)
 {
-        if (dest < 0 || dest > 8) {
+        if (dest < 0 || dest > 9) {
                 handle_runtime_error(IMMUTABLE_MUTATION);
         }
         int16_t clamped_value = clamp(value);
         switch (dest) {
-                case 0: cpu_handle.reg_a = clamped_value; break;
-                case 1: cpu_handle.reg_b = clamped_value; break;
-                case 2: cpu_handle.reg_c = clamped_value; break;
-                case 3: cpu_handle.reg_d = clamped_value; break;
-                case 4: cpu_handle.reg_e = clamped_value; break;
-                case 5: cpu_handle.reg_f = clamped_value; break;
-                case 6: cpu_handle.reg_g = clamped_value; break;
-                case 7: cpu_handle.reg_h = clamped_value; break;
-                case 8: cpu_handle.stack_ptr = clamped_value; break;
+                case 0: break; // "RZ"
+                case 1: cpu_handle.reg_a = clamped_value; break;
+                case 2: cpu_handle.reg_b = clamped_value; break;
+                case 3: cpu_handle.reg_c = clamped_value; break;
+                case 4: cpu_handle.reg_d = clamped_value; break;
+                case 5: cpu_handle.reg_e = clamped_value; break;
+                case 6: cpu_handle.reg_f = clamped_value; break;
+                case 7: cpu_handle.reg_g = clamped_value; break;
+                case 8: cpu_handle.reg_h = clamped_value; break;
+                case 9: cpu_handle.stack_ptr = clamped_value; break;
                 default: break; /* impossible */
         }
 

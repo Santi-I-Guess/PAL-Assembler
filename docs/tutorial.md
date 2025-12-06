@@ -36,6 +36,11 @@ Allowing RSP to be written to makes string operations possible without
 moving the string to RAM. Attempting to set RSP to a negative value or
 above the MAX_STACK_SIZE will cause a STACK_WRITE_ERROR.
 
+There is also a zero register, RZ, that is provided. Writing to it has
+no effect, and reading from RZ will always return 0; This is particularly
+useful for popping parameters of a function call from a stack, without
+worrying about changing any registers.
+
 All registers, with the exception of RIP, are guarenteed to be set to 0 at
 the start of the program.
 
@@ -117,44 +122,44 @@ INPUT behavior. SINPUT will push a null terminator.
 Every program is required to have at least one instance of the EXIT
 instruction, or the program will refuse to assemble.
 
-| **Mnemonic** | **Arg 1** | **Arg 2**  | **Arg 3** | **Pseudocode**               |
-|--------------|-----------|------------|-----------|------------------------------|
-| NOP          |           |            |           |                              |
-| MOV          | dest      | src0       |           | dest =  src0                 |
-| INC          | dest      |            |           | dest++                       |
-| DEC          | dest      |            |           | dest--                       |
-| ADD          | dest      | src0       | src1      | dest =  src0 + src1          |
-| SUB          | dest      | src0       | src1      | dest =  src0 - src1          |
-| MUL          | dest      | src0       | src1      | dest =  src0 * src1          |
-| DIV          | dest      | src0       | src1      | dest =  src0 / src1          |
-| MOD          | dest      | src0       | src1      | dest =  src0 % src1          |
-| AND          | dest      | src0       | src1      | dest =  src0 & src1          |
-| OR           | dest      | src0       | src1      | dest =  src0 \| src1         |
-| NOT          | dest      | src0       |           | dest = ~src0                 |
-| XOR          | dest      | src0       | src1      | dest =  src0 ^ src1          |
-| LSH          | dest      | src0       | src1      | dest =  src0 << src1         |
-| RSH          | dest      | src0       | src1      | dest =  src0 >> src1         |
-| CMP          | src0      | src1       |           | cmp0 =  src0; cmp1 = src1    |
-| JMP          | label     |            |           | goto label                   |
-| JEQ          | label     |            |           | goto label if cmp0 == cmp1   |
-| JNE          | label     |            |           | goto label if cmp0 != cmp1   |
-| JGE          | label     |            |           | goto label if cmp0 >= cmp1   |
-| JGR          | label     |            |           | goto label if cmp0 >  cmp1   |
-| JLE          | label     |            |           | goto label if cmp0 <= cmp1   |
-| JLS          | label     |            |           | goto label if cmp0 <  cmp1   |
-| CALL         | label     |            |           | label()                      |
-| RET          |           |            |           | return                       |
-| PUSH         | src       |            |           | push(src)                    |
-| POP          | dest      |            |           | dest = pop()                 |
-| WRITE        | src       | addr (src) |           | ram\[addr\] = src            |
-| READ         | dest      | addr (src) |           | dest = ram\[addr\]           |
-| PRINT        | src       |            |           | print(src)                   |
-| SPRINT       | string    |            |           | print(string)                |
-| CPRINT       | src       |            |           | print((ascii)src)            |
-| INPUT        |           |            |           | push((int16_t)input())       |
-| SINPUT       |           |            |           | push((int16_t)input())       |
-| RAND         |           |            |           | push((int16_t)rand(-100,100))|
-| EXIT         |           |            |           | exit()                       |
+| **Mnemonic** | **Arg 1** | **Arg 2**  | **Pseudocode**               |
+|--------------|-----------|------------|------------------------------|
+| NOP          |           |            |                              |
+| MOV          | dest      | src        | dest =  src                  |
+| INC          | dest      |            | dest++                       |
+| DEC          | dest      |            | dest--                       |
+| ADD          | dest      | src        | dest += src                  |
+| SUB          | dest      | src        | dest -= src                  |
+| MUL          | dest      | src        | dest *= src                  |
+| DIV          | dest      | src        | dest /= src                  |
+| MOD          | dest      | src        | dest %= src                  |
+| AND          | dest      | src        | dest &= src                  |
+| OR           | dest      | src        | dest \|= src                 |
+| NOT          | dest      | src        | dest = ~src                  |
+| XOR          | dest      | src        | dest ^= src_0                |
+| LSH          | dest      | src        | dest <<= src                 |
+| RSH          | dest      | src        | dest >>= src                 |
+| CMP          | src0      | src1       | cmp0 = src0; cmp1 = src1     |
+| JMP          | label     |            | goto label                   |
+| JEQ          | label     |            | goto label if cmp0 == cmp1   |
+| JNE          | label     |            | goto label if cmp0 != cmp1   |
+| JGE          | label     |            | goto label if cmp0 >= cmp1   |
+| JGR          | label     |            | goto label if cmp0 >  cmp1   |
+| JLE          | label     |            | goto label if cmp0 <= cmp1   |
+| JLS          | label     |            | goto label if cmp0 <  cmp1   |
+| CALL         | label     |            | label()                      |
+| RET          |           |            | return                       |
+| PUSH         | src       |            | push(src)                    |
+| POP          | dest      |            | dest = pop()                 |
+| WRITE        | src       | addr (src) | ram\[addr\] = src            |
+| READ         | dest      | addr (src) | dest = ram\[addr\]           |
+| PRINT        | src       |            | print(src)                   |
+| SPRINT       | string    |            | print(string)                |
+| CPRINT       | src       |            | print((ascii)src)            |
+| INPUT        |           |            | push((int16_t)input())       |
+| SINPUT       |           |            | push((int16_t)input())       |
+| RAND         |           |            | push((int16_t)rand(-100,100))|
+| EXIT         |           |            | exit()                       |
 
 # Addressing Modes (Source Arguments)
 Registers are the medium where values are used, but without a way to put

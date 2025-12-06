@@ -2,7 +2,8 @@ main:
     PUSH RSP
     SINPUT
     ; calculate length
-    SUB RA, RSP, %0
+    MOV RA, RSP
+    SUB RA, %0
     DEC RA ; stack ptr logic
     DEC RA ; null terminator
     SPRINT "Your line was "
@@ -12,7 +13,7 @@ main:
     ; move RSP to beginning of string
     ; keep printing while the top stack element is not 0
     ; RA is the string size
-    SUB RSP, RSP, RA
+    SUB RSP, RA
     CPRINT $34 ; '"'
 next_letter:
     CPRINT %0

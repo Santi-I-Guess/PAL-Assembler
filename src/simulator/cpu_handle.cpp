@@ -72,18 +72,19 @@ int16_t CPU_Handle::dereference_value(const int16_t given_value) {
         } else {
                 // register idx
                 switch (given_value) {
-                case  0: intended_value = reg_a;     break;
-                case  1: intended_value = reg_b;     break;
-                case  2: intended_value = reg_c;     break;
-                case  3: intended_value = reg_d;     break;
-                case  4: intended_value = reg_e;     break;
-                case  5: intended_value = reg_f;     break;
-                case  6: intended_value = reg_g;     break;
-                case  7: intended_value = reg_h;     break;
-                case  8: intended_value = stack_ptr; break;
-                case  9: intended_value = prog_ctr;  break;
-                case 10: intended_value = reg_cmp_a; break;
-                case 11: intended_value = reg_cmp_b; break;
+                case  0: intended_value = 0;         break;
+                case  1: intended_value = reg_a;     break;
+                case  2: intended_value = reg_b;     break;
+                case  3: intended_value = reg_c;     break;
+                case  4: intended_value = reg_d;     break;
+                case  5: intended_value = reg_e;     break;
+                case  6: intended_value = reg_f;     break;
+                case  7: intended_value = reg_g;     break;
+                case  8: intended_value = reg_h;     break;
+                case  9: intended_value = stack_ptr; break;
+                case 10: intended_value = prog_ctr;  break;
+                case 11: intended_value = reg_cmp_a; break;
+                case 12: intended_value = reg_cmp_b; break;
                 default:
                         handle_runtime_error(UNKNOWN_REGISTER);
                 }
@@ -125,7 +126,7 @@ void CPU_Handle::next_instruction(bool &hit_exit, bool continue_cond) {
                 prog_ctr = get_program_data(4);
 
         int16_t opcode = get_program_data(prog_ctr);
-        if (opcode < 0 || opcode >= (int16_t)INS_BLUEPRINTS.size()) {
+        if (opcode < 0 || opcode >= (int16_t)BLUEPRINTS.size()) {
                 handle_runtime_error(UNKNOWN_OPCODE);
         }
         std::string mnem_name = get_mnem_name(opcode);
@@ -241,7 +242,7 @@ void CPU_Handle::run_program_debug() {
         while (temp_idx < prog_size) {
                 mnemonic_addrs.push_back(temp_idx);
                 int16_t opcode = get_program_data(temp_idx);
-                temp_idx += (int16_t)INS_BLUEPRINTS.at(get_mnem_name(opcode)).length;
+                temp_idx += (int16_t)BLUEPRINTS.at(get_mnem_name(opcode)).length;
         }
 
         std::cout << "PAL Debugger (PalDB)\n";
@@ -308,7 +309,7 @@ void CPU_Handle::run_program_debug() {
                 } else if (cmd_tokens.front()[0] == 'l') {
                         // next instruction to run
                         int16_t opcode = get_program_data(prog_ctr);
-                        int16_t ins_len = (int16_t)INS_BLUEPRINTS.at(get_mnem_name(opcode)).length;
+                        int16_t ins_len = (int16_t)BLUEPRINTS.at(get_mnem_name(opcode)).length;
                         std::vector<int16_t> instruction = {};
                         for (int16_t i = 0; i < ins_len; ++i) {
                                 int16_t curr_element = get_program_data(prog_ctr + i);
@@ -374,7 +375,7 @@ void CPU_Handle::run_program_debug() {
                 if (!hit_exit && previously_ran) {
                         // print next instruction to run
                         int16_t opcode = get_program_data(prog_ctr);
-                        int16_t ins_len = (int16_t)INS_BLUEPRINTS.at(get_mnem_name(opcode)).length;
+                        int16_t ins_len = (int16_t)BLUEPRINTS.at(get_mnem_name(opcode)).length;
                         std::vector<int16_t> instruction = {};
                         for (int16_t i = 0; i < ins_len; ++i) {
                                 int16_t curr_element = get_program_data(prog_ctr + i);

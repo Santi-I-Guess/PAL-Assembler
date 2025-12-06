@@ -11,7 +11,7 @@
 /**
  * @brief generates file of program's label_table and filtered_tokens
  */
-void generate_debug_file(
+void generate_intermediate_file(
         const std::string &file_header,
         const std::vector<Token> &tokens,
         const std::map<std::string, int16_t> &label_table

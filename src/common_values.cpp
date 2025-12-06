@@ -19,7 +19,7 @@ Instruction_Data get_instruction(const int16_t &opcode) {
         // ordered_maps are organized by key in lexographical order,
         // not by initalization order
         std::map<std::string, Instruction_Data>::const_iterator it;
-        for (it = INS_BLUEPRINTS.begin(); it != INS_BLUEPRINTS.end(); ++it) {
+        for (it = BLUEPRINTS.begin(); it != BLUEPRINTS.end(); ++it) {
                 if (it->second.opcode == opcode)
                         return it->second;
         }
@@ -30,7 +30,7 @@ std::string get_mnem_name(const int16_t &opcode) {
         // ordered_maps are organized by key in lexographical order,
         // not by initalization order
         std::map<std::string, Instruction_Data>::const_iterator it;
-        for (it = INS_BLUEPRINTS.begin(); it != INS_BLUEPRINTS.end(); ++it) {
+        for (it = BLUEPRINTS.begin(); it != BLUEPRINTS.end(); ++it) {
                 if (it->second.opcode == opcode)
                         return it->first;
         }
@@ -38,5 +38,5 @@ std::string get_mnem_name(const int16_t &opcode) {
 }
 
 int16_t get_opcode(const std::string &mnem_name) {
-        return INS_BLUEPRINTS.at(mnem_name).opcode;
+        return BLUEPRINTS.at(mnem_name).opcode;
 }

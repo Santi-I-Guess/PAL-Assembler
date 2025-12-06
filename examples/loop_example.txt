@@ -1,0 +1,50 @@
+check_value:
+    ; %0 is value, %1 is row or columm (0|1)
+    CMP %0, $0
+    JLE bad
+    POP RZ ; dump parameters
+    POP RZ
+    RET
+bad:
+    PRINT %0
+    SPRINT " is not a valid "
+    CMP %1, $0
+    JNE column_bad
+    SPRINT "row number\n"
+    EXIT
+column_bad:
+    SPRINT "column number\n"
+    EXIT 
+
+print_row:
+    ; %0 is the row size
+    ; RA as ctr
+    MOV RA, $0
+    CPRINT $88
+    CMP RA, %0
+    INC RA
+    JLS print_row
+    RET
+
+main:
+    SPRINT "Enter num rows: "
+    INPUT
+    MOV RA, %0
+    SPRINT "Enter num columns: "
+    INPUT
+    MOV RB, %0
+    ; RA is rows, RB is columns
+    PUSH $0
+    PUSH RA
+    CALL check_value
+    PUSH $1
+    PUSH RB
+    CALL check_value
+
+    SPRINT "will print "
+    PRINT RA
+    CPRINT $88
+    PRINT RB
+    SPRINT " grid\n"
+
+    EXIT

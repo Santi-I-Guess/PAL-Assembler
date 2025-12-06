@@ -5,17 +5,21 @@ main:
     INPUT
 
     WRITE %0, $1 ; put input into ram address 1
-    MOD RA, %0, $400
+    MOV RA, %0
+    MOD RA, $400
     WRITE RA, $2 ; put % 400 result in $2
-    MOD RA, %0, $100
+    MOV RA, %0
+    MOD RA, $100
     WRITE RA, $3 ; put % 100 result in $3
-    MOD RA, %0, $4
+    MOV RA, %0
+    MOD RA, $4
     WRITE RA, $4 ; put %4 result in $4
 
     ; if div by 400 and 100
     READ RA, $2 ; result of INPUT % 400
     READ RB, $3 ; result of INPUT % 100
-    OR RC, RA, RB
+    MOV RC, RA
+    OR RC, RB
     CMP RC, $0         ; check if the sum of their mods are 0
     JEQ is_leap_year
 
