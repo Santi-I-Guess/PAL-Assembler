@@ -37,8 +37,8 @@ some changes to make usage simple.
 - can print integer values with PRINT, ascii characters with CPRINT, and
   string literals with SPRINT
 - can define labels with \<string\>:
-- stack addressing with "%n"
-- ram addressing with "\[$n\]"
+- stack addressing with "%n" (see addressing modes)
+- ram addressing with "\[$n\]" (see addressing modesk)
 - can access stack pointer with RSP, and the instruction counter with RIP
 
 ## Instructions
@@ -81,20 +81,18 @@ some changes to make usage simple.
 | RAND         |           |            |
 | EXIT         |           |            |
 
-## Syntax (Backus-Naur Form)
-Note: "$" in this case is not the start of a string, but the literal character \
-"?" means optional \
-"+" means repeated 1 or more times \
-"." means any character \
-"[...]" means the set of included characters \
-\<dest\> ::= \<register\> \
-\<src\> ::= \<literal_int\> | \<register\> | \<stack_offset\> \
-\<literal_int\> ::= $-?[:digit:]\+ \
-\<register\> ::= R[ABCDEFG] \
-\<stack_offset\> ::= %[:digit:]\+ \
-\<addr\> ::= [:digit:]\+ \
-\<label\> ::= .\+ \
-\<string\> ::= ".+"
+- src can refer to any register, a literal value, a stack offset,
+  or an address in RAM
+- dest refers to any general purpose register RA-RH
+- for write and read, src1 is the value of the address, not necesarily using
+  RAM addressing. For example,
+`
+MOV RB, $1
+WRITE $10, RB
+`
+  is a valid use of WRITE, which writes the value 10 to the address of 1.
+- INPUT, SINPUT, and RAND push their values onto the stack, instead of
+  storing inside a register
 
 ## Other quirks
 - every program is required to have a main label and at least one EXIT instruction
