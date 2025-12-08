@@ -108,6 +108,32 @@ For SPRINT, Strings must be surrounded by double quotes, and support
 two escaped characters: the double quote, and the newline. Null terminators
 are automatically included in string, and as such have no escape character.
 
+SPRINT is capable of printing a subset of 3-bit ansi escape codes. Specifically
+in the form \x1b[Nm. The string has to exactly match that form, or the
+output will print literally. This means ansi codes have to go on their own
+SPRINT instruction. See examples/color_examples.pseudo for usage.
+
+### Supported Ansi Codes
+|   **Code**   | **Action** |
+|--------------|------------|
+|   \\x1b[0m   | normal     |
+|   \\x1b[30m  | black  fg  |
+|   \\x1b[31m  | red    fg  |
+|   \\x1b[32m  | green  fg  |
+|   \\x1b[33m  | yellow fg  |
+|   \\x1b[34m  | blue   fg  |
+|   \\x1b[35m  | purple fg  |
+|   \\x1b[36m  | cyan   fg  |
+|   \\x1b[37m  | white  fg  |
+|   \\x1b[40m  | black  fg  |
+|   \\x1b[41m  | red    bg  |
+|   \\x1b[42m  | green  bg  |
+|   \\x1b[43m  | yellow bg  |
+|   \\x1b[44m  | blue   bg  |
+|   \\x1b[45m  | purple bg  |
+|   \\x1b[46m  | cyan   bg  |
+|   \\x1b[47m  | white  bg  |
+
 INPUT takes in a single integer from stdin, and pushes the resulting
 integer onto the stack. If the user inputs a single ascii character, such
 as a letter or number, then the ascii value of will be pushed to the stack.

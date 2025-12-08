@@ -63,17 +63,6 @@ void handle_grammar_error(
         std::exit(1);
 }
 
-std::string generate_file_header() {
-        std::random_device rd;
-        std::mt19937 mt(rd());
-        std::uniform_int_distribution<int> uid(1, 10000);
-        std::string file_header = std::to_string(uid(mt));
-        while (file_header.length() < 5) {
-                file_header = "0" + file_header;
-        }
-        return file_header;
-}
-
 int main(int argc, char **argv) {
         Cmd_Options life_opts;
         life_opts.store_cmd_args(argc, argv);
@@ -83,7 +72,13 @@ int main(int argc, char **argv) {
 
         // produce random file header for intermediate files, which makes
         //      running multiple tests in a row unlikely to overwrite data
-        std::string file_header = generate_file_header();
+        std::random_device rd;
+        std::mt19937 mt(rd());
+        std::uniform_int_distribution<int> uid(1, 10000);
+        std::string file_header = std::to_string(uid(mt));
+        while (file_header.length() < 5) {
+                file_header = "0" + file_header;
+        }
 
         // put assembled program here, so assembler module
         //      doesn't require cpu_handle
@@ -116,6 +111,7 @@ int main(int argc, char **argv) {
                 if (life_opts.intermediate_files)
                         generate_intermediate_file(file_header, filtered_tokens, label_map);
 
+                // exit program if there is a grammar error
                 Debug_Info context = grammar_check(filtered_tokens, label_map);
                 if (context.grammar_retval != ACCEPTABLE_E) {
                         std::stringstream aux_stream;
@@ -126,20 +122,22 @@ int main(int argc, char **argv) {
                         handle_grammar_error(context.grammar_retval, context, aux_string);
                 }
 
+                // create the assembled program
                 final_program = assemble_program(filtered_tokens, label_map);
 
-                // write the assembled program to a binary file
+                // if assemble_only flag is on, write binary to file and quit
                 if (life_opts.assemble_only) {
                         bool res_temp;
                         res_temp = write_program_to_sink(final_program, file_header);
                         if (!res_temp) {
-                                std::cerr << "Failed to open token sink file\n";
+                                std::cerr << "Failed to open assembly binary file\n";
                                 return 1;
                         }
                         return 0;
                 }
         }
 
+        // if test only flag is on, don't simulate program
         if (!life_opts.test_only) {
                 CPU_Handle cpu_handle;
                 cpu_handle.load_program(final_program);

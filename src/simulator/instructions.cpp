@@ -413,12 +413,43 @@ void ins_sprint(CPU_Handle &cpu_handle) {
         int16_t &prog_ctr = cpu_handle.prog_ctr;
         int16_t raw = cpu_handle.get_program_data(prog_ctr + 1);
         int16_t temp_str_idx = cpu_handle.dereference_value(raw);
+        std::string output;
         while (cpu_handle.get_program_data(temp_str_idx) != (int16_t)0) {
                 int16_t curr = cpu_handle.get_program_data(temp_str_idx);
                 char lower = (char)(curr & 255);
                 char higher = (char)(curr >> 8);
-                std::cout << lower << higher;
+                output += lower;
+                // so that \x1b[0m gets matched correctly
+                if (higher != 0)
+                        output += higher;
                 temp_str_idx++;
+        }
+
+        // check if sprint string is an ANSI escape code
+        std::map<std::string, std::string> ansi_code_map = {
+                {"\\x1b[0m",  "\x1b[0m"},  // clear
+                {"\\x1b[30m", "\x1b[30m"}, // black   fg
+                {"\\x1b[31m", "\x1b[31m"}, // red     fg
+                {"\\x1b[32m", "\x1b[32m"}, // green   fg
+                {"\\x1b[33m", "\x1b[33m"}, // yellow  fg
+                {"\\x1b[34m", "\x1b[34m"}, // blue    fg
+                {"\\x1b[35m", "\x1b[35m"}, // magenta fg
+                {"\\x1b[36m", "\x1b[36m"}, // cyan    fg
+                {"\\x1b[37m", "\x1b[37m"}, // white   fg
+                {"\\x1b[40m", "\x1b[40m"}, // black   bg
+                {"\\x1b[41m", "\x1b[41m"}, // red     bg
+                {"\\x1b[42m", "\x1b[42m"}, // green   bg
+                {"\\x1b[43m", "\x1b[43m"}, // yellow  bg
+                {"\\x1b[44m", "\x1b[44m"}, // blue    bg
+                {"\\x1b[45m", "\x1b[45m"}, // magenta bg
+                {"\\x1b[46m", "\x1b[46m"}, // cyan    bg
+                {"\\x1b[47m", "\x1b[47m"}, // white   bg
+        };
+
+        if (ansi_code_map.find(output) != ansi_code_map.end()) {
+                std::cout << ansi_code_map.at(output);
+        } else {
+                std::cout << output;
         }
 
         prog_ctr += 2;

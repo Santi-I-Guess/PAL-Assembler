@@ -14,12 +14,12 @@ void pdb_handle_break(
         std::vector<int16_t> &breakpoints,
         const std::vector<int16_t> &mnemonic_addrs
 ) {
-        // break
         if (cmd_tokens.size() != 2) {
                 std::cout << "argument required\n";
                 return;
         }
 
+        // if subcommand is "list", list breakpoints and quit
         if (cmd_tokens.at(1) == "list") {
                 std::cout << "breakpoints:\n";
                 for (int16_t address : breakpoints) {
@@ -28,15 +28,20 @@ void pdb_handle_break(
                 return;
         }
 
+        // check if breakpoint points to an address with an opcode
         int16_t awaiting = (int16_t)std::stoi(cmd_tokens.at(1));
         bool is_valid = false;
-        // check if breakpoint is at an opcode
         for (int16_t address : mnemonic_addrs) {
                 if (awaiting == address) {
                         is_valid = true;
                         break;
                 }
         }
+        if (!is_valid) {
+                std::cout << awaiting << " is not a valid breakpoint\n";
+                return;
+        }
+
         // check if breakpoint already exists
         for (int16_t address : breakpoints) {
                 if (awaiting == address) {
@@ -45,12 +50,8 @@ void pdb_handle_break(
                 }
         }
 
-        if (is_valid) {
-                breakpoints.push_back(awaiting);
-                std::cout << "added " << awaiting << "\n";
-        } else {
-                std::cout << awaiting << " is not a valid breakpoint\n";
-        }
+        breakpoints.push_back(awaiting);
+        std::cout << "added " << awaiting << "\n";
 }
 
 void pdb_handle_delete(
@@ -108,12 +109,16 @@ void pdb_handle_disassemble(const CPU_Handle &cpu_handle) {
                 cpu_handle.get_program_data(2),
                 cpu_handle.get_program_data(3),
         };
+
         const int16_t magic_nums[4] = {
                 0x4153,
                 0x544e,
                 0x4149,
                 0x4f47
         };
+
+        // check if program starts with hex values of "SANTIAGO",
+        // and warn user if false
         if ((header[0] != magic_nums[0])
                 || (header[1] != magic_nums[1])
                 || (header[2] != magic_nums[2])
@@ -124,12 +129,14 @@ void pdb_handle_disassemble(const CPU_Handle &cpu_handle) {
         // I mean, after it hits the first mnemonic, it's expected that
         // it's only going to see mnemonics afterwards
 
-        // start at 4 to skip magic numbers
-        int16_t curr_str_idx = 0;
-        int16_t int_idx = 4;
+
         // auxiliary variables
         int16_t opcode;
         int16_t ins_len;
+
+        // start at 4 to skip magic numbers
+        int16_t curr_str_idx = 0;
+        int16_t int_idx = 4;
         std::vector<int16_t> instruction = {};
         while (int_idx < cpu_handle.get_prog_size()) {
                 int16_t curr_int = cpu_handle.get_program_data(int_idx);
