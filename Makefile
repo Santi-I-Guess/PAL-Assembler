@@ -2,8 +2,7 @@
 
 CXX = g++
 CXXFLAGS_DEBUG = -g
-CXXFLAGS_WARN  = -Wall -Werror -Wextra -Wconversion -Wdouble-promotion \
-				 -Wunreachable-code -Wshadow -Wpedantic
+CXXFLAGS_WARN  = -Wall -Werror -Wunreachable-code -Wshadow -Wpedantic
 CPPVERSION = -std=c++17
 USERNAME = santiago_sagastegui
 
@@ -79,7 +78,7 @@ clean: | $(BUILD_DIR)
 
 
 depend:
-	@sed --in-place=.bak '/^# DEPENDENCIES/,$$d' Makefile
+	@sed --in-place=.bak '/^# DEPENDENCIES$$/,$$d' Makefile
 	@$(DEL) sed* $(DEL_FLAGS)
 	@echo $(Q)# DEPENDENCIES$(Q) >> Makefile
 	@$(CXX) -MM $(SRC_FILES) | sed "s/\([a-z_]*.o:\)/build\/\1/g" >> Makefile
