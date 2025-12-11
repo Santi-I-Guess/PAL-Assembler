@@ -1,10 +1,27 @@
 # Two cars in every pot and a chicken in every garage.
 
-CXX = g++
+CXX            = g++
 CXXFLAGS_DEBUG = -g -Wmissing-include-dirs
 CXXFLAGS_WARN  = -Wall
-CPPVERSION = -std=c++17
-USERNAME = santiago_sagastegui
+CPPVERSION     = -std=c++17
+USERNAME       = santiago_sagastegui
+
+PROJECT = pal_assembler
+SRC_DIRS  = src/assembler \
+			src/misc \
+			src/simulator \
+			src
+SRC_FILES = $(foreach dir, $(SRC_DIRS), $(wildcard ${dir}/*.cpp))
+H_FILES   = $(foreach dir, $(SRC_DIRS), $(wildcard ${dir}/*.h))
+OBJECTS = $(patsubst %.cpp, build/%.o, $(notdir $(SRC_FILES)))
+REZ_FILES = resources/pseudo_assembly_assembler.png \
+			docs/Doxyfile \
+			final.txt \
+			$(wildcard docs/*.md) \
+			$(wildcard examples/*.pseudo) \
+			$(wildcard testing/*.py) \
+			$(wildcard testing/*.sh) \
+
 
 ARCHIVE_EXTENSION = zip
 
@@ -30,21 +47,6 @@ else
 	endif
 	ZIP_NAME = $(PROJECT)_$(USERNAME).$(ARCHIVE_EXTENSION)
 endif
-
-PROJECT = pal_assembler
-SRC_DIRS  = src/assembler \
-			src/misc \
-			src/simulator \
-			src
-SRC_FILES = $(foreach dir, $(SRC_DIRS), $(wildcard ${dir}/*.cpp))
-H_FILES   = $(foreach dir, $(SRC_DIRS), $(wildcard ${dir}/*.h))
-OBJECTS = $(patsubst %.cpp, build/%.o, $(notdir $(SRC_FILES)))
-REZ_FILES = resources/pseudo_assembly_assembler.png \
-			docs/Doxyfile \
-			$(wildcard docs/*.md) \
-			$(wildcard examples/*.pseudo) \
-			$(wildcard testing/*.py) \
-			$(wildcard testing/*.sh) \
 
 # https://www.gnu.org/software/make/manual/html_node/File-Name-Functions.html
 

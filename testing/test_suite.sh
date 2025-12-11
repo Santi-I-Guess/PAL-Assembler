@@ -7,7 +7,7 @@ set -o nounset
 
 cd "$(dirname ${0})" || exit
 
-executable="../final_project"
+executable="../pal_assembler -S"
 
 print_check() {
     printf "\x1b[32mPrint Check:\x1b[0m\n"
