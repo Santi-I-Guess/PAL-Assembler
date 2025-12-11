@@ -76,11 +76,11 @@ bool Cmd_Options::is_valid_args() {
 // misc: man page style: see cbonsai tool
 void print_help() {
         std::string help_buffer = 
-        "Usage: final_project \x1b[4minput_file\x1b[0m [OPTION]\n\n"
-        "final_project is a pseudo assembly assembler, simulator, and debugger\n"
+        "Usage: pal_assembler \x1b[4minput_file\x1b[0m [OPTION]\n\n"
+        "pal_assembler is a pseudo assembly assembler, simulator, and debugger\n"
         "for educational purposes. It is designed for use with the pseudo \n"
         "assembly language (PAL), and comes with a dedicated debugger (PAL debugger).\n"
-        "By default, final_project will assemble and simulate the program in one step\n\n"
+        "By default, pal_assembler will assemble and simulate the program in one step\n\n"
         "Options:\n"
         "  -a, --assemble-only\n"
         "      assemble ascii source file (or stdin when used with -S) into a binary file, and quit.\n\n"

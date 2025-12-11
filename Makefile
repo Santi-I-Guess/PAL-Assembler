@@ -31,7 +31,7 @@ else
 	ZIP_NAME = $(PROJECT)_$(USERNAME).$(ARCHIVE_EXTENSION)
 endif
 
-PROJECT = final_project
+PROJECT = pal_assembler
 SRC_DIRS  = src/assembler \
 			src/misc \
 			src/simulator \
