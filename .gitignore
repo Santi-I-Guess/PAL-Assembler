@@ -9,3 +9,4 @@ testing/__pycache__
 *.txt
 *.typ
 !examples/*.txt
+!src/instructions.txt
